@@ -1,4 +1,5 @@
 import lxml.etree as et
+from gameObjects.planet import Planet
 
 ''' XML with etree:
 
@@ -50,6 +51,46 @@ class XMLReader:
             newText = text.replace(',','')
             outputList.append(newText)
         return outputList
+
+    #general XML root parser to return list of element names (e.g. all planet names)
+    #sorts alphabetically
+    def getName(self, XMLRoot):
+        nameList = []
+
+        for element in XMLRoot.iter():
+            nameList.append(element.get("Name"))
+        
+        return nameList.sort()
+
+    #general planet name/location search. Searches an XML root for all planet names
+    #then returns a list of Planet objects with names and locations
+    def getPlanetNameLocation(self, XMLRoot):
+        planetList = []
+        positionList = []
+
+        for i, planetElement in enumerate(XMLRoot.iter()):
+            planetName = planetElement.get("Name")
+            planetList.append(Planet(planetName))
+
+            for planetChild in planetElement.iter("Galactic_Position"):
+                positionList = self.commaSepListParser(planetChild.text)
+                planetList[i].x = float(positionList[0])
+                planetList[i].y = float(positionList[1])
+        
+        return planetList
+
+    #parses a campaign XML root and returns a Python list of all trade route names in the campaign XML
+    #sorts alphabetically
+    def getCampaignTradeRouteList(self, campaignRoot):
+        campaignRoutes = []
+
+        for campaignChild in campaignRoot.findall("Trade_Routes"):
+            routeEntry = self.commaReplaceInList(campaignChild.text.split())
+            campaignRoutes.append(routeEntry)
+
+        return campaignRoutes.sort()
+
+    #REALLY SPECIFIC FUNCTIONS
 
     #searches the planet XML root for a planet with name planetName, and returns its x, y, z location as a list of floats
     def findPlanetLocation(self, planetName, planetXMLRoot):
