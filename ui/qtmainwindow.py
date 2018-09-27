@@ -35,6 +35,9 @@ class QtMainWindow(MainWindow):
         # self.__openAction.setStatusTip("Open a Galactic Conquest XML") #if we want a status bar
         self.__openAction.triggered.connect(self.__openFile)
 
+        self.__setDataFolderAction: QAction = QAction("Set Data Folder", self.__window)
+        self.__setDataFolderAction.triggered.connect(self.__openFolder)
+
         self.__saveAction: QAction = QAction("Save", self.__window)
         self.__saveAction.triggered.connect(self.__saveFile)
 
@@ -43,6 +46,7 @@ class QtMainWindow(MainWindow):
         
         self.__menu.addAction(self.__openAction)
         self.__menu.addAction(self.__saveAction)
+        self.__menu.addAction(self.__setDataFolderAction)
         self.__menu.addAction(self.__quitAction)
         self.__menuBar.addMenu(self.__menu)
         self.__widget.addWidget(self.__menuBar)
@@ -96,6 +100,11 @@ class QtMainWindow(MainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
         if fileName:
             print(fileName)
+
+    def __openFolder(self):
+        folderName = QFileDialog.getExistingDirectory(self.__widget, 'Select Data folder:', "", QFileDialog.ShowDirsOnly)
+        if folderName:
+            print(folderName)
 
     def __saveFile(self):    
         fileName, _ = QFileDialog.getSaveFileName(self.__widget,"Save Galactic Conquest","","XML Files (*.xml);;All Files (*)")
