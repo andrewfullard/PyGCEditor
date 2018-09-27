@@ -61,7 +61,7 @@ class XMLReader:
             nameList.append(element.get("Name"))
         
         return nameList.sort()
-
+        
     #general planet name/location search. Searches an XML root for all planet names
     #then returns a list of Planet objects with names and locations
     def getPlanetNameLocation(self, XMLRoot):
@@ -79,43 +79,13 @@ class XMLReader:
         
         return planetList
 
-    #parses a campaign XML root and returns a Python list of all trade route names in the campaign XML
+    #parses a XML root and returns a Python list of all names in the XML tag given
     #sorts alphabetically
-    def getCampaignTradeRouteList(self, campaignRoot):
-        campaignRoutes = []
+    def getListFromXMLRoot(self, XMLRoot, XMLTag):
+        outputList = []
 
-        for campaignChild in campaignRoot.findall("Trade_Routes"):
-            routeEntry = self.commaReplaceInList(campaignChild.text.split())
-            campaignRoutes.append(routeEntry)
+        for child in XMLRoot.findall(XMLTag):
+            entry = self.commaReplaceInList(child.text.split())
+            outputList.append(entry)
 
-        return campaignRoutes.sort()
-
-    #REALLY SPECIFIC FUNCTIONS
-
-    #searches the planet XML root for a planet with name planetName, and returns its x, y, z location as a list of floats
-    def findPlanetLocation(self, planetName, planetXMLRoot):
-        for element in planetXMLRoot.iter():
-            if element.get("Name") == str(planetName):
-                for child in element.iter("Galactic_Position"):
-                    positionList = self.commaSepListParser(child.text)
-                    return [float(i) for i in positionList]
-    
-    # searches the trade route XML root for a trade route with name tradeRouteName   
-    # then searches for the planet locations of the start and end points
-    # then returns the start and end locations, as well as the start and end planet names 
-    # ALMOST CERTAINLY UNNECESSARY IN ITS CURRENT FORM           
-    def findTradeRoute(self, tradeRouteName, tradeRouteXMLRoot, planetXMLRoot):
-        for element in tradeRouteXMLRoot.iter():
-            if element.get("Name") == str(tradeRouteName):
-                #print("Found trade route", trade_route_name)
-                for child in element.iter():
-                    if child.tag == "Point_A":
-                        start = child.text
-                        startLocation = self.findPlanetLocation(start, planetXMLRoot)
-                    elif child.tag == "Point_B":
-                        end = child.text
-                        endLocation = self.findPlanetLocation(end, planetXMLRoot)
-                
-                if startLocation and endLocation and (start and end):
-                    return startLocation[:2], endLocation[:2], start, end
-        return False, False, "", ""
+        return outputList.sort()

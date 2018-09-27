@@ -7,22 +7,14 @@ class XMLWriter:
         self.__inputTree
         self.__outputFileName
 
-    #creates a planet list string to insert into a campaign file
-    def createPlanetListEntry(self, planetList):
+    #creates a list string to insert into a file
+    #requires a GameObject with the name property
+    def createListEntry(self, inputList):
         entry = "\n"
 
-        for planet in planetList:
-            entry += (planet.name + ",\n")
+        for item in inputList:
+            entry += (item.name + ",\n")
 
-        return entry
-    
-    #creates a trade route list string to insert into a campaign file
-    def createTradeRouteListEntry(self, tradeRouteList):
-        entry = "\n"
-
-        for tradeRoute in tradeRouteList:
-            entry += (tradeRoute.name + ",\n")
-        
         return entry
 
     #example of creating XML from scratch. Probably better to use a template file!
