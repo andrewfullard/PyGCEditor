@@ -26,11 +26,27 @@ class XMLReader:
 
     #Probably wrong
     def __init__(self):
-        self.__planetPath: str = "/Data/XML/PLANETS.XML"
-        self.__tradeRoutePath: str = "Data/XML/TRADEROUTES.XML"
+        self.__gameObjectFilesPath: str = "/XML/gameobjectfiles.xml"
+        self.__tradeRouteFilesPath: str = "/XML/traderoutefiles.xml"
 
-        self.__planetXMLRoot: Element = et.parse(self.__planetPath).getroot()
-        self.__tradeXMLRoot: Element = et.parse(self.__tradeRoutePath).getroot()
+        self.__gameObjectFilesXMLRoot: Element = et.parse(self.__gameObjectFilesPath).getroot()
+        self.__tradeRouteFilesXMLRoot: Element = et.parse(self.__tradeRouteFilesPath).getroot()
+
+    #checks if the XML root is that of a metafile by checking the first element
+    #if the element tag is <File>, returns True. Otherwise False.
+    def isMetaFile(self, XMLRoot):
+        if XMLRoot[0].tag == "File":
+            return True
+        else
+            return False
+
+    #Returns a list of XML files from a metafile such as GameObjectFiles.xml
+    def parseMetaFile(self, XMLRoot):
+        fileList = []
+        for element in XMLRoot.iter():
+            fileList.append(element.text)
+        
+        return fileList
 
     #Parses a list of XML files and returns their roots as a list
     def parseXMLFileList(self, XMLFileList):
