@@ -42,8 +42,10 @@ class MainWindowPresenter:
         self.__planets: List[Planet] = list(repository.planets)
         self.__tradeRoutes: List[TradeRoute] = list(repository.tradeRoutes)
 
-        self.__mainWindow.addPlanets(self.__getPlanetNames())
+        self.__mainWindow.addPlanets(self.__getNames(self.__planets))
+        self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
         self.__checkedPlanets: Set[Planet] = set()
+        self.__checkedTradeRoutes: Set[TradeRoute] = set()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
         if checked:
@@ -54,6 +56,16 @@ class MainWindowPresenter:
                 self.__checkedPlanets.remove(self.__planets[index])
 
         self.__plot.plotPlanets(self.__checkedPlanets)
+    
+    def onTradeRouteChecked(self, index: int, checked: bool) -> None:
+        if checked:
+            if self.__tradeRoutes[index] not in self.__checkedTradeRoutes:
+                self.__checkedTradeRoutes.add(self.__tradeRoutes[index])
+        else:
+            if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
+                self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
 
-    def __getPlanetNames(self) -> List[str]:
-        return [p.name for p in self.__planets]
+        self.__plot.plotTradeRoutes(self.__checkedTradeRoutes)
+
+    def __getNames(self, inputList: list) -> List[str]:
+        return [x.name for x in inputList]

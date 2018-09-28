@@ -29,15 +29,15 @@ class XMLReader:
         self.__gameObjectFilesPath: str = "/XML/gameobjectfiles.xml"
         self.__tradeRouteFilesPath: str = "/XML/traderoutefiles.xml"
 
-        self.__gameObjectFilesXMLRoot: Element = et.parse(self.__gameObjectFilesPath).getroot()
-        self.__tradeRouteFilesXMLRoot: Element = et.parse(self.__tradeRouteFilesPath).getroot()
+       # self.__gameObjectFilesXMLRoot: Element = et.parse(self.__gameObjectFilesPath).getroot()
+       #self.__tradeRouteFilesXMLRoot: Element = et.parse(self.__tradeRouteFilesPath).getroot()
 
     #checks if the XML root is that of a metafile by checking the first element
     #if the element tag is <File>, returns True. Otherwise False.
     def isMetaFile(self, XMLRoot):
         if XMLRoot[0].tag == "File":
             return True
-        else
+        else:
             return False
 
     #Returns a list of XML files from a metafile such as GameObjectFiles.xml
@@ -69,14 +69,24 @@ class XMLReader:
         return outputList
 
     #general XML root parser to return list of element names (e.g. all planet names)
-    #sorts alphabetically
     def getName(self, XMLRoot):
         nameList = []
 
+        for element in XMLRoot:
+            if element.get("Name") is not None:
+                nameList.append(element.get("Name"))
+        print(nameList)
+        return nameList
+    
+    #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
+    def getLocation(self, name, XMLRoot):
         for element in XMLRoot.iter():
-            nameList.append(element.get("Name"))
+            if element.get("Name") == name:
+                for child in element.iter("Galactic_Position"):
+                    outputList = self.commaSepListParser(child.text)
+                    return outputList[0], outputList[1]
         
-        return nameList.sort()
+        print("Planet"+name+"not found!")
         
     #general planet name/location search. Searches an XML root for all planet names
     #then returns a list of Planet objects with names and locations
@@ -86,13 +96,15 @@ class XMLReader:
 
         for i, planetElement in enumerate(XMLRoot.iter()):
             planetName = planetElement.get("Name")
-            planetList.append(Planet(planetName))
+            if planetName:
+                planetList.append(Planet(planetName))
 
-            for planetChild in planetElement.iter("Galactic_Position"):
-                positionList = self.commaSepListParser(planetChild.text)
-                planetList[i].x = float(positionList[0])
-                planetList[i].y = float(positionList[1])
-        
+                for planetChild in planetElement.iter("Galactic_Position"):
+                    positionList = self.commaSepListParser(planetChild.text)
+                    print(planetList, i)
+                    planetList[i-1].x = float(positionList[0])
+                    planetList[i-1].y = float(positionList[1])
+    
         return planetList
 
     #parses a XML root and returns a Python list of all names in the XML tag given

@@ -1,7 +1,7 @@
 from typing import List
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QAction, QCheckBox, QFileDialog, QHeaderView, QMainWindow, QMenu, QMenuBar, QSplitter, \
+from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QFileDialog, QHeaderView, QMainWindow, QMenu, QMenuBar, QSplitter, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from ui.galacticplot import GalacticPlot
@@ -26,6 +26,12 @@ class QtMainWindow(MainWindow):
         self.__tradeRouteListWidget.setColumnCount(1)
         self.__tradeRouteListWidget.setHorizontalHeaderLabels(["TradeRoutes"])
         self.__tradeRouteListWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+
+        self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
+        self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget))
+
+        self.__selectAllTradeRoutesButton: QPushButton = QPushButton("Select All Trade Routes")
+        self.__selectAllTradeRoutesButton.clicked.connect(lambda: self.__selectAllTradeRoutesButtonClicked(self.__tradeRouteListWidget))
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
@@ -56,7 +62,9 @@ class QtMainWindow(MainWindow):
         self.__widget.addWidget(leftWidget)
 
         leftWidget.layout().addWidget(self.__planetListWidget)
+        leftWidget.layout().addWidget(self.__selectAllPlanetsButton)
         leftWidget.layout().addWidget(self.__tradeRouteListWidget)
+        leftWidget.layout().addWidget(self.__selectAllTradeRoutesButton)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -80,6 +88,8 @@ class QtMainWindow(MainWindow):
             self.__tradeRouteListWidget.setRowCount(rowCount + 1)
             self.__tradeRouteListWidget.setCellWidget(rowCount, 0, QCheckBox())
             self.__tradeRouteListWidget.setItem(self.__tradeRouteListWidget.rowCount(), 0, QTableWidgetItem(tradeRoute))
+        
+        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def makeGalacticPlot(self) -> GalacticPlot:
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
@@ -95,6 +105,13 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+
+    def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem):
+        checked: bool = False
+        if item.checkState() == QtCore.Qt.Checked:
+            checked = True
+
+        self.__presenter.onTradeRouteChecked(item.row(), checked)
 
     def __openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
@@ -113,3 +130,17 @@ class QtMainWindow(MainWindow):
 
     def __quit(self):
         self.__window.close()
+
+    def __selectAllPlanetsButtonClicked(self, table: QTableWidget):
+        rowCount = table.rowCount()
+        for row in range(rowCount):
+            item = table.item(row, 0)
+            item.setCheckState(2)
+            self.__presenter.onPlanetChecked(item.row(), True)
+    
+    def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget):
+        rowCount = table.rowCount()
+        for row in range(rowCount):
+            item = table.item(row, 0)
+            item.setCheckState(2)
+            self.__presenter.onTradeRouteChecked(item.row(), True)
