@@ -69,16 +69,30 @@ class XMLReader:
         return outputList
 
     #general XML root parser to return list of element names (e.g. all planet names)
-    def getName(self, XMLRoot) -> list():
+    def getNamesFromXML(self, XMLRoot) -> list():
         nameList = []
 
         for element in XMLRoot:
             if element.get("Name") is not None:
                 nameList.append(element.get("Name"))
-        print(nameList)
+
         return nameList
     
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
+    def getStartEnd(self, name, planetList, tradeRouteRoot) -> Planet:
+        for element in tradeRouteRoot.iter():
+            if element.get("Name") == name:
+                for child in element.iter():
+                    if child.tag == "Point_A":
+                        start_planet = self.getPlanet(child.text, planetList)
+                    elif child.tag == "Point_B":
+                        end_planet = self.getPlanet(child.text, planetList)
+                    
+                return start_planet, end_planet
+        
+        print("TradeRoute"+name+"not found!")
+    
+     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
     def getLocation(self, name, XMLRoot) -> float:
         for element in XMLRoot.iter():
             if element.get("Name") == name:
@@ -88,6 +102,15 @@ class XMLReader:
         
         print("Planet"+name+"not found!")
         
+    def getPlanet(self, name, planetList) -> Planet:
+        for p in planetList:
+            if p.name == name:
+                if p is not None:
+                    return p
+        
+        print("Error! Planet"+name+"not found!")
+
+    
     #general planet name/location search. Searches an XML root for all planet names
     #then returns a list of Planet objects with names and locations
     def getPlanetNameLocation(self, XMLRoot) -> list():

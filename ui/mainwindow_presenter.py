@@ -39,8 +39,8 @@ class MainWindowPresenter:
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         self.__repository = repository
-        self.__planets: List[Planet] = list(repository.planets)
-        self.__tradeRoutes: List[TradeRoute] = list(repository.tradeRoutes)
+        self.__planets: List[Planet] = sorted(repository.planets, key = lambda entry: entry.name)
+        self.__tradeRoutes: List[TradeRoute] = sorted(repository.tradeRoutes, key = lambda entry: entry.name)
 
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
@@ -66,6 +66,22 @@ class MainWindowPresenter:
                 self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)
+    
+    def allPlanetsChecked(self, checked: bool) -> None:
+        if checked:
+            self.__checkedPlanets.update(self.__planets)
+        else:
+            self.__checkedPlanets.clear()
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)       
+
+    def allTradeRoutesChecked(self, checked: bool) -> None:
+        if checked:
+            self.__checkedTradeRoutes.update(self.__tradeRoutes)
+        else:
+            self.__checkedTradeRoutes.clear()
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)        
 
     def __getNames(self, inputList: list) -> List[str]:
         return [x.name for x in inputList]

@@ -21,12 +21,18 @@ xmlfilelist = [planetfile, traderoutefile]
 
 rootlist = xml.parseXMLFileList(xmlfilelist)
 
-planets = xml.getName(rootlist[0])
+planetsfromxml = xml.getNamesFromXML(rootlist[0])
+traderoutesfromxml = xml.getNamesFromXML(rootlist[1])
 
-for planet in set(planets):
+for planet in planetsfromxml:
     newplanet = Planet(planet)
     newplanet.x, newplanet.y = xml.getLocation(planet, rootlist[0])
-    repository.addPlanet(newplanet) """
+    repository.addPlanet(newplanet)
+
+for route in traderoutesfromxml:
+    newroute = TradeRoute(route)
+    newroute.start, newroute.end = xml.getStartEnd(route, repository.planets, rootlist[1])
+    repository.addTradeRoute(newroute) """
 
 a = Planet("A")
 a.x = random.randint(-100, 100)
@@ -46,7 +52,7 @@ repository.addPlanet(b)
 repository.addPlanet(c)
 repository.addPlanet(d)
 
-ab_trade = TradeRoute("A to B")
+ab_trade = TradeRoute("1 to 2")
 ab_trade.start = list(repository.planets)[0]
 ab_trade.end = list(repository.planets)[1]
 print(ab_trade.name)

@@ -133,11 +133,13 @@ class QtMainWindow(MainWindow):
         for row in range(rowCount):
             item = table.item(row, 0)
             item.setCheckState(2)
-            self.__presenter.onPlanetChecked(item.row(), True)
+        
+        self.__presenter.allPlanetsChecked(True)
     
     def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget) -> None:
         rowCount = table.rowCount()
         for row in range(rowCount):
             item = table.item(row, 0)
             item.setCheckState(2)
-            self.__presenter.onTradeRouteChecked(item.row(), True)
+            
+        self.__presenter.allTradeRoutesChecked(True)
