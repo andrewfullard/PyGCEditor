@@ -32,7 +32,7 @@ class QtGalacticPlot:
             x2 = t.end.x
             y2 = t.end.y
             # plot each route (start, end)            
-            self.__axes.plot([x1, x2], [y1, y2], 'k-')
+            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.3)
 
         x = []
         y = []
