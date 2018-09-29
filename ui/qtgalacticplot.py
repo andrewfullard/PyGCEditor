@@ -16,23 +16,10 @@ class QtGalacticPlot:
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111)
 
-    # plots planets as standard blue circles
-    def plotPlanets(self, planets):
+    #plots galaxy
+    def plotGalaxy(self, planets, tradeRoutes):
         self.__axes.clear()
-        x = []
-        y = []
 
-        for p in planets:
-            x.append(p.x)
-            y.append(p.y)
-
-        self.__axes.scatter(x, y)
-        self.__galacticPlotCanvas.draw_idle()
-    
-    # plots traderoutes as rainbow fluorescent lines
-    def plotTradeRoutes(self, tradeRoutes):
-        # initialize traderoute start/end x,y positions
-        self.__axes.clear()
         x1 = 0        
         y1 = 0
         x2 = 0
@@ -47,7 +34,18 @@ class QtGalacticPlot:
             # plot each route (start, end)            
             self.__axes.plot([x1, x2], [y1, y2], 'k-')
 
+        x = []
+        y = []
+
+        for p in planets:
+            x.append(p.x)
+            y.append(p.y)
+            self.__axes.text(p.x+1, p.y+1, p.name, fontsize=10)
+
+        self.__axes.scatter(x, y, c = 'b')
+
         self.__galacticPlotCanvas.draw_idle()
+
 
     def getWidget(self) -> QWidget:
         return self.__galacticPlotWidget

@@ -55,7 +55,7 @@ class MainWindowPresenter:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
 
-        self.__plot.plotPlanets(self.__checkedPlanets)
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)
     
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         if checked:
@@ -65,7 +65,7 @@ class MainWindowPresenter:
             if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
 
-        self.__plot.plotTradeRoutes(self.__checkedTradeRoutes)
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)
 
     def __getNames(self, inputList: list) -> List[str]:
         return [x.name for x in inputList]
