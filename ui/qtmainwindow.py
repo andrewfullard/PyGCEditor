@@ -72,23 +72,11 @@ class QtMainWindow(MainWindow):
         self.__presenter = presenter
 
     def addPlanets(self, planets: List[str]) -> None:
-        for planet in planets:
-            rowCount = self.__planetListWidget.rowCount()
-            self.__planetListWidget.setRowCount(rowCount + 1)
-            item: QTableWidgetItem = QTableWidgetItem(planet)
-            item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            self.__planetListWidget.setItem(rowCount, 0, item)
-        
+        self.__addEntriesToTableWidget(self.__planetListWidget, planets)
         self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
-        for tradeRoute in tradeRoutes:
-            rowCount = self.__tradeRouteListWidget.rowCount()
-            self.__tradeRouteListWidget.setRowCount(rowCount + 1)
-            self.__tradeRouteListWidget.setCellWidget(rowCount, 0, QCheckBox())
-            self.__tradeRouteListWidget.setItem(self.__tradeRouteListWidget.rowCount(), 0, QTableWidgetItem(tradeRoute))
-        
+        self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
         self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def makeGalacticPlot(self) -> GalacticPlot:
@@ -98,6 +86,15 @@ class QtMainWindow(MainWindow):
 
     def getWindow(self) -> QMainWindow:
         return self.__window
+
+    def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
+        for entry in entries:
+            rowCount = widget.rowCount()
+            widget.setRowCount(rowCount + 1)
+            item: QTableWidgetItem = QTableWidgetItem(entry)
+            item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            widget.setItem(rowCount, 0, item)
 
     def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem):
         checked: bool = False

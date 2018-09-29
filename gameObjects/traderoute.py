@@ -6,7 +6,7 @@ class TradeRoute:
     '''Trade routes have a name and a start/end planet
     this doc will be better once I get better at it'''
     def __init__(self, name: str):
-        self.__name: str = ""
+        self.__name: str = name
         self.__start: Planet = None
         self.__end: Planet = None
 
@@ -17,7 +17,7 @@ class TradeRoute:
     @name.setter
     def name(self, value: str) -> None:
         if value:
-            self.__name
+            self.__name = value
 
     @property
     def start(self) -> Planet:
