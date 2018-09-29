@@ -34,14 +34,14 @@ class XMLReader:
 
     #checks if the XML root is that of a metafile by checking the first element
     #if the element tag is <File>, returns True. Otherwise False.
-    def isMetaFile(self, XMLRoot):
+    def isMetaFile(self, XMLRoot) -> bool:
         if XMLRoot[0].tag == "File":
             return True
         else:
             return False
 
     #Returns a list of XML files from a metafile such as GameObjectFiles.xml
-    def parseMetaFile(self, XMLRoot):
+    def parseMetaFile(self, XMLRoot) -> list():
         fileList = []
         for element in XMLRoot.iter():
             fileList.append(element.text)
@@ -49,19 +49,19 @@ class XMLReader:
         return fileList
 
     #Parses a list of XML files and returns their roots as a list
-    def parseXMLFileList(self, XMLFileList):
+    def parseXMLFileList(self, XMLFileList) -> list():
         rootList = []
         for XMLFile in XMLFileList:
             rootList.append(et.parse(XMLFile).getroot())  
         return rootList
 
     #parses a comma-separated string into a Python List
-    def commaSepListParser(self, entry):
+    def commaSepListParser(self, entry) -> list():
         entry = entry.replace(',',' ')
         return entry.split()
 
     #replaces spurious commas in a Python List
-    def commaReplaceInList(self, listToReplace):
+    def commaReplaceInList(self, listToReplace) -> list():
         outputList = []
         for text in listToReplace:
             newText = text.replace(',','')
@@ -69,7 +69,7 @@ class XMLReader:
         return outputList
 
     #general XML root parser to return list of element names (e.g. all planet names)
-    def getName(self, XMLRoot):
+    def getName(self, XMLRoot) -> list():
         nameList = []
 
         for element in XMLRoot:
@@ -79,18 +79,18 @@ class XMLReader:
         return nameList
     
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
-    def getLocation(self, name, XMLRoot):
+    def getLocation(self, name, XMLRoot) -> float:
         for element in XMLRoot.iter():
             if element.get("Name") == name:
                 for child in element.iter("Galactic_Position"):
                     outputList = self.commaSepListParser(child.text)
-                    return outputList[0], outputList[1]
+                    return float(outputList[0]), float(outputList[1])
         
         print("Planet"+name+"not found!")
         
     #general planet name/location search. Searches an XML root for all planet names
     #then returns a list of Planet objects with names and locations
-    def getPlanetNameLocation(self, XMLRoot):
+    def getPlanetNameLocation(self, XMLRoot) -> list():
         planetList = []
         positionList = []
 
@@ -109,7 +109,7 @@ class XMLReader:
 
     #parses a XML root and returns a Python list of all names in the XML tag given
     #sorts alphabetically
-    def getListFromXMLRoot(self, XMLRoot, XMLTag):
+    def getListFromXMLRoot(self, XMLRoot, XMLTag) -> list():
         outputList = []
 
         for child in XMLRoot.findall(XMLTag):

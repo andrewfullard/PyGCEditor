@@ -96,46 +96,46 @@ class QtMainWindow(MainWindow):
             item.setCheckState(QtCore.Qt.Unchecked)
             widget.setItem(rowCount, 0, item)
 
-    def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem):
+    def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         checked: bool = False
         if item.checkState() == QtCore.Qt.Checked:
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
 
-    def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem):
+    def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         checked: bool = False
         if item.checkState() == QtCore.Qt.Checked:
             checked = True
 
         self.__presenter.onTradeRouteChecked(item.row(), checked)
 
-    def __openFile(self):
+    def __openFile(self) -> None:
         fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
         if fileName:
             print(fileName)
 
-    def __openFolder(self):
+    def __openFolder(self) -> None:
         folderName = QFileDialog.getExistingDirectory(self.__widget, 'Select Data folder:', "", QFileDialog.ShowDirsOnly)
         if folderName:
             print(folderName)
 
-    def __saveFile(self):    
+    def __saveFile(self) -> None:    
         fileName, _ = QFileDialog.getSaveFileName(self.__widget,"Save Galactic Conquest","","XML Files (*.xml);;All Files (*)")
         if fileName:
             print(fileName)
 
-    def __quit(self):
+    def __quit(self) -> None:
         self.__window.close()
 
-    def __selectAllPlanetsButtonClicked(self, table: QTableWidget):
+    def __selectAllPlanetsButtonClicked(self, table: QTableWidget) -> None:
         rowCount = table.rowCount()
         for row in range(rowCount):
             item = table.item(row, 0)
             item.setCheckState(2)
             self.__presenter.onPlanetChecked(item.row(), True)
     
-    def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget):
+    def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget) -> None:
         rowCount = table.rowCount()
         for row in range(rowCount):
             item = table.item(row, 0)

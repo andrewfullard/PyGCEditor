@@ -52,5 +52,5 @@ class XMLWriter:
         return element
 
 
-    def writer(self, self.__inputTree, self.__outputFileName):
+    def writer(self, self.__inputTree, self.__outputFileName) -> None:
         self.__inputTree.write(self.__outputFileName, xml_declaration="1.0")
