@@ -26,8 +26,8 @@ class XMLReader:
 
     #Probably wrong
     def __init__(self):
-        self.__gameObjectFilesPath: str = "/XML/gameobjectfiles.xml"
-        self.__tradeRouteFilesPath: str = "/XML/traderoutefiles.xml"
+        self.__gameObjectFilesPath: str = SomeClass.dataFolder + "gameobjectfiles.xml"
+        self.__tradeRouteFilesPath: str = SomeClass.dataFolder + "traderoutefiles.xml"
 
        # self.__gameObjectFilesXMLRoot: Element = et.parse(self.__gameObjectFilesPath).getroot()
        #self.__tradeRouteFilesXMLRoot: Element = et.parse(self.__tradeRouteFilesPath).getroot()
@@ -35,7 +35,7 @@ class XMLReader:
     #checks if the XML root is that of a metafile by checking the first element
     #if the element tag is <File>, returns True. Otherwise False.
     def isMetaFile(self, XMLRoot) -> bool:
-        if XMLRoot[0].tag == "File":
+        if self.hasTag(XMLRoot, "File"):
             return True
         else:
             return False
@@ -47,6 +47,40 @@ class XMLReader:
             fileList.append(element.text)
         
         return fileList
+
+    #searches GameObjectFiles for all XML files with the Planet tag.
+    #returns a list of their XML roots
+    def findPlanetsFiles(self, gameObjectFile) -> list():
+        metaRoot = et.parse(gameObjectFile).getroot()
+        if self.isMetaFile(metaRoot):
+            fileList = self.parseMetaFile(metaRoot)
+            planetsFiles = []
+
+            for file in fileList:
+                fileRoot = et.parse(SomeClass.dataFolder + file)
+                if self.hasTag(fileRoot, "Planet"):
+                    planetsFiles.append(fileRoot)
+                
+            return planetsFiles
+
+        else:
+            print("Not a meta file!")
+
+    #searches TradeRouteFiles and returns a list of traderoute XML roots
+    def findTradeRoutesFiles(self, tradeRoutesFile) -> list():
+        metaRoot = et.parse(tradeRoutesFile).getroot()
+        if self.isMetaFile(metaRoot):
+            fileList = self.parseMetaFile(metaRoot)
+            tradeRoutesFiles = []
+
+            for file in fileList:
+                fileRoot = et.parse(SomeClass.dataFolder + file)
+                tradeRoutesFiles.append(fileRoot)
+                
+            return tradeRoutesFiles
+
+         else:
+            print("Not a meta file!")
 
     #Parses a list of XML files and returns their roots as a list
     def parseXMLFileList(self, XMLFileList) -> list():
@@ -77,7 +111,7 @@ class XMLReader:
                 nameList.append(element.get("Name"))
 
         return nameList
-    
+
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
     def getStartEnd(self, name, planetList, tradeRouteRoot) -> Planet:
         for element in tradeRouteRoot.iter():
@@ -110,6 +144,11 @@ class XMLReader:
         
         print("Error! Planet"+name+"not found!")
 
+     def hasTag(self, XMLRoot, XMLTag) -> bool:
+        if XMLRoot.find(XMLTag) is not None:
+            return True
+        else:
+            return False
     
     #general planet name/location search. Searches an XML root for all planet names
     #then returns a list of Planet objects with names and locations
