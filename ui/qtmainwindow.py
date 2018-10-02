@@ -182,5 +182,5 @@ class QtMainWindow(MainWindow):
             
             self.__presenter.allTradeRoutesChecked(False)
 
-    def __onCampaignSelected(self):
-        pass
+    def __onCampaignSelected(self, index: int):
+        self.__presenter.onCampaignSelected(index)

@@ -29,6 +29,52 @@ class XMLReader:
     def __init__(self):
         pass
 
+
+    ''' Generic Python functions that are helpful for XML, should be moved to another class? '''
+
+    #parses a comma-separated string into a Python List
+    def commaSepListParser(self, entry) -> list():
+        entry = entry.replace(',',' ')
+        return entry.split()
+
+    #replaces spurious commas in a Python List
+    def commaReplaceInList(self, listToReplace) -> list():
+        outputList = []
+        for text in listToReplace:
+            newText = text.replace(',','')
+            outputList.append(newText)
+        return outputList
+
+
+    ''' General XML file parsing '''
+
+    #Parses a list of XML files and returns their roots as a list
+    def parseXMLFileList(self, XMLFileList) -> list():
+        rootList = []
+        for XMLFile in XMLFileList:
+            rootList.append(et.parse(XMLFile).getroot())  
+        return rootList
+
+    #Checks if a given tag is present in a given XML root
+    def hasTag(self, XMLRoot, XMLTag) -> bool:
+        if XMLRoot.find(XMLTag) is not None:
+            return True
+        else:
+            return False
+
+    #parses a XML root and returns a Python set of all names in the XML tag given
+    def getListFromXMLRoot(self, XMLRoot, XMLTag) -> set():
+        outputSet = set()
+
+        for child in XMLRoot.findall(XMLTag):
+            entry = self.commaReplaceInList(child.text.split())
+            outputSet.update(entry)
+
+        return outputSet
+
+
+    ''' Parsing EAW Meta files '''
+
     #checks if the XML root is that of a metafile by checking the first element
     #if the element tag is <File>, returns True. Otherwise False.
     def isMetaFile(self, XMLRoot) -> bool:
@@ -79,25 +125,8 @@ class XMLReader:
         else:
             print("Not a meta file!")  
 
-    #Parses a list of XML files and returns their roots as a list
-    def parseXMLFileList(self, XMLFileList) -> list():
-        rootList = []
-        for XMLFile in XMLFileList:
-            rootList.append(et.parse(XMLFile).getroot())  
-        return rootList
 
-    #parses a comma-separated string into a Python List
-    def commaSepListParser(self, entry) -> list():
-        entry = entry.replace(',',' ')
-        return entry.split()
-
-    #replaces spurious commas in a Python List
-    def commaReplaceInList(self, listToReplace) -> list():
-        outputList = []
-        for text in listToReplace:
-            newText = text.replace(',','')
-            outputList.append(newText)
-        return outputList
+    ''' EAW specific XML parsing '''
 
     #general XML root parser to return list of element names (e.g. all planet names)
     def getNamesFromXML(self, XMLRoot) -> list():
@@ -123,7 +152,7 @@ class XMLReader:
         
         print("TradeRoute " + name + " not found!")
     
-     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
+    #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
     def getLocation(self, name, XMLRoot) -> float:
         for element in XMLRoot.iter():
             if element.get("Name") == name:
@@ -132,7 +161,11 @@ class XMLReader:
                     return float(outputList[0]), float(outputList[1])
         
         print("Planet " + name + " not found!")
-        
+
+
+    ''' Should be moved to another class? '''
+
+    #finds a planet object in a list of planet objects and returns it
     def getPlanet(self, name, planetList) -> Planet:
         for p in planetList:
             if p.name == name:
@@ -141,6 +174,8 @@ class XMLReader:
         
         print("Planet " + name + " not found!")
 
+
+    #finds a traderoute object in a list of traderoute objects and returns it
     def getTradeRoute(self, name, tradeRouteList) -> TradeRoute:
         for t in tradeRouteList:
             if t.name == name:
@@ -148,20 +183,3 @@ class XMLReader:
                     return t
         
         print("Trade Route " + name + " not found!")
-
-    def hasTag(self, XMLRoot, XMLTag) -> bool:
-        if XMLRoot.find(XMLTag) is not None:
-            return True
-        else:
-            return False
-
-    #parses a XML root and returns a Python list of all names in the XML tag given
-    #sorts alphabetically
-    def getListFromXMLRoot(self, XMLRoot, XMLTag) -> list():
-        outputList = []
-
-        for child in XMLRoot.findall(XMLTag):
-            entry = self.commaReplaceInList(child.text.split())
-            outputList.append(entry)
-
-        return outputList.sort()

@@ -38,9 +38,13 @@ traderoutesfromxml = xml.getNamesFromXML(rootlist[1])
 campaignrootlist = xml.findMetaFileRefs(campaignfile)
 
 campaignNames = []
+allCampaignRoots = []
+
+# All this needs to be in classes I expect
 
 for campaignroot in campaignrootlist:
     campaignNames.extend(xml.getNamesFromXML(campaignroot))
+    allCampaignRoots.extend(campaignroot.iter("Campaign"))
 
 for planet in planetsfromxml:
     newplanet = Planet(planet)
@@ -52,8 +56,25 @@ for route in traderoutesfromxml:
     newroute.start, newroute.end = xml.getStartEnd(route, repository.planets, rootlist[1])
     repository.addTradeRoute(newroute)
 
-for campaign in campaignNames:
+for (campaign, campaignroot) in zip(campaignNames, allCampaignRoots):
+    newCampaignPlanets = set()
+    newCampaignTradeRoutes = set()
+
     newcampaign = Campaign(campaign)
+    campaignPlanetNames = xml.getListFromXMLRoot(campaignroot, ".//Locations")
+    campaignTradeRouteNames = xml.getListFromXMLRoot(campaignroot, ".//Trade_Routes")
+
+    for p in campaignPlanetNames:
+        newplanet = xml.getPlanet(p, repository.planets)
+        newCampaignPlanets.add(newplanet)
+
+    for t in campaignTradeRouteNames:
+        newroute = xml.getPlanet(t, repository.tradeRoutes)
+        newCampaignTradeRoutes.add(newroute)
+
+    newcampaign.planets = newCampaignPlanets
+    newcampaign.tradeRoutes = newCampaignTradeRoutes
+
     repository.addCampaign(newcampaign)
 
 
