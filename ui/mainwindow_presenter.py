@@ -29,6 +29,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def addCampaigns(self, campaigns: List[str]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def makeGalacticPlot(self) -> GalacticPlot:
         raise NotImplementedError()
 
@@ -39,9 +43,11 @@ class MainWindowPresenter:
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         self.__repository = repository
+        self.__campaigns: List[Campaign] = sorted(repository.campaigns, key = lambda entry: entry.name)
         self.__planets: List[Planet] = sorted(repository.planets, key = lambda entry: entry.name)
         self.__tradeRoutes: List[TradeRoute] = sorted(repository.tradeRoutes, key = lambda entry: entry.name)
 
+        self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
         self.__checkedPlanets: Set[Planet] = set()
@@ -55,7 +61,7 @@ class MainWindowPresenter:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         if checked:
@@ -65,7 +71,7 @@ class MainWindowPresenter:
             if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def allPlanetsChecked(self, checked: bool) -> None:
         if checked:
@@ -73,7 +79,7 @@ class MainWindowPresenter:
         else:
             self.__checkedPlanets.clear()
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)       
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)    
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
         if checked:
@@ -81,7 +87,7 @@ class MainWindowPresenter:
         else:
             self.__checkedTradeRoutes.clear()
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes)        
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)        
 
     def __getNames(self, inputList: list) -> List[str]:
         return [x.name for x in inputList]

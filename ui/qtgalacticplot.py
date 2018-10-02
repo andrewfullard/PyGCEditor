@@ -17,8 +17,17 @@ class QtGalacticPlot:
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111)
 
     #plots galaxy
-    def plotGalaxy(self, planets, tradeRoutes):
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets):
         self.__axes.clear()
+
+        x = []
+        y = []
+
+        for p in allPlanets:
+            x.append(p.x)
+            y.append(p.y)
+
+        self.__axes.scatter(x, y, c = 'b', alpha = 0.1)
 
         x1 = 0        
         y1 = 0

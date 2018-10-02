@@ -6,7 +6,9 @@ from PyQt5.QtWidgets import QApplication
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.campaign import Campaign
 from xml.xmlreader import XMLReader
+from xml.xmlstructure import XMLStructure
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtmainwindow import QtMainWindow
 
@@ -14,15 +16,15 @@ from ui.qtmainwindow import QtMainWindow
 numArgs = len(sys.argv)
 
 if numArgs > 1:
-    planetfile = sys.argv[1]
-
-if numArgs > 2:
-    traderoutefile = sys.argv[2]
+    XMLStructure.dataFolder = sys.argv[1]
+else:
+    XMLStructure.dataFolder = "C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Source/Data"
 
 repository: GameObjectRepository = GameObjectRepository()
 
-# planetfile = "C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Source/Data/XML/Planets.XML"
-# traderoutefile = "C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Source/Data/XML/TradeRoutes.XML"
+campaignfile = XMLStructure.dataFolder + "/XML/CampaignFiles.XML"
+planetfile = XMLStructure.dataFolder + "/XML/Planets.XML"
+traderoutefile = XMLStructure.dataFolder + "/XML/TradeRoutes.XML"
 
 xml: XMLReader = XMLReader()
 
@@ -32,6 +34,13 @@ rootlist = xml.parseXMLFileList(xmlfilelist)
 
 planetsfromxml = xml.getNamesFromXML(rootlist[0])
 traderoutesfromxml = xml.getNamesFromXML(rootlist[1])
+
+campaignrootlist = xml.findMetaFileRefs(campaignfile)
+
+campaignNames = []
+
+for campaignroot in campaignrootlist:
+    campaignNames.extend(xml.getNamesFromXML(campaignroot))
 
 for planet in planetsfromxml:
     newplanet = Planet(planet)
@@ -43,6 +52,9 @@ for route in traderoutesfromxml:
     newroute.start, newroute.end = xml.getStartEnd(route, repository.planets, rootlist[1])
     repository.addTradeRoute(newroute)
 
+for campaign in campaignNames:
+    newcampaign = Campaign(campaign)
+    repository.addCampaign(newcampaign)
 
 
 # a = Planet("A")
