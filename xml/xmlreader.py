@@ -107,7 +107,7 @@ class XMLReader:
             return planetsFiles
 
         else:
-            print("Not a meta file!")
+            print("Not a meta file! findPlanetsFiles")
 
     #searches a metafile and returns a list of XML roots that are referenced in the metafile
     def findMetaFileRefs(self, metaFile) -> list():
@@ -123,7 +123,7 @@ class XMLReader:
             return metaFileRefs
 
         else:
-            print("Not a meta file!")  
+            print("Not a meta file! findMetaFileRefs")  
 
 
     ''' EAW specific XML parsing '''
@@ -141,7 +141,7 @@ class XMLReader:
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
     def getStartEnd(self, name, planetList, tradeRouteRoot) -> Planet:
         for element in tradeRouteRoot.iter():
-            if element.get("Name") == name:
+            if element.get("Name").lower() == name.lower():
                 for child in element.iter():
                     if child.tag == "Point_A":
                         start_planet = self.getPlanet(child.text, planetList)
@@ -150,17 +150,17 @@ class XMLReader:
                     
                 return start_planet, end_planet
         
-        print("TradeRoute " + name + " not found!")
+        print("TradeRoute " + name + " not found! getStartEnd")
     
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
     def getLocation(self, name, XMLRoot) -> float:
         for element in XMLRoot.iter():
-            if element.get("Name") == name:
+            if element.get("Name").lower() == name.lower():
                 for child in element.iter("Galactic_Position"):
                     outputList = self.commaSepListParser(child.text)
                     return float(outputList[0]), float(outputList[1])
         
-        print("Planet " + name + " not found!")
+        print("Planet " + name + " not found! getLocation")
 
 
     ''' Should be moved to another class? '''
@@ -168,18 +168,18 @@ class XMLReader:
     #finds a planet object in a list of planet objects and returns it
     def getPlanet(self, name, planetList) -> Planet:
         for p in planetList:
-            if p.name == name:
+            if p.name.lower() == name.lower():
                 if p is not None:
                     return p
         
-        print("Planet " + name + " not found!")
+        print("Planet " + name + " not found! getPlanet")
 
 
     #finds a traderoute object in a list of traderoute objects and returns it
     def getTradeRoute(self, name, tradeRouteList) -> TradeRoute:
         for t in tradeRouteList:
-            if t.name == name:
+            if t.name.lower() == name.lower():
                 if t is not None:
                     return t
         
-        print("Trade Route " + name + " not found!")
+        print("Trade Route " + name + " not found! getTradeRoute")
