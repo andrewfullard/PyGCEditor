@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDia
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
+from ui.qtcampaigncreator import QtCampaignCreator
 from xml.xmlstructure import XMLStructure
 
 class QtMainWindow(MainWindow):
@@ -22,15 +23,19 @@ class QtMainWindow(MainWindow):
 
         self.__campaignComboBox: QComboBox = QComboBox()
 
+        self.__campaignCreator = QtCampaignCreator()
+
         self.__planetListWidget: QTableWidget = QTableWidget()
         self.__planetListWidget.setColumnCount(1)
         self.__planetListWidget.setHorizontalHeaderLabels(["Planets"])
         self.__planetListWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.__planetListWidget.verticalHeader().setVisible(False)
 
         self.__tradeRouteListWidget: QTableWidget = QTableWidget()
         self.__tradeRouteListWidget.setColumnCount(1)
-        self.__tradeRouteListWidget.setHorizontalHeaderLabels(["TradeRoutes"])
+        self.__tradeRouteListWidget.setHorizontalHeaderLabels(["Trade Routes"])
         self.__tradeRouteListWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.__tradeRouteListWidget.verticalHeader().setVisible(False)
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -48,6 +53,9 @@ class QtMainWindow(MainWindow):
         self.__menuBar: QMenuBar = QMenuBar()
         self.__menu: QMenu = QMenu("File", self.__window)
         
+        self.__newAction: QAction = QAction("New Galactic Conquest...", self.__window)
+        self.__newAction.triggered.connect(self.__campaignCreator.showDialog)
+
         self.__openAction: QAction = QAction("Open Galactic Conquest", self.__window)
         # self.__openAction.setStatusTip("Open a Galactic Conquest XML") #if we want a status bar
         self.__openAction.triggered.connect(self.__openFile)
@@ -61,6 +69,7 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
         
+        self.__menu.addAction(self.__newAction)
         self.__menu.addAction(self.__openAction)
         self.__menu.addAction(self.__saveAction)
         self.__menu.addAction(self.__setDataFolderAction)

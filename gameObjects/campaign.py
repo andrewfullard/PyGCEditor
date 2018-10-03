@@ -5,9 +5,10 @@ from gameObjects.traderoute import TradeRoute
 
 '''Campaign class definition'''
 class Campaign:
-    '''Campaigns have a name, planets and traderoutes'''
+    '''Campaigns have a name, set name, planets and traderoutes'''
     def __init__(self, name: str):
         self.__name: str = name
+        self.__setName: str = None
         self.__planets: Set[Planet] = None
         self.__tradeRoutes: Set[TradeRoute] = None
 
@@ -19,6 +20,15 @@ class Campaign:
     def name(self, value: str) -> None:
         if value:
             self.__name = value
+
+    @property
+    def setName(self) -> str:
+        return self.__setName
+
+    @name.setter
+    def setName(self, value: str) -> None:
+        if value:
+            self.__setName = value
 
     @property
     def planets(self) -> Set[Planet]:

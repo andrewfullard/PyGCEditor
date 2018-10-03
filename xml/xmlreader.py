@@ -33,12 +33,12 @@ class XMLReader:
     ''' Generic Python functions that are helpful for XML, should be moved to another class? '''
 
     #parses a comma-separated string into a Python List
-    def commaSepListParser(self, entry) -> list():
+    def commaSepListParser(self, entry: str) -> list():
         entry = entry.replace(',',' ')
         return entry.split()
 
     #replaces spurious commas in a Python List
-    def commaReplaceInList(self, listToReplace) -> list():
+    def commaReplaceInList(self, listToReplace: list) -> list():
         outputList = []
         for text in listToReplace:
             newText = text.replace(',','')
@@ -49,21 +49,21 @@ class XMLReader:
     ''' General XML file parsing '''
 
     #Parses a list of XML files and returns their roots as a list
-    def parseXMLFileList(self, XMLFileList) -> list():
+    def parseXMLFileList(self, XMLFileList: list) -> list():
         rootList = []
         for XMLFile in XMLFileList:
             rootList.append(et.parse(XMLFile).getroot())  
         return rootList
 
     #Checks if a given tag is present in a given XML root
-    def hasTag(self, XMLRoot, XMLTag) -> bool:
+    def hasTag(self, XMLRoot, XMLTag: str) -> bool:
         if XMLRoot.find(XMLTag) is not None:
             return True
         else:
             return False
 
     #parses a XML root and returns a Python set of all names in the XML tag given
-    def getListFromXMLRoot(self, XMLRoot, XMLTag) -> set():
+    def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set():
         outputSet = set()
 
         for child in XMLRoot.findall(XMLTag):
@@ -93,7 +93,7 @@ class XMLReader:
 
     #searches GameObjectFiles for all XML files with the Planet tag.
     #returns a list of their XML roots
-    def findPlanetsFiles(self, gameObjectFile) -> list():
+    def findPlanetsFiles(self, gameObjectFile: str) -> list():
         metaRoot = et.parse(gameObjectFile).getroot()
         if self.isMetaFile(metaRoot):
             fileList = self.parseMetaFile(metaRoot)
@@ -110,7 +110,7 @@ class XMLReader:
             print("Not a meta file! findPlanetsFiles")
 
     #searches a metafile and returns a list of XML roots that are referenced in the metafile
-    def findMetaFileRefs(self, metaFile) -> list():
+    def findMetaFileRefs(self, metaFile: str) -> list():
         metaRoot = et.parse(metaFile).getroot()
         if self.isMetaFile(metaRoot):
             fileList = self.parseMetaFile(metaRoot)
@@ -139,9 +139,9 @@ class XMLReader:
         return nameList
 
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
-    def getStartEnd(self, name, planetList, tradeRouteRoot) -> Planet:
+    def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> Planet:
         for element in tradeRouteRoot.iter():
-            if element.get("Name").lower() == name.lower():
+            if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter():
                     if child.tag == "Point_A":
                         start_planet = self.getPlanet(child.text, planetList)
@@ -153,20 +153,17 @@ class XMLReader:
         print("TradeRoute " + name + " not found! getStartEnd")
     
     #gets the galactic position tag value for an object of name in root XMLRoot and returns x, y
-    def getLocation(self, name, XMLRoot) -> float:
+    def getLocation(self, name: str, XMLRoot) -> float:
         for element in XMLRoot.iter():
-            if element.get("Name").lower() == name.lower():
+            if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter("Galactic_Position"):
                     outputList = self.commaSepListParser(child.text)
                     return float(outputList[0]), float(outputList[1])
         
         print("Planet " + name + " not found! getLocation")
 
-
-    ''' Should be moved to another class? '''
-
-    #finds a planet object in a list of planet objects and returns it
-    def getPlanet(self, name, planetList) -> Planet:
+     #finds a planet object in a list of planet objects and returns it
+    def getPlanet(self, name: str, planetList: set) -> Planet:
         for p in planetList:
             if p.name.lower() == name.lower():
                 if p is not None:
@@ -174,9 +171,8 @@ class XMLReader:
         
         print("Planet " + name + " not found! getPlanet")
 
-
     #finds a traderoute object in a list of traderoute objects and returns it
-    def getTradeRoute(self, name, tradeRouteList) -> TradeRoute:
+    def getTradeRoute(self, name: str, tradeRouteList: set) -> TradeRoute:
         for t in tradeRouteList:
             if t.name.lower() == name.lower():
                 if t is not None:
