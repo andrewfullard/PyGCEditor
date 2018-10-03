@@ -1,6 +1,8 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
+from gameObjects.campaign import Campaign
+
 class QtCampaignCreator:
     def __init__(self):
         self.__dialog: QDialog = QDialog()
@@ -33,6 +35,18 @@ class QtCampaignCreator:
         self.__dialog.exec_()
 
     def __okayClicked(self) -> None:
+        name = self.__inputName.text()
+        setName = self.__inputSetName.text()
+
+        if len(name) > 0:
+            newcampaign = Campaign(name)
+        else:
+            print("Error! No campaign name set!")
+        
+        if len(setName) > 0:
+            newcampaign.setName = setName
+        
+        #Add campaign to repository here
         self.__dialog.close()
 
     def __cancelClicked(self) -> None:
