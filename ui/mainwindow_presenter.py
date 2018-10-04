@@ -38,7 +38,7 @@ class MainWindow(ABC):
 
 
 class MainWindowPresenter:
-
+    '''Window display class'''
     def __init__(self, mainWindow: MainWindow, repository: GameObjectRepository):
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
@@ -54,6 +54,7 @@ class MainWindowPresenter:
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
+        '''If a planet is checked by the user, refresh the galaxy plot'''
         if checked:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
@@ -64,6 +65,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
+        '''If a trade route is checked by the user, refresh the galaxy plot'''
         if checked:
             if self.__tradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__tradeRoutes[index])
@@ -74,6 +76,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
     def onCampaignSelected(self, index: int) -> None:
+        '''If a campaign is selected by the user, clear then refresh the galaxy plot'''
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
 
@@ -86,6 +89,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def allPlanetsChecked(self, checked: bool) -> None:
+        '''Select all planets handler: plots all planets'''
         if checked:
             self.__checkedPlanets.update(self.__planets)
         else:
@@ -94,6 +98,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)    
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
+        '''Select all trade routes handler: plots all trade routes'''
         if checked:
             self.__checkedTradeRoutes.update(self.__tradeRoutes)
         else:
@@ -102,4 +107,5 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)        
 
     def __getNames(self, inputList: list) -> List[str]:
+        '''Returns the name attribute from a list of GameObjects'''
         return [x.name for x in inputList]

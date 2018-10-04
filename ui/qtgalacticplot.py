@@ -5,7 +5,7 @@ from matplotlib.figure import Axes, Figure
 
 
 class QtGalacticPlot:
-
+    '''Class for plotting the galaxy'''
     def __init__(self, parent: QWidget = None):
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
@@ -18,8 +18,8 @@ class QtGalacticPlot:
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111, aspect = "equal")
 
-    #plots galaxy
     def plotGalaxy(self, planets, tradeRoutes, allPlanets):
+        '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
         x = []
@@ -62,5 +62,6 @@ class QtGalacticPlot:
         return self.__galacticPlotWidget
 
     def planetSelect(self, event) -> None:
+        '''Handler for clicking on a planet in the plot'''
         planetIndex = event.ind
         #something here to select the planet in the table and plot it

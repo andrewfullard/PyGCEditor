@@ -11,7 +11,7 @@ from ui.qtcampaigncreator import QtCampaignCreator
 from xml.xmlstructure import XMLStructure
 
 class QtMainWindow(MainWindow):
-
+    '''Qt based window'''
     def __init__(self):
         self.__allPlanetsChecked: bool = False
         self.__allTradeRoutesChecked: bool = False
@@ -92,21 +92,26 @@ class QtMainWindow(MainWindow):
         self.__presenter: MainWindowPresenter = None
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
+        '''Set the presenter class for the window'''
         self.__presenter = presenter
 
     def addPlanets(self, planets: List[str]) -> None:
+        '''Add Planet objects to the planet table widget'''
         self.__addEntriesToTableWidget(self.__planetListWidget, planets)
         self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
+        '''Add TradeRoute objects to the trade route table widget'''
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
         self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def addCampaigns(self, campaigns: List[str]) -> None:
+        '''Add Campaign objects to the campaign combobox widget'''
         self.__campaignComboBox.addItems(campaigns)
         self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
 
     def makeGalacticPlot(self) -> GalacticPlot:
+        '''Plot planets and trade routes'''
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
         self.__widget.addWidget(plot.getWidget())
         return plot
@@ -115,6 +120,7 @@ class QtMainWindow(MainWindow):
         return self.__window
 
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
+        '''Adds a list of rows to a table widget'''
         for entry in entries:
             rowCount = widget.rowCount()
             widget.setRowCount(rowCount + 1)
@@ -124,6 +130,7 @@ class QtMainWindow(MainWindow):
             widget.setItem(rowCount, 0, item)
 
     def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
+        '''If a planet table widget item is clicked, check it and call the presenter to display it'''
         checked: bool = False
         if item.checkState() == QtCore.Qt.Checked:
             checked = True
@@ -131,6 +138,7 @@ class QtMainWindow(MainWindow):
         self.__presenter.onPlanetChecked(item.row(), checked)
 
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
+        '''If a trade route table widget item is clicked, check it and call the presenter to display it'''
         checked: bool = False
         if item.checkState() == QtCore.Qt.Checked:
             checked = True
@@ -138,25 +146,30 @@ class QtMainWindow(MainWindow):
         self.__presenter.onTradeRouteChecked(item.row(), checked)
 
     def __openFile(self) -> None:
+        '''Open File dialog'''
         fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
         if fileName:
             print(fileName)
 
     def __openFolder(self) -> None:
+        '''Set data folder dialog'''
         folderName = QFileDialog.getExistingDirectory(self.__widget, 'Select Data folder:', "", QFileDialog.ShowDirsOnly)
         if folderName:
             print(folderName)
             XMLStructure.dataFolder = folderName
 
     def __saveFile(self) -> None:    
+        '''Save file dialog'''
         fileName, _ = QFileDialog.getSaveFileName(self.__widget,"Save Galactic Conquest","","XML Files (*.xml);;All Files (*)")
         if fileName:
             print(fileName)
 
     def __quit(self) -> None:
+        '''Exits application by closing the window'''
         self.__window.close()
 
     def __selectAllPlanetsButtonClicked(self, table: QTableWidget, checked: bool) -> None:
+        '''Cycles through a table and checks all the planet entries, then presents them'''
         rowCount = table.rowCount()
 
         if checked:
@@ -175,6 +188,7 @@ class QtMainWindow(MainWindow):
         
     
     def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget, checked: bool) -> None:
+        '''Cycles through a table and checks all the trade route entries, then presents them'''
         rowCount = table.rowCount()
         
         if checked:
@@ -192,4 +206,5 @@ class QtMainWindow(MainWindow):
             self.__presenter.allTradeRoutesChecked(False)
 
     def __onCampaignSelected(self, index: int):
+        '''Presents a selected campaign'''
         self.__presenter.onCampaignSelected(index)

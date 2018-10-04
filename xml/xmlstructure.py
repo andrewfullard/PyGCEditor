@@ -1,5 +1,3 @@
-"""Class to share XML info"""
-
 class XMLStructure:
-
+    '''Class to share XML info'''
     dataFolder = ""

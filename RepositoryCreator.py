@@ -6,12 +6,15 @@ from xml.xmlreader import XMLReader
 from xml.xmlstructure import XMLStructure
 
 class RepositoryCreator:
+    '''Creates a Repository of GameObjects from input XMLs'''
     def __init__(self):
         self.repository: GameObjectRepository = GameObjectRepository()
         
         self.__xml: XMLReader = XMLReader()
 
-    def getNamesRootsFromXML(self, rootsList, tag) -> list:
+    def getNamesRootsFromXML(self, rootsList, tag: str) -> list:
+        '''Takes a list of XML roots and a tag to search for
+        and returns the Names and Roots of GameObjects in the list'''
         names = []
         roots = []
 
@@ -22,6 +25,8 @@ class RepositoryCreator:
         return names, roots
             
     def addPlanetsFromXML(self, planetRoots) -> None:
+        '''Takes a list of Planet GameObject XML roots and adds
+        them to the repository with x and y positions'''
         for planetRoot in planetRoots:
             planetNames = self.__xml.getNamesFromXML(planetRoot)
 
@@ -31,6 +36,8 @@ class RepositoryCreator:
                 self.repository.addPlanet(newplanet)
         
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
+        '''Takes a list of Trade Route GameObject XML roots and adds
+        them to the repository with start and end planets'''
         for tradeRouteRoot in tradeRouteRoots:
             tradeRouteNames = self.__xml.getNamesFromXML(tradeRouteRoot)
 
@@ -40,6 +47,8 @@ class RepositoryCreator:
                 self.repository.addTradeRoute(newroute)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
+        '''Takes a list of Campaign GameObject XML roots and their names, and adds
+        them to the repository, after finding their planets and trade routes'''
         for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
             newCampaignPlanets = set()
             newCampaignTradeRoutes = set()
@@ -62,6 +71,8 @@ class RepositoryCreator:
             self.repository.addCampaign(newCampaign)
 
     def constructRepository(self, folder: str) -> None:
+        '''Reads a mod Data folder and searches the XML metafiles within
+        Creates a repository with planets, trade routes and campaigns'''
         XMLStructure.dataFolder = folder
 
         gameObjectFile = folder + "/XML/GameObjectFiles.XML"

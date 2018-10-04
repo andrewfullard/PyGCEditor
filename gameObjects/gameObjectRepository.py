@@ -6,7 +6,7 @@ from gameObjects.campaign import Campaign
 
 
 class GameObjectRepository:
-
+    '''Repository of GameObjects. Has campaigns, planets and traderoutes'''
     def __init__(self):
         self.__campaigns: Set[Campaign] = set()
         self.__planets: Set[Planet] = set()
