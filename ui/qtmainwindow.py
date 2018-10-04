@@ -104,7 +104,7 @@ class QtMainWindow(MainWindow):
 
     def addCampaigns(self, campaigns: List[str]) -> None:
         self.__campaignComboBox.addItems(campaigns)
-        self.__campaignComboBox.currentIndexChanged.connect(self.__onCampaignSelected)
+        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
 
     def makeGalacticPlot(self) -> GalacticPlot:
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)

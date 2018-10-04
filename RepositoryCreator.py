@@ -71,8 +71,6 @@ class RepositoryCreator:
         planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
         tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
 
-        print(planetRoots)
-
         campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
 
         campaignNames, campaignRoots = self.getNamesRootsFromXML(campaignRootList, "Campaign")

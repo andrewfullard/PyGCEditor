@@ -67,6 +67,8 @@ class XMLReader:
     def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set():
         outputSet = set()
 
+        et.strip_tags(XMLRoot, et.Comment)
+
         for child in XMLRoot.findall(XMLTag):
             entry = self.commaReplaceInList(child.text.split())
             outputSet.update(entry)

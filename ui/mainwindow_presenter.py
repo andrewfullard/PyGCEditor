@@ -77,8 +77,11 @@ class MainWindowPresenter:
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
 
-        self.__checkedPlanets.update(self.__campaigns[index].planets)
-        self.__checkedTradeRoutes.update(self.__campaigns[index].tradeRoutes)
+        if self.__campaigns[index].planets is not None:
+            self.__checkedPlanets.update(self.__campaigns[index].planets)
+        
+        if self.__campaigns[index].tradeRoutes is not None:
+            self.__checkedTradeRoutes.update(self.__campaigns[index].tradeRoutes)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     

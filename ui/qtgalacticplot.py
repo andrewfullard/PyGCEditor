@@ -11,6 +11,8 @@ class QtGalacticPlot:
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
+        self.__galacticPlotCanvas.mpl_connect('pick_event', self.planetSelect)
+
         self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(self.__galacticPlotCanvas, self.__galacticPlotWidget)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotNavBar)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
@@ -27,7 +29,7 @@ class QtGalacticPlot:
             x.append(p.x)
             y.append(p.y)
 
-        self.__axes.scatter(x, y, c = 'b', alpha = 0.1)
+        self.__axes.scatter(x, y, c = 'b', alpha = 0.1, picker = 5)
 
         x1 = 0        
         y1 = 0
@@ -58,3 +60,7 @@ class QtGalacticPlot:
 
     def getWidget(self) -> QWidget:
         return self.__galacticPlotWidget
+
+    def planetSelect(self, event) -> None:
+        planetIndex = event.ind
+        #something here to select the planet in the table and plot it
