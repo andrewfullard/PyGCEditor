@@ -11,27 +11,33 @@ class RepositoryCreator:
         
         self.__xml: XMLReader = XMLReader()
 
-    def getCampaignNamesRoots(self, campaignRootsList) -> list:
-        campaignNames = []
-        campaignRoots = []
+    def getNamesRootsFromXML(self, rootsList, tag) -> list:
+        names = []
+        roots = []
 
-        for campaignRoot in campaignRootsList:
-            campaignNames.extend(self.__xml.getNamesFromXML(campaignRoot))
-            campaignRoots.extend(campaignRoot.iter("Campaign"))
+        for root in rootsList:
+            names.extend(self.__xml.getNamesFromXML(root))
+            roots.extend(root.iter(tag))
 
-        return campaignNames, campaignRoots
+        return names, roots
             
-    def addPlanetsFromXML(self, planetNames, planetRoot) -> None:
-        for planet in planetNames:
-            newplanet = Planet(planet)
-            newplanet.x, newplanet.y = self.__xml.getLocation(planet, planetRoot)
-            self.repository.addPlanet(newplanet)
+    def addPlanetsFromXML(self, planetRoots) -> None:
+        for planetRoot in planetRoots:
+            planetNames = self.__xml.getNamesFromXML(planetRoot)
+
+            for name in planetNames:
+                newplanet = Planet(name)
+                newplanet.x, newplanet.y = self.__xml.getLocation(name, planetRoot)
+                self.repository.addPlanet(newplanet)
         
-    def addTradeRoutesFromXML(self, tradeRouteNames, tradeRouteRoot) -> None:
-        for route in tradeRouteNames:
-            newroute = TradeRoute(route)
-            newroute.start, newroute.end = self.__xml.getStartEnd(route, self.repository.planets, tradeRouteRoot)
-            self.repository.addTradeRoute(newroute)
+    def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
+        for tradeRouteRoot in tradeRouteRoots:
+            tradeRouteNames = self.__xml.getNamesFromXML(tradeRouteRoot)
+
+            for name in tradeRouteNames:
+                newroute = TradeRoute(name)
+                newroute.start, newroute.end = self.__xml.getStartEnd(name, self.repository.planets, tradeRouteRoot)
+                self.repository.addTradeRoute(newroute)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
@@ -58,21 +64,19 @@ class RepositoryCreator:
     def constructRepository(self, folder: str) -> None:
         XMLStructure.dataFolder = folder
 
+        gameObjectFile = folder + "/XML/GameObjectFiles.XML"
         campaignFile = folder + "/XML/CampaignFiles.XML"
-        planetFile = folder + "/XML/Planets.XML"
-        tradeRouteFile = folder + "/XML/TradeRoutes.XML"
+        tradeRouteFile = folder + "/XML/TradeRouteFiles.XML"
 
-        xmlFileList = [planetFile, tradeRouteFile]
+        planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
+        tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
 
-        rootList = self.__xml.parseXMLFileList(xmlFileList)
-
-        planetsFromXML = self.__xml.getNamesFromXML(rootList[0])
-        tradeRoutesFromXML = self.__xml.getNamesFromXML(rootList[1])
+        print(planetRoots)
 
         campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
 
-        campaignNames, campaignRoots = self.getCampaignNamesRoots(campaignRootList)
+        campaignNames, campaignRoots = self.getNamesRootsFromXML(campaignRootList, "Campaign")
        
-        self.addPlanetsFromXML(planetsFromXML, rootList[0])
-        self.addTradeRoutesFromXML(tradeRoutesFromXML, rootList[1])
+        self.addPlanetsFromXML(planetRoots)
+        self.addTradeRoutesFromXML(tradeRouteRoots)
         self.addCampaignsFromXML(campaignNames, campaignRoots)

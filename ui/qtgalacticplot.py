@@ -14,7 +14,7 @@ class QtGalacticPlot:
         self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(self.__galacticPlotCanvas, self.__galacticPlotWidget)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotNavBar)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
-        self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111)
+        self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111, aspect = "equal")
 
     #plots galaxy
     def plotGalaxy(self, planets, tradeRoutes, allPlanets):

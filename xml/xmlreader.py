@@ -1,4 +1,5 @@
 import lxml.etree as et
+import os.path
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from xml.xmlstructure import XMLStructure
@@ -100,6 +101,10 @@ class XMLReader:
             planetsFiles = []
 
             for file in fileList:
+                if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                    print(file + " not found. Continuing")
+                    continue
+
                 fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
                 if self.hasTag(fileRoot, "Planet"):
                     planetsFiles.append(fileRoot.getroot())
@@ -117,6 +122,10 @@ class XMLReader:
             metaFileRefs = []
 
             for file in fileList:
+                if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                    print(file + " not found. Continuing")
+                    continue
+
                 fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
                 metaFileRefs.append(fileRoot.getroot())
                 

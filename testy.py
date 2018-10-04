@@ -14,7 +14,7 @@ numArgs = len(sys.argv)
 if numArgs > 1:
     repositoryCreator.constructRepository(sys.argv[1])
 else:
-    repositoryCreator.constructRepository("C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Source/Data")
+    repositoryCreator.constructRepository("C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Imperial_Civil_War/Data")
 
 
 # a = Planet("A")
