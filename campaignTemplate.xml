@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Campaigns>
+	<Campaign Name="Template">
+
+		<Campaign_Set>Template</Campaign_Set>
+		<Sort_Order>1</Sort_Order>
+
+		<Text_ID>TEMPLATE</Text_ID>
+		<Description_Text>TEMPLATE</Description_Text>
+
+		<Camera_Shift_X> 0.0 </Camera_Shift_X>
+		<Camera_Shift_Y> 0.0 </Camera_Shift_Y>
+		<Camera_Distance> 1000.0 </Camera_Distance>
+
+		<Locations>
+		</Locations>
+
+		<Trade_Routes>
+		</Trade_Routes>
+
+    </Campaign>
+</Campaigns>

@@ -10,6 +10,7 @@ from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
+from xml.xmlwriter import XMLWriter
 
 
 class MainWindowPresenter:
@@ -70,10 +71,13 @@ class MainWindowPresenter:
         self.__path: str = path
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         self.__repositoryCreator: repositoryCreator = RepositoryCreator(self.__path)
+        self.__xmlWriter: xmlWriter = XMLWriter()
 
         self.__campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
+
+        self.__selectedCampaignIndex: int = 0
 
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
@@ -98,24 +102,28 @@ class MainWindowPresenter:
         #loadingScreen.close()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
-        '''If a planet is checked by the user, refresh the galaxy plot'''
+        '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
         if checked:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
+                self.__campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
         else:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
+                self.__campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
-        '''If a trade route is checked by the user, refresh the galaxy plot'''
+        '''If a trade route is checked by the user, add it to the selecte campaign and refresh the galaxy plot'''
         if checked:
             if self.__tradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__tradeRoutes[index])
+                self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.add(self.__tradeRoutes[index])
         else:
             if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
+                self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__tradeRoutes[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
@@ -123,6 +131,8 @@ class MainWindowPresenter:
         '''If a campaign is selected by the user, clear then refresh the galaxy plot'''
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
+
+        self.__selectedCampaignIndex = index
 
         selectedPlanets = []
         selectedTradeRoutes = []
@@ -177,7 +187,12 @@ class MainWindowPresenter:
         else:
             self.__checkedTradeRoutes.clear()
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)        
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)  
+
+    def saveFile(self, fileName: str) -> None:
+        campaign = self.__campaigns[self.__selectedCampaignIndex]
+        self.__xmlWriter.campaignWriter(campaign, fileName)
+
 
     def __getNames(self, inputList: list) -> List[str]:
         '''Returns the name attribute from a list of GameObjects'''

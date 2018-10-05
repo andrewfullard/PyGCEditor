@@ -220,7 +220,7 @@ class QtMainWindow(MainWindow):
         '''Save file dialog'''
         fileName, _ = QFileDialog.getSaveFileName(self.__widget,"Save Galactic Conquest","","XML Files (*.xml);;All Files (*)")
         if fileName:
-            print(fileName)
+            self.__presenter.saveFile(fileName)
 
     def __quit(self) -> None:
         '''Exits application by closing the window'''

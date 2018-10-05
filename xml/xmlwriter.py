@@ -4,12 +4,23 @@ import lxml.etree as et
 class XMLWriter:
 
     def __init__(self):
-        self.__inputTree
-        self.__outputFileName
+        self.__template = "campaignTemplate.xml"
+        self.__templateTree = et.parse(self.__template)
+        self.__templateRoot = self.__templateTree.getroot()
 
-    #creates a list string to insert into a file
-    #requires a GameObject with the name property
+    def campaignWriter(self, campaign, outputName: str) -> None:
+        planets = self.createListEntry(campaign.planets)
+        tradeRoutes = self.createListEntry(campaign.tradeRoutes)
+
+        #self.__templateRoot.find(".//Campaign").get("Name") = campaign.name
+        self.__templateRoot.find(".//Locations").text = planets
+        self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+
+        self.__templateTree.write(outputName, xml_declaration = "1.0")
+
     def createListEntry(self, inputList):
+        '''creates a list string to insert into a file
+        requires a GameObject with the name property'''
         entry = "\n"
 
         for item in inputList:
@@ -17,40 +28,11 @@ class XMLWriter:
 
         return entry
 
-    #example of creating XML from scratch. Probably better to use a template file!
-    def createCampaignFile(self, campaignName = "", campaignSetName = "", campaignPlanetList = "",\
-                 campaignTradeRouteList = "", sortOrderNumber = 1, textIDName = "MISSING", descriptionTextName = "MISSING"):
-        root = et.Element("Campaigns")
-
-        campaign = et.SubElement(root, "Campaign")
-        campaign.attrib["Name"] = campaignName
-
-        campaignSet = subElementText(campaign, "Campaign_Set", campaignSetName)
-        sortOrder = subElementText(campaign, "Sort_Order", sortOrderNumber)
-
-        textID = subElementText(campaign, "Text_ID", textIDName)
-        descriptionText = subElementText(campaign, "Description_Text", descriptionTextName)
-
-        cameraShiftX = subElementText(campaign, "Camera_Shift_X", 0.0)
-        cameraShiftY = subElementText(campaign, "Camera_Shift_Y", 0.0)
-        cameraDistance = subElementText(campaign, "Camera_Distance", 1000.0)
-
-        locations = subElementText(campaign, "Locations", campaignPlanetList)
-
-        tradeRoutes = subElementText(campaign, "Trade_Routes", campaignTradeRouteList)
-
-        homeLocation = subElementText(campaign, "Home_Location", "Empire, Coruscant")
-
-        startingActivePlayer = subElementText(campaign, "Starting_Active_Player", "Empire")
-
-        return root
-
     def subElementText(self, parent, subElementName, text):
         element = et.SubElement(parent, subElementName)
         element.text = text
 
         return element
 
-
-    def writer(self, self.__inputTree, self.__outputFileName) -> None:
-        self.__inputTree.write(self.__outputFileName, xml_declaration="1.0")
+    def writer(self, XMLRoot, outputName: str) -> None:
+        XMLRoot.write(outputName, xml_declaration="1.0")
