@@ -7,7 +7,9 @@ from numpy import ndarray as NumPyArray
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
+from RepositoryCreator import RepositoryCreator
 
 
 class MainWindowPresenter:
@@ -36,6 +38,10 @@ class MainWindow(ABC):
     def makeGalacticPlot(self) -> GalacticPlot:
         raise NotImplementedError()
 
+    @abstractmethod
+    def emptyWidgets(self) -> None:
+        raise NotImplementedError()
+
 
 class MainWindowPresenter:
     '''Window display class'''
@@ -43,15 +49,37 @@ class MainWindowPresenter:
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         self.__repository = repository
-        self.__campaigns: List[Campaign] = sorted(repository.campaigns, key = lambda entry: entry.name)
-        self.__planets: List[Planet] = sorted(repository.planets, key = lambda entry: entry.name)
-        self.__tradeRoutes: List[TradeRoute] = sorted(repository.tradeRoutes, key = lambda entry: entry.name)
+        self.__campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
+        self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
+        self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
 
         self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
+
+        self.__repositoryCreator: repositoryCreator = RepositoryCreator()
+
+    def onDataFolderChanged(self, folder: str) -> None:
+        #loadingScreen = self.__mainWindow.displayLoadingScreen()
+
+        #loadingScreen.exec_()
+
+        self.__repository.emptyRepository()
+        self.__repository = self.__repositoryCreator.constructRepository(folder)
+
+        self.__mainWindow.emptyWidgets()
+
+        self.__campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
+        self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
+        self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
+
+        self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
+        self.__mainWindow.addPlanets(self.__getNames(self.__planets))
+        self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))   
+        #loadingScreen.close()
+        
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
         '''If a planet is checked by the user, refresh the galaxy plot'''
@@ -85,6 +113,15 @@ class MainWindowPresenter:
         
         if self.__campaigns[index].tradeRoutes is not None:
             self.__checkedTradeRoutes.update(self.__campaigns[index].tradeRoutes)
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+
+    def onNewCampaign(self, campaign: Campaign) -> None:
+        '''If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot'''
+        self.__repository.addCampaign(campaign)
+
+        self.__checkedPlanets.clear()
+        self.__checkedTradeRoutes.clear()
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     

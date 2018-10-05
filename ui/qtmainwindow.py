@@ -1,7 +1,7 @@
 from typing import List
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDialog, QHeaderView, QMainWindow, QMenu, QMenuBar, QSplitter, \
+from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDialog, QHeaderView, QLabel, QMainWindow, QMenu, QMenuBar, QDialog, QSplitter, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from ui.galacticplot import GalacticPlot
@@ -119,6 +119,27 @@ class QtMainWindow(MainWindow):
     def getWindow(self) -> QMainWindow:
         return self.__window
 
+    def emptyWidgets(self) -> None:
+        self.__planetListWidget.clearContents()
+        self.__planetListWidget.setRowCount(0)
+        self.__tradeRouteListWidget.clearContents()
+        self.__tradeRouteListWidget.setRowCount(0)
+        self.__campaignComboBox.clear()
+
+    def displayLoadingScreen(self) -> QDialog:
+        screen: QDialog = QDialog()
+        layout = QVBoxLayout()
+        label = QLabel("Loading Mod Data...")
+
+        screen.setWindowTitle("Loading...")
+        screen.setBaseSize(100, 100)
+        layout.addWidget(label)
+
+        screen.setWindowFlags(QtCore.Qt.WindowTitleHint)
+        screen.setLayout(layout)
+
+        return screen
+
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
         '''Adds a list of rows to a table widget'''
         for entry in entries:
@@ -155,8 +176,7 @@ class QtMainWindow(MainWindow):
         '''Set data folder dialog'''
         folderName = QFileDialog.getExistingDirectory(self.__widget, 'Select Data folder:', "", QFileDialog.ShowDirsOnly)
         if folderName:
-            print(folderName)
-            XMLStructure.dataFolder = folderName
+            self.__presenter.onDataFolderChanged(folderName)
 
     def __saveFile(self) -> None:    
         '''Save file dialog'''
