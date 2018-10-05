@@ -70,7 +70,7 @@ class RepositoryCreator:
 
             self.repository.addCampaign(newCampaign)
 
-    def constructRepository(self, folder: str) -> None:
+    def constructRepository(self, folder: str) -> GameObjectRepository:
         '''Reads a mod Data folder and searches the XML metafiles within
         Creates a repository with planets, trade routes and campaigns'''
         XMLStructure.dataFolder = folder
@@ -89,3 +89,5 @@ class RepositoryCreator:
         self.addPlanetsFromXML(planetRoots)
         self.addTradeRoutesFromXML(tradeRouteRoots)
         self.addCampaignsFromXML(campaignNames, campaignRoots)
+
+        return self.repository

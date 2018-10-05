@@ -13,22 +13,34 @@ class GameObjectRepository:
         self.__tradeRoutes: Set[TradeRoute] = set()
 
     def addCampaign(self, campaign: Campaign) -> None:
+        '''Add a Campaign to the repository'''
         self.__campaigns.add(campaign)
 
     def removeCampaign(self, campaign: Campaign) -> None:
+        '''Remove a Campaign from the repository'''
         self.__campaigns.remove(campaign)
 
     def addPlanet(self, planet: Planet) -> None:
+        '''Add a Planet to the repository'''
         self.__planets.add(planet)
 
     def removePlanet(self, planet: Planet) -> None:
+        '''Remove a Planet from the repository'''
         self.__planets.remove(planet)
 
     def addTradeRoute(self, tradeRoute: TradeRoute) -> None:
+        '''Add a TradeRoute to the repository'''
         self.__tradeRoutes.add(tradeRoute)
 
     def removeTradeRoute(self, tradeRoute: TradeRoute) -> None:
+        '''Remove a TradeRoute from the repository'''
         self.__tradeRoutes.remove(tradeRoute)
+
+    def emptyRepository(self) -> None:
+        '''Empty the repository'''
+        self.__campaigns.clear()
+        self.__tradeRoutes.clear()
+        self.__planets.clear()
 
     @property
     def campaigns(self) -> Set[Campaign]:

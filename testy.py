@@ -4,17 +4,19 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from RepositoryCreator import RepositoryCreator
+from config import Config
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtmainwindow import QtMainWindow
 
 repositoryCreator: repositoryCreator = RepositoryCreator()
+config: config = Config()
 
 numArgs = len(sys.argv)
 
 if numArgs > 1:
-    repositoryCreator.constructRepository(sys.argv[1])
+    repository = repositoryCreator.constructRepository(sys.argv[1])
 else:
-    repositoryCreator.constructRepository("C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Imperial_Civil_War/Data")
+    repository = repositoryCreator.constructRepository(config.dataPath)
 
 
 # a = Planet("A")
@@ -44,7 +46,7 @@ else:
 app = QApplication([])
 
 qtMainWindow: QtMainWindow = QtMainWindow()
-presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repositoryCreator.repository)
+presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()
 
