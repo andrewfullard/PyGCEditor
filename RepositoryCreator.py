@@ -7,9 +7,9 @@ from xml.xmlstructure import XMLStructure
 
 class RepositoryCreator:
     '''Creates a Repository of GameObjects from input XMLs'''
-    def __init__(self):
+    def __init__(self, folder: str):
         self.repository: GameObjectRepository = GameObjectRepository()
-        
+        self.__folder: str = folder
         self.__xml: XMLReader = XMLReader()
 
     def getNamesRootsFromXML(self, rootsList, tag: str) -> list:
@@ -70,14 +70,14 @@ class RepositoryCreator:
 
             self.repository.addCampaign(newCampaign)
 
-    def constructRepository(self, folder: str) -> GameObjectRepository:
+    def constructRepository(self) -> GameObjectRepository:
         '''Reads a mod Data folder and searches the XML metafiles within
         Creates a repository with planets, trade routes and campaigns'''
-        XMLStructure.dataFolder = folder
+        XMLStructure.dataFolder = self.__folder
 
-        gameObjectFile = folder + "/XML/GameObjectFiles.XML"
-        campaignFile = folder + "/XML/CampaignFiles.XML"
-        tradeRouteFile = folder + "/XML/TradeRouteFiles.XML"
+        gameObjectFile = self.__folder + "/XML/GameObjectFiles.XML"
+        campaignFile = self.__folder + "/XML/CampaignFiles.XML"
+        tradeRouteFile = self.__folder + "/XML/TradeRouteFiles.XML"
 
         planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
         tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)

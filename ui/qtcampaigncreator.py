@@ -31,12 +31,15 @@ class QtCampaignCreator:
 
         self.__dialog.setWindowTitle("New Campaign")      
         self.__dialog.setLayout(self.__layout)
+
+        self.__presenter = None
        
-    def showDialog(self) -> None:
+    def showDialog(self, presenter) -> None:
         '''Display dialog modally'''
+        self.__presenter = presenter
         self.__dialog.exec_()
 
-    def __okayClicked(self) -> None:
+    def __okayClicked(self) -> Campaign:
         '''Okay button handler. Performs minor error checking and adds campaign to repository'''
         name = self.__inputName.text()
         setName = self.__inputSetName.text()
@@ -48,8 +51,8 @@ class QtCampaignCreator:
         
         if len(setName) > 0:
             newcampaign.setName = setName
-        
-        #Add campaign to repository here
+
+        self.__presenter.onNewCampaign(newcampaign)
         self.__dialog.close()
 
     def __cancelClicked(self) -> None:

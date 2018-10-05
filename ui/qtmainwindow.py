@@ -10,6 +10,9 @@ from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtcampaigncreator import QtCampaignCreator
 from xml.xmlstructure import XMLStructure
 
+from gameObjects.planet import Planet
+from gameObjects.traderoute import TradeRoute
+
 class QtMainWindow(MainWindow):
     '''Qt based window'''
     def __init__(self):
@@ -54,7 +57,7 @@ class QtMainWindow(MainWindow):
         self.__menu: QMenu = QMenu("File", self.__window)
         
         self.__newAction: QAction = QAction("New Galactic Conquest...", self.__window)
-        self.__newAction.triggered.connect(self.__campaignCreator.showDialog)
+        self.__newAction.triggered.connect(self.__newCampaign)
 
         self.__openAction: QAction = QAction("Open Galactic Conquest", self.__window)
         # self.__openAction.setStatusTip("Open a Galactic Conquest XML") #if we want a status bar
@@ -120,13 +123,35 @@ class QtMainWindow(MainWindow):
         return self.__window
 
     def emptyWidgets(self) -> None:
+        '''Clears all list and combobox widgets'''
         self.__planetListWidget.clearContents()
         self.__planetListWidget.setRowCount(0)
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
         self.__campaignComboBox.clear()
 
+    def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
+        '''Update the campaign combobox'''
+        self.__campaignComboBox.clear()
+        self.__campaignComboBox.addItems(campaigns)
+        self.__campaignComboBox.setCurrentIndex(self.__campaignComboBox.findText(newCampaign))
+    
+    def updatePlanetSelection(self, planets: List[int]) -> None:
+        '''Clears table, then checks off planets in the table from a list of indexes'''
+        self.__uncheckAllTable(self.__planetListWidget)
+
+        for p in planets:
+            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.Checked)
+    
+    def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
+        '''Clears table, then checks off trade routes in the table from a list of indexes'''
+        self.__uncheckAllTable(self.__tradeRouteListWidget)
+
+        for t in tradeRoutes:
+            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
+
     def displayLoadingScreen(self) -> QDialog:
+        '''Displays a loading screen'''
         screen: QDialog = QDialog()
         layout = QVBoxLayout()
         label = QLabel("Loading Mod Data...")
@@ -166,6 +191,11 @@ class QtMainWindow(MainWindow):
 
         self.__presenter.onTradeRouteChecked(item.row(), checked)
 
+    def __newCampaign(self) -> None:
+        '''Helper function to launch the new campaign dialog with a presenter connection'''
+        if self.__presenter is not None:
+            self.__campaignCreator.showDialog(self.__presenter)
+
     def __openFile(self) -> None:
         '''Open File dialog'''
         fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
@@ -193,38 +223,38 @@ class QtMainWindow(MainWindow):
         rowCount = table.rowCount()
 
         if checked:
-            for row in range(rowCount):
-                item = table.item(row, 0)
-                item.setCheckState(2)
+            self.__checkAllTable(table)
             
             self.__presenter.allPlanetsChecked(True)
         
         else:
-            for row in range(rowCount):
-                item = table.item(row, 0)
-                item.setCheckState(0)
+            self.__uncheckAllTable(table)
             
             self.__presenter.allPlanetsChecked(False)
         
     
     def __selectAllTradeRoutesButtonClicked(self, table: QTableWidget, checked: bool) -> None:
-        '''Cycles through a table and checks all the trade route entries, then presents them'''
-        rowCount = table.rowCount()
-        
+        '''Cycles through a table and checks all the trade route entries, then presents them'''        
         if checked:
-            for row in range(rowCount):
-                item = table.item(row, 0)
-                item.setCheckState(2)
+            self.__checkAllTable(table)
             
             self.__presenter.allTradeRoutesChecked(True)
         
         else:
-            for row in range(rowCount):
-                item = table.item(row, 0)
-                item.setCheckState(0)
+            self.__uncheckAllTable(table)
             
             self.__presenter.allTradeRoutesChecked(False)
 
     def __onCampaignSelected(self, index: int):
         '''Presents a selected campaign'''
         self.__presenter.onCampaignSelected(index)
+
+    def __checkAllTable(self, table: QTableWidget) -> None:
+        rowCount = table.rowCount()
+        for row in range(rowCount):
+            table.item(row, 0).setCheckState(QtCore.Qt.Checked)
+
+    def __uncheckAllTable(self, table: QTableWidget) -> None:
+        rowCount = table.rowCount()
+        for row in range(rowCount):
+            table.item(row, 0).setCheckState(QtCore.Qt.Unchecked)

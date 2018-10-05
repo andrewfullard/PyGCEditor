@@ -8,15 +8,14 @@ from config import Config
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtmainwindow import QtMainWindow
 
-repositoryCreator: repositoryCreator = RepositoryCreator()
 config: config = Config()
 
 numArgs = len(sys.argv)
 
 if numArgs > 1:
-    repository = repositoryCreator.constructRepository(sys.argv[1])
+    path = sys.argv[1]
 else:
-    repository = repositoryCreator.constructRepository(config.dataPath)
+    path = config.dataPath
 
 
 # a = Planet("A")
@@ -46,7 +45,7 @@ else:
 app = QApplication([])
 
 qtMainWindow: QtMainWindow = QtMainWindow()
-presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
+presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, path)
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()
 
