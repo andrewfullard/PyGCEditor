@@ -54,6 +54,14 @@ class MainWindow(ABC):
     def updateTradeRouteSelection(self, tradeRoutes: List[TradeRoute]) -> None:
         raise NotImplementedError()
 
+    @abstractmethod
+    def clearPlanets(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def clearTradeRoutes(self) -> None:
+        raise NotImplementedError()
+
 
 class MainWindowPresenter:
     '''Window display class'''
@@ -145,6 +153,9 @@ class MainWindowPresenter:
 
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
+
+        self.__mainWindow.clearPlanets()
+        self.__mainWindow.clearTradeRoutes()
 
         self.__mainWindow.updateCampaignComboBox(self.__getNames(self.__campaigns), campaign.name)
 

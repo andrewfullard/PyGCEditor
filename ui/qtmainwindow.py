@@ -165,6 +165,14 @@ class QtMainWindow(MainWindow):
 
         return screen
 
+    def clearPlanets(self) -> None:
+        '''Helper function to clear planet selections from the presenter'''
+        self.__uncheckAllTable(self.__planetListWidget)
+    
+    def clearTradeRoutes(self) -> None:
+        '''Helper function to clear traderoute selections from the presenter'''
+        self.__uncheckAllTable(self.__tradeRouteListWidget)
+
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
         '''Adds a list of rows to a table widget'''
         for entry in entries:
