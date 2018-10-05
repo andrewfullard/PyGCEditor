@@ -12,7 +12,7 @@ class XMLWriter:
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
-        #self.__templateRoot.find(".//Campaign").get("Name") = campaign.name
+        self.__templateRoot.find(".//Campaign").set("Name", campaign.name)
         self.__templateRoot.find(".//Locations").text = planets
         self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
 
