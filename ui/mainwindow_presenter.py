@@ -84,7 +84,7 @@ class MainWindowPresenter:
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
 
-        self.__repository = self.__repositoryCreator.constructRepository()
+        self.__repository = self.__repositoryCreator.constructRepository(self.__path)
 
         self.__updateWidgets()
 
