@@ -2,6 +2,8 @@ from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
+from gameObjects.faction import Faction
+from gameObjects.aiplayer import AIPlayer
 from xml.xmlreader import XMLReader
 from xml.xmlstructure import XMLStructure
 
@@ -45,6 +47,16 @@ class RepositoryCreator:
                 newroute = TradeRoute(name)
                 newroute.start, newroute.end = self.__xml.getStartEnd(name, self.repository.planets, tradeRouteRoot)
                 self.repository.addTradeRoute(newroute)
+    
+    def addFactionsFromXML(self, factionRoots) -> None:
+        '''Takes a list of Faction GameObject XML roots and adds
+        them to the repository'''
+        for factionRoot in factionRoots:
+            factionNames = self.__xml.getNamesFromXML(factionRoot)
+
+            for name in factionNames:
+                newfaction = Faction(name)
+                self.repository.addFaction(newfaction)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         '''Takes a list of Campaign GameObject XML roots and their names, and adds
@@ -80,16 +92,19 @@ class RepositoryCreator:
         gameObjectFile = self.__folder + "/XML/GameObjectFiles.XML"
         campaignFile = self.__folder + "/XML/CampaignFiles.XML"
         tradeRouteFile = self.__folder + "/XML/TradeRouteFiles.XML"
+        factionFile = self.__folder + "/XML/FactionFiles.XML"
 
         planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
         tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
-
+        factionRoots = self.__xml.findMetaFileRefs(factionFile)
+        
         campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
 
         campaignNames, campaignRoots = self.getNamesRootsFromXML(campaignRootList, "Campaign")
        
         self.addPlanetsFromXML(planetRoots)
         self.addTradeRoutesFromXML(tradeRouteRoots)
+        self.addFactionsFromXML(factionRoots)
         self.addCampaignsFromXML(campaignNames, campaignRoots)
 
         return self.repository
