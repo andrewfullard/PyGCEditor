@@ -12,15 +12,27 @@ class QtGalacticPlot:
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
         self.__galacticPlotCanvas.mpl_connect('pick_event', self.planetSelect)
+        self.__galacticPlotCanvas.mpl_connect('motion_notify_event', self.planetHover)
 
         self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(self.__galacticPlotCanvas, self.__galacticPlotWidget)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotNavBar)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111, aspect = "equal")
 
+        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"))
+        self.__annotate.set_visible(False)
+        self.__planetNames = []
+        self.__planetsScatter = None
+
     def plotGalaxy(self, planets, tradeRoutes, allPlanets):
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
+
+        #Has to be set again here for the planet hover labels to work
+        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"))
+        self.__annotate.set_visible(False)
+
+        self.__planetNames = []
 
         x = []
         y = []
@@ -28,8 +40,9 @@ class QtGalacticPlot:
         for p in allPlanets:
             x.append(p.x)
             y.append(p.y)
+            self.__planetNames.append(p.name)
 
-        self.__axes.scatter(x, y, c = 'b', alpha = 0.1, picker = 5)
+        self.__planetsScatter = self.__axes.scatter(x, y, c = 'b', alpha = 0.1, picker = 5)
 
         x1 = 0        
         y1 = 0
@@ -51,7 +64,6 @@ class QtGalacticPlot:
         for p in planets:
             x.append(p.x)
             y.append(p.y)
-            self.__axes.text(p.x+1, p.y+1, p.name, fontsize=10)
 
         self.__axes.scatter(x, y, c = 'b')
 
@@ -62,6 +74,27 @@ class QtGalacticPlot:
         return self.__galacticPlotWidget
 
     def planetSelect(self, event) -> None:
-        '''Handler for clicking on a planet in the plot'''
-        planetIndex = event.ind
-        #something here to select the planet in the table and plot it
+        pass
+
+    def planetHover(self, event) -> None:
+        '''Handler for hovering on a planet in the plot'''
+        visible = self.__annotate.get_visible()
+
+        if event.inaxes == self.__axes:
+            contains, ind = self.__planetsScatter.contains(event)
+
+            if contains:
+                self.__update_annotation(ind)
+                self.__annotate.set_visible(True)
+                self.__galacticPlotCanvas.draw_idle()
+            else:
+                if visible:
+                    self.__annotate.set_visible(False)
+                    self.__galacticPlotCanvas.draw_idle()
+
+    def __update_annotation(self, ind) -> None:
+        '''Updates annotation parameters'''
+        pos = self.__planetsScatter.get_offsets()[ind["ind"][0]]
+        self.__annotate.xy = pos
+        text = "{}".format(" ".join([self.__planetNames[n] for n in ind["ind"]]))
+        self.__annotate.set_text(text)

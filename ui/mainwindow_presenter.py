@@ -11,6 +11,7 @@ from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
 from xml.xmlwriter import XMLWriter
+from xml.xmlreader import XMLReader
 
 
 class MainWindowPresenter:
@@ -72,6 +73,7 @@ class MainWindowPresenter:
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         self.__repositoryCreator: repositoryCreator = RepositoryCreator(self.__path)
         self.__xmlWriter: xmlWriter = XMLWriter()
+        self.__xmlReader: xmlReader = XMLReader()
 
         self.__campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
@@ -170,6 +172,22 @@ class MainWindowPresenter:
         self.__mainWindow.updateCampaignComboBox(self.__getNames(self.__campaigns), campaign.name)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+
+    def onNewTradeRoute(self, name: str, start: str, end: str) -> None:
+        '''If a new trade route is created, find the start and end planets, and add the trade route to the repository, selected'''
+        newTradeRoute = TradeRoute(name)
+
+        newTradeRoute.start = self.__xmlReader.getPlanet(start, self.__planets)
+        newTradeRoute.end = self.__xmlReader.getPlanet(end, self.__planets)
+
+        self.__repository.addTradeRoute(newTradeRoute)
+
+        self.__updateWidgets()
+
+        self.__checkedTradeRoutes.add(newTradeRoute)
+        self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.add(newTradeRoute)
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
@@ -208,3 +226,5 @@ class MainWindowPresenter:
         self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)

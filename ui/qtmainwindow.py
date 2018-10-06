@@ -8,6 +8,7 @@ from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtcampaigncreator import QtCampaignCreator
+from ui.qttraderoutecreator import QtTradeRouteCreator
 from xml.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
@@ -27,6 +28,7 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox: QComboBox = QComboBox()
 
         self.__campaignCreator = QtCampaignCreator()
+        self.__tradeRouteCreator = QtTradeRouteCreator()
 
         self.__planetListWidget: QTableWidget = QTableWidget()
         self.__planetListWidget.setColumnCount(1)
@@ -54,14 +56,14 @@ class QtMainWindow(MainWindow):
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
-        self.__menu: QMenu = QMenu("File", self.__window)
+        self.__fileMenu: QMenu = QMenu("File", self.__window)
+        self.__addMenu: QMenu = QMenu("New...", self.__window)
         
-        self.__newAction: QAction = QAction("New Galactic Conquest...", self.__window)
-        self.__newAction.triggered.connect(self.__newCampaign)
+        self.__newCampaignAction: QAction = QAction("Galactic Conquest...", self.__window)
+        self.__newCampaignAction.triggered.connect(self.__newCampaign)
 
-        self.__openAction: QAction = QAction("Open Galactic Conquest", self.__window)
-        # self.__openAction.setStatusTip("Open a Galactic Conquest XML") #if we want a status bar
-        self.__openAction.triggered.connect(self.__openFile)
+        self.__newTradeRouteAction: QAction = QAction("Trade Route...", self.__window)
+        self.__newTradeRouteAction.triggered.connect(self.__newTradeRoute)
 
         self.__setDataFolderAction: QAction = QAction("Set Data Folder", self.__window)
         self.__setDataFolderAction.triggered.connect(self.__openFolder)
@@ -72,13 +74,16 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
         
-        self.__menu.addAction(self.__newAction)
-        self.__menu.addAction(self.__openAction)
-        self.__menu.addAction(self.__saveAction)
-        self.__menu.addAction(self.__setDataFolderAction)
-        self.__menu.addAction(self.__quitAction)
-        self.__menuBar.addMenu(self.__menu)
-        self.__widget.addWidget(self.__menuBar)
+        self.__fileMenu.addAction(self.__saveAction)
+        self.__fileMenu.addAction(self.__setDataFolderAction)
+        self.__fileMenu.addAction(self.__quitAction)
+
+        self.__addMenu.addAction(self.__newCampaignAction)
+        self.__addMenu.addAction(self.__newTradeRouteAction)
+
+        self.__menuBar.addMenu(self.__fileMenu)
+        self.__menuBar.addMenu(self.__addMenu)
+        self.__window.setMenuWidget(self.__menuBar)
 
         leftWidget: QWidget = QWidget()
         leftWidget.setLayout(QVBoxLayout())
@@ -204,17 +209,16 @@ class QtMainWindow(MainWindow):
         if self.__presenter is not None:
             self.__campaignCreator.showDialog(self.__presenter)
 
-    def __openFile(self) -> None:
-        '''Open File dialog'''
-        fileName, _ = QFileDialog.getOpenFileName(self.__widget,"Open Galactic Conquest", "","XML Files (*.xml);;All Files (*)")
-        if fileName:
-            print(fileName)
-
     def __openFolder(self) -> None:
         '''Set data folder dialog'''
         folderName = QFileDialog.getExistingDirectory(self.__widget, 'Select Data folder:', "", QFileDialog.ShowDirsOnly)
         if folderName:
             self.__presenter.onDataFolderChanged(folderName)
+
+    def __newTradeRoute(self) -> None:
+        '''Helper function to launch the new trade route dialog'''
+        if self.__presenter is not None:
+            self.__tradeRouteCreator.showDialog(self.__presenter)
 
     def __saveFile(self) -> None:    
         '''Save file dialog'''
@@ -253,7 +257,7 @@ class QtMainWindow(MainWindow):
             
             self.__presenter.allTradeRoutesChecked(False)
 
-    def __onCampaignSelected(self, index: int):
+    def __onCampaignSelected(self, index: int) -> None:
         '''Presents a selected campaign'''
         self.__presenter.onCampaignSelected(index)
 
