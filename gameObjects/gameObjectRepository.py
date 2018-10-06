@@ -3,7 +3,8 @@ from typing import Set
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
-
+from gameObjects.faction import Faction
+from gameObjects.aiplayer import AIPlayer
 
 class GameObjectRepository:
     '''Repository of GameObjects. Has campaigns, planets and traderoutes'''
