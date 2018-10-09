@@ -79,6 +79,7 @@ class MainWindowPresenter:
         self.__campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
+        self.__newTradeRoutes: List[TradeRoute] = list()
 
         self.__selectedCampaignIndex: int = 0
 
@@ -182,6 +183,7 @@ class MainWindowPresenter:
         newTradeRoute.end = self.__xmlReader.getPlanet(end, self.__planets)
 
         self.__repository.addTradeRoute(newTradeRoute)
+        self.__newTradeRoutes.append(newTradeRoute)
 
         self.__updateWidgets()
 
@@ -211,6 +213,8 @@ class MainWindowPresenter:
     def saveFile(self, fileName: str) -> None:
         campaign = self.__campaigns[self.__selectedCampaignIndex]
         self.__xmlWriter.campaignWriter(campaign, fileName)
+        if len(self.__newTradeRoutes) > 0:
+            self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
 
 
     def __getNames(self, inputList: list) -> List[str]:

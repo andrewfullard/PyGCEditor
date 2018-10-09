@@ -18,13 +18,31 @@ class XMLWriter:
 
         self.__templateTree.write(outputName, xml_declaration = "1.0")
 
+    def tradeRouteWriter(self, tradeRoutes) -> None:
+        tradeRoutesRoot = et.Element("TradeRoutes")
+        tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
+
+        for t in tradeRoutes:
+            route = et.SubElement(tradeRoutesRoot, "TradeRoute", Name = t.name)
+
+            point_a = self.subElementText(route, "Point_A", t.start.name)
+            point_b = self.subElementText(route, "Point_B", t.end.name)
+
+            hsSpeedFactor = self.subElementText(route, "HS_Speed_Factor", "1.0")
+            politicalControlGain = self.subElementText(route, "Political_Control_Gain", "0")
+            creditGainFactor = self.subElementText(route, "Credit_Gain_Factor", "0")
+            visibleLineName = self.subElementText(route, "Visible_Line_Name", "None")
+
+        tradeRoutesTree.write("NewTradeRoutes.xml", xml_declaration = "1.0", pretty_print = True)
+
+
     def createListEntry(self, inputList):
         '''creates a list string to insert into a file
         requires a GameObject with the name property'''
         entry = "\n"
 
         for item in inputList:
-            entry += (item.name + ",\n")
+            entry += ("\t\t\t" + item.name + ",\n")
 
         return entry
 
