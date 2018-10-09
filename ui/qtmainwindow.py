@@ -139,7 +139,9 @@ class QtMainWindow(MainWindow):
         '''Update the campaign combobox'''
         self.__campaignComboBox.clear()
         self.__campaignComboBox.addItems(campaigns)
-        self.__campaignComboBox.setCurrentIndex(self.__campaignComboBox.findText(newCampaign))
+        newCampaignIndex = self.__campaignComboBox.findText(newCampaign)
+        self.__campaignComboBox.setCurrentIndex(newCampaignIndex)
+        self.__presenter.onCampaignSelected(newCampaignIndex)
     
     def updatePlanetSelection(self, planets: List[int]) -> None:
         '''Clears table, then checks off planets in the table from a list of indexes'''

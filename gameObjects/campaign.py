@@ -8,9 +8,9 @@ class Campaign:
     '''Campaigns have a name, set name, planets and traderoutes'''
     def __init__(self, name: str):
         self.__name: str = name
-        self.__setName: str = None
-        self.__planets: Set[Planet] = None
-        self.__tradeRoutes: Set[TradeRoute] = None
+        self.__setName: str = ""
+        self.__planets: Set[Planet] = set()
+        self.__tradeRoutes: Set[TradeRoute] = set()
 
     @property
     def name(self) -> str:
