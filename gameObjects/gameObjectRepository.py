@@ -41,11 +41,11 @@ class GameObjectRepository:
 
     def addFaction(self, faction: Faction) -> None:
         '''Add a Faction to the repository'''
-        self.__tradeRoutes.add(faction)
+        self.__factions.add(faction)
 
     def removeFaction(self, faction: Faction) -> None:
         '''Remove a Faction from the repository'''
-        self.__tradeRoutes.remove(faction)
+        self.__factions.remove(faction)
 
     def addAIPlayer(self, aiplayer: AIPlayer) -> None:
         '''Add an AI Player to the repository'''

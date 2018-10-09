@@ -7,6 +7,7 @@ from numpy import ndarray as NumPyArray
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.faction import Faction
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
@@ -222,6 +223,7 @@ class MainWindowPresenter:
         self.__campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
         self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
+        self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
         self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))

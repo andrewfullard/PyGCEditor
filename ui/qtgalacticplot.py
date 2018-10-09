@@ -24,7 +24,7 @@ class QtGalacticPlot:
         self.__planetNames = []
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets):
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
