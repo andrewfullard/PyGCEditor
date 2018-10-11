@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPus
 
 from gameObjects.campaign import Campaign
 
-class QtCampaignCreator:
-    '''Class for a "new campaign" dialog box'''
+class QtCampaignProperties:
+    '''Class for a "campaign properties" dialog box'''
     def __init__(self):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
@@ -29,14 +29,19 @@ class QtCampaignCreator:
         self.__layout.addLayout(self.__formLayout)
         self.__layout.addLayout(self.__buttonLayout)
 
-        self.__dialog.setWindowTitle("New Campaign")      
+        self.__dialog.setWindowTitle("Campaign Properties")      
         self.__dialog.setLayout(self.__layout)
 
         self.__presenter = None
        
-    def showDialog(self, presenter) -> None:
+    def showDialog(self, presenter, index = None) -> None:
         '''Display dialog modally'''
         self.__presenter = presenter
+        if index is not None:
+            campaign = presenter.__campaigns[index]
+            self.__inputName.setText(campaign.name)
+            self.__inputSetName.setText(campaign.setName)
+
         self.__dialog.exec_()
 
     def __okayClicked(self) -> None:

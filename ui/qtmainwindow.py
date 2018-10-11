@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDia
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
-from ui.qtcampaigncreator import QtCampaignCreator
+from ui.qtcampaignproperties import QtCampaignProperties
 from ui.qttraderoutecreator import QtTradeRouteCreator
+from ui.qttablewidgetfactory import QtTableWidgetFactory
 from xml.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
@@ -26,21 +27,17 @@ class QtMainWindow(MainWindow):
         self.__window.setWindowTitle("Galactic Conquest Editor")
 
         self.__campaignComboBox: QComboBox = QComboBox()
+        self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
+        self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
 
-        self.__campaignCreator = QtCampaignCreator()
+        self.__campaignProperties = QtCampaignProperties()
         self.__tradeRouteCreator = QtTradeRouteCreator()
 
-        self.__planetListWidget: QTableWidget = QTableWidget()
-        self.__planetListWidget.setColumnCount(1)
-        self.__planetListWidget.setHorizontalHeaderLabels(["Planets"])
-        self.__planetListWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.__planetListWidget.verticalHeader().setVisible(False)
+        self.__tableWidgetFactory = QtTableWidgetFactory()
 
-        self.__tradeRouteListWidget: QTableWidget = QTableWidget()
-        self.__tradeRouteListWidget.setColumnCount(1)
-        self.__tradeRouteListWidget.setHorizontalHeaderLabels(["Trade Routes"])
-        self.__tradeRouteListWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.__tradeRouteListWidget.verticalHeader().setVisible(False)
+        self.__planetListWidget = self.__tableWidgetFactory.construct("Planets")
+
+        self.__tradeRouteListWidget = self.__tableWidgetFactory.construct("Trade Routes")
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -90,6 +87,7 @@ class QtMainWindow(MainWindow):
         self.__widget.addWidget(leftWidget)
 
         leftWidget.layout().addWidget(self.__campaignComboBox)
+        leftWidget.layout().addWidget(self.__campaignPropertiesButton)
         leftWidget.layout().addWidget(self.__planetListWidget)
         leftWidget.layout().addWidget(self.__selectAllPlanetsButton)
         leftWidget.layout().addWidget(self.__deselectAllPlanetsButton)
@@ -141,7 +139,7 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox.addItems(campaigns)
         newCampaignIndex = self.__campaignComboBox.findText(newCampaign)
         self.__campaignComboBox.setCurrentIndex(newCampaignIndex)
-        self.__presenter.onCampaignSelected(newCampaignIndex)
+        self.__onCampaignSelected(newCampaignIndex)
     
     def updatePlanetSelection(self, planets: List[int]) -> None:
         '''Clears table, then checks off planets in the table from a list of indexes'''
@@ -209,7 +207,7 @@ class QtMainWindow(MainWindow):
     def __newCampaign(self) -> None:
         '''Helper function to launch the new campaign dialog with a presenter connection'''
         if self.__presenter is not None:
-            self.__campaignCreator.showDialog(self.__presenter)
+            self.__campaignProperties.showDialog(self.__presenter)
 
     def __openFolder(self) -> None:
         '''Set data folder dialog'''
@@ -272,3 +270,7 @@ class QtMainWindow(MainWindow):
         rowCount = table.rowCount()
         for row in range(rowCount):
             table.item(row, 0).setCheckState(QtCore.Qt.Unchecked)
+
+    def __campaignPropertiesButtonClicked(self) -> None:
+        campaign = self.__campaignComboBox.currentIndex()
+        self.__campaignProperties.showDialog(self.__presenter, campaign)
