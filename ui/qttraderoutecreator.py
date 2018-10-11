@@ -2,6 +2,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
 from gameObjects.traderoute import TradeRoute
+from ui.qtautocomplete import AutoCompleter
 
 class QtTradeRouteCreator:
     '''Class for a "new trade route" dialog box'''
@@ -10,6 +11,8 @@ class QtTradeRouteCreator:
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
         self.__buttonLayout: QHBoxLayout = QHBoxLayout()
+
+        self.__autoComplete = None
 
         self.__inputName: QLineEdit = QLineEdit(self.__dialog)
         self.__inputStart: QLineEdit = QLineEdit(self.__dialog)
@@ -38,8 +41,15 @@ class QtTradeRouteCreator:
        
     def showDialog(self, presenter) -> None:
         '''Display dialog non-modally'''
+        self.__setupAutoComplete(presenter)
         self.__presenter = presenter
         self.__dialog.show()
+
+    def __setupAutoComplete(self, presenter) -> None:
+        autoCompleter = AutoCompleter(presenter.planetNames)
+        planetCompleter = autoCompleter.completer()
+        self.__inputStart.setCompleter(planetCompleter)
+        self.__inputEnd.setCompleter(planetCompleter)
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking and adds trade route to repository'''

@@ -80,6 +80,7 @@ class MainWindowPresenter:
         self.__planets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
+        self.planetNames: List[str] = list()
 
         self.__selectedCampaignIndex: int = 0
 
@@ -232,5 +233,7 @@ class MainWindowPresenter:
         self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
+
+        self.planetNames = self.__getNames(self.__planets)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
