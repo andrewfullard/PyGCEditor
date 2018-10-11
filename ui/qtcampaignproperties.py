@@ -38,7 +38,7 @@ class QtCampaignProperties:
         '''Display dialog modally'''
         self.__presenter = presenter
         if index is not None:
-            campaign = presenter.__campaigns[index]
+            campaign = presenter.campaigns[index]
             self.__inputName.setText(campaign.name)
             self.__inputSetName.setText(campaign.setName)
 

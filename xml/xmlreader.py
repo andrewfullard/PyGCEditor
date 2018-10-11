@@ -64,6 +64,9 @@ class XMLReader:
         else:
             return False
 
+    def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
+        return XMLRoot.find(XMLTag).text
+
     
     def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set():
         '''Parses a XML root and returns a Python set of all names in the XML tag given'''

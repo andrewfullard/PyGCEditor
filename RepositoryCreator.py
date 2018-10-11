@@ -66,6 +66,7 @@ class RepositoryCreator:
             newCampaignTradeRoutes = set()
 
             newCampaign = Campaign(campaign)
+            newCampaign.setName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Campaign_Set")
             campaignPlanetNames = self.__xml.getListFromXMLRoot(campaignRoot, ".//Locations")
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(campaignRoot, ".//Trade_Routes")
 

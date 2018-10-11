@@ -76,7 +76,7 @@ class MainWindowPresenter:
         self.__xmlWriter: xmlWriter = XMLWriter()
         self.__xmlReader: xmlReader = XMLReader()
 
-        self.__campaigns: List[Campaign] = list()
+        self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
@@ -111,11 +111,11 @@ class MainWindowPresenter:
         if checked:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
-                self.__campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
+                self.campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
         else:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
-                self.__campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
+                self.campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
@@ -124,11 +124,11 @@ class MainWindowPresenter:
         if checked:
             if self.__tradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__tradeRoutes[index])
-                self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.add(self.__tradeRoutes[index])
+                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(self.__tradeRoutes[index])
         else:
             if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
-                self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__tradeRoutes[index])
+                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__tradeRoutes[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
@@ -142,16 +142,16 @@ class MainWindowPresenter:
         selectedPlanets = []
         selectedTradeRoutes = []
 
-        if self.__campaigns[index].planets is not None:
-            self.__checkedPlanets.update(self.__campaigns[index].planets)
+        if self.campaigns[index].planets is not None:
+            self.__checkedPlanets.update(self.campaigns[index].planets)
 
             for p in self.__checkedPlanets:
                 selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
         
-        if self.__campaigns[index].tradeRoutes is not None:
-            self.__checkedTradeRoutes.update(self.__campaigns[index].tradeRoutes)
+        if self.campaigns[index].tradeRoutes is not None:
+            self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
             
             for t in self.__checkedTradeRoutes:
                 selectedTradeRoutes.append(self.__getNames(self.__tradeRoutes).index(t.name))
@@ -172,7 +172,7 @@ class MainWindowPresenter:
         self.__mainWindow.clearPlanets()
         self.__mainWindow.clearTradeRoutes()
 
-        self.__mainWindow.updateCampaignComboBox(self.__getNames(self.__campaigns), campaign.name)
+        self.__mainWindow.updateCampaignComboBox(self.__getNames(self.campaigns), campaign.name)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
@@ -189,7 +189,7 @@ class MainWindowPresenter:
         self.__updateWidgets()
 
         self.__checkedTradeRoutes.add(newTradeRoute)
-        self.__campaigns[self.__selectedCampaignIndex].tradeRoutes.add(newTradeRoute)
+        self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(newTradeRoute)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
@@ -212,7 +212,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)  
 
     def saveFile(self, fileName: str) -> None:
-        campaign = self.__campaigns[self.__selectedCampaignIndex]
+        campaign = self.campaigns[self.__selectedCampaignIndex]
         self.__xmlWriter.campaignWriter(campaign, fileName)
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
@@ -225,12 +225,12 @@ class MainWindowPresenter:
 
     def __updateWidgets(self) -> None:
         '''Update the main window widgets'''
-        self.__campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
+        self.campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
         self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
         self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
-        self.__mainWindow.addCampaigns(self.__getNames(self.__campaigns))
+        self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
 
