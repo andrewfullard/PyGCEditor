@@ -111,6 +111,13 @@ class QtMainWindow(MainWindow):
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
         self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
+    def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
+        '''Update TradeRoute trade route table widget'''
+        self.__tradeRouteListWidget.clearContents()
+        self.__tradeRouteListWidget.setRowCount(0)
+        self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
+        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
+
     def addCampaigns(self, campaigns: List[str]) -> None:
         '''Add Campaign objects to the campaign combobox widget'''
         self.__campaignComboBox.addItems(campaigns)

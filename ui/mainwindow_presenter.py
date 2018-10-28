@@ -79,6 +79,7 @@ class MainWindowPresenter:
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
+        self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
         self.planetNames: List[str] = list()
 
@@ -110,23 +111,25 @@ class MainWindowPresenter:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
                 self.campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
+                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         else:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
                 self.campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
+                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         '''If a trade route is checked by the user, add it to the selecte campaign and refresh the galaxy plot'''
         if checked:
-            if self.__tradeRoutes[index] not in self.__checkedTradeRoutes:
-                self.__checkedTradeRoutes.add(self.__tradeRoutes[index])
-                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(self.__tradeRoutes[index])
+            if self.__availableTradeRoutes[index] not in self.__checkedTradeRoutes:
+                self.__checkedTradeRoutes.add(self.__availableTradeRoutes[index])
+                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(self.__availableTradeRoutes[index])
         else:
-            if self.__tradeRoutes[index] in self.__checkedTradeRoutes:
-                self.__checkedTradeRoutes.remove(self.__tradeRoutes[index])
-                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__tradeRoutes[index])
+            if self.__availableTradeRoutes[index] in self.__checkedTradeRoutes:
+                self.__checkedTradeRoutes.remove(self.__availableTradeRoutes[index])
+                self.campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__availableTradeRoutes[index])
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
@@ -148,11 +151,13 @@ class MainWindowPresenter:
 
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
         
+        self.__updateAvailableTradeRoutes(self.campaigns[index].planets)
+        
         if self.campaigns[index].tradeRoutes is not None:
             self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
             
             for t in self.__checkedTradeRoutes:
-                selectedTradeRoutes.append(self.__getNames(self.__tradeRoutes).index(t.name))
+                selectedTradeRoutes.append(self.__getNames(self.__availableTradeRoutes).index(t.name))
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
 
@@ -163,6 +168,8 @@ class MainWindowPresenter:
         self.__repository.addCampaign(campaign)
 
         self.__updateWidgets()
+
+        self.__updateAvailableTradeRoutes(campaign.planets)
 
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
@@ -218,7 +225,7 @@ class MainWindowPresenter:
     def allTradeRoutesChecked(self, checked: bool) -> None:
         '''Select all trade routes handler: plots all trade routes'''
         if checked:
-            self.__checkedTradeRoutes.update(self.__tradeRoutes)
+            self.__checkedTradeRoutes.update(self.__availableTradeRoutes)
         else:
             self.__checkedTradeRoutes.clear()
 
@@ -247,8 +254,20 @@ class MainWindowPresenter:
 
         self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
-        self.__mainWindow.addTradeRoutes(self.__getNames(self.__tradeRoutes))
+        self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
         self.planetNames = self.__getNames(self.__planets)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+
+    def __updateAvailableTradeRoutes(self, planetList:  list):
+        '''Updates the list of available trade routes based on the planets in the GC'''
+        self.__availableTradeRoutes = []
+
+        if planetList is not None:
+            for planet in planetList:
+                for route in self.__tradeRoutes:
+                    if route.start == planet or route.end == planet:
+                        self.__availableTradeRoutes.append(route)
+
+        self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))
