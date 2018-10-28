@@ -2,7 +2,7 @@
 
 
 class AIPlayer:
-    '''AIs have a name and location (x, y)'''
+    '''AIs have a name'''
     def __init__(self, name: str):
         self.__name: str = name
 

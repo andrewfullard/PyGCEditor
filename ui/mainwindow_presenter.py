@@ -101,8 +101,6 @@ class MainWindowPresenter:
         self.__repository.emptyRepository()
         self.__repository = self.__repositoryCreator.constructRepository(folder)
 
-        self.__mainWindow.emptyWidgets()
-
         self.__updateWidgets()
         #loadingScreen.close()
 
@@ -178,19 +176,34 @@ class MainWindowPresenter:
 
     def onNewTradeRoute(self, name: str, start: str, end: str) -> None:
         '''If a new trade route is created, find the start and end planets, and add the trade route to the repository, selected'''
+        #Get name
         newTradeRoute = TradeRoute(name)
 
+        #Get start and end
         newTradeRoute.start = self.__xmlReader.getPlanet(start, self.__planets)
         newTradeRoute.end = self.__xmlReader.getPlanet(end, self.__planets)
 
+        #Add route to repository and new route list
         self.__repository.addTradeRoute(newTradeRoute)
         self.__newTradeRoutes.append(newTradeRoute)
 
+        #Refresh displays
         self.__updateWidgets()
 
+        #Add it to the checked trade routes list and check them all off
         self.__checkedTradeRoutes.add(newTradeRoute)
+
+        selectedTradeRoutes = []
+
+        for t in self.__checkedTradeRoutes:
+            selectedTradeRoutes.append(self.__getNames(self.__tradeRoutes).index(t.name))
+
+        self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
+
+        #Add to the current campaign
         self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(newTradeRoute)
 
+        #Update plot
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def allPlanetsChecked(self, checked: bool) -> None:
@@ -229,6 +242,8 @@ class MainWindowPresenter:
         self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
         self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
+
+        self.__mainWindow.emptyWidgets()
 
         self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
