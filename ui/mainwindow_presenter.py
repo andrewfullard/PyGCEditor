@@ -169,8 +169,6 @@ class MainWindowPresenter:
 
         self.__updateWidgets()
 
-        self.__updateAvailableTradeRoutes(campaign.planets)
-
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
 
@@ -250,6 +248,8 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
         self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
+        self.__updateAvailableTradeRoutes(self.campaigns[self.__selectedCampaignIndex].planets)
+
         self.__mainWindow.emptyWidgets()
 
         self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
@@ -269,5 +269,7 @@ class MainWindowPresenter:
                 for route in self.__tradeRoutes:
                     if route.start == planet or route.end == planet:
                         self.__availableTradeRoutes.append(route)
+
+        self.__availableTradeRoutes.sort(key = lambda entry: entry.name)
 
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))

@@ -160,6 +160,7 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
         for t in tradeRoutes:
+            print(self.__tradeRouteListWidget.item(t, 0), t)
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
 
     def displayLoadingScreen(self) -> QDialog:
