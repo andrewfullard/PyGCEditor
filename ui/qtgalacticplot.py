@@ -1,18 +1,24 @@
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from PyQt5.QtCore import pyqtSignal
 from matplotlib.backends.backend_qt5agg import FigureCanvas, \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Axes, Figure
 
 
-class QtGalacticPlot:
+class QtGalacticPlot(QWidget):
     '''Class for plotting the galaxy'''
+    #signal to send to main window presenter when a planet is selected in the plot
+    planetSelectedSignal = pyqtSignal(list)
+
     def __init__(self, parent: QWidget = None):
+        super(QtGalacticPlot, self).__init__()
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
-        self.__galacticPlotCanvas.mpl_connect('pick_event', self.planetSelect)
-        self.__galacticPlotCanvas.mpl_connect('motion_notify_event', self.planetHover)
+
+        self.__galacticPlotCanvas.mpl_connect('pick_event', self.__planetSelect)
+        self.__galacticPlotCanvas.mpl_connect('motion_notify_event', self.__planetHover)
 
         self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(self.__galacticPlotCanvas, self.__galacticPlotWidget)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotNavBar)
@@ -73,10 +79,11 @@ class QtGalacticPlot:
     def getWidget(self) -> QWidget:
         return self.__galacticPlotWidget
 
-    def planetSelect(self, event) -> None:
-        pass
+    def __planetSelect(self, event) -> None:
+        planet_index = event.ind
+        self.planetSelectedSignal.emit(list(planet_index))
 
-    def planetHover(self, event) -> None:
+    def __planetHover(self, event) -> None:
         '''Handler for hovering on a planet in the plot'''
         visible = self.__annotate.get_visible()
 

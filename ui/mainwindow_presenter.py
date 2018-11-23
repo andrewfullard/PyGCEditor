@@ -90,6 +90,8 @@ class MainWindowPresenter:
 
         self.__repository = self.__repositoryCreator.constructRepository(self.__path)
 
+        self.__plot.planetSelectedSignal.connect(self.planetSelectedOnPlot)
+
         self.__updateWidgets()
 
 
@@ -120,6 +122,28 @@ class MainWindowPresenter:
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
+    def planetSelectedOnPlot(self, indexes: list) -> None:
+        '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
+        for index in indexes:
+            if self.__planets[index] not in self.__checkedPlanets:
+                self.__checkedPlanets.add(self.__planets[index])
+                self.campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
+                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+            elif self.__planets[index] in self.__checkedPlanets:
+                self.__checkedPlanets.remove(self.__planets[index])
+                self.campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
+                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+
+        selectedPlanets = []
+
+        for p in self.__checkedPlanets:
+            selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
+
+        self.__mainWindow.updatePlanetSelection(selectedPlanets)
+
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+    
+
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         '''If a trade route is checked by the user, add it to the selecte campaign and refresh the galaxy plot'''
         if checked:
