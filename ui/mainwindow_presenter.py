@@ -50,6 +50,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def updatePlanetComboBox(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def updatePlanetSelection(self, planets: List[Planet]) -> None:
         raise NotImplementedError()
 
@@ -120,6 +124,7 @@ class MainWindowPresenter:
                 self.campaigns[self.__selectedCampaignIndex].planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
+        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def planetSelectedOnPlot(self, indexes: list) -> None:
@@ -140,7 +145,7 @@ class MainWindowPresenter:
             selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
-
+        self.__mainWindow.updatePlanetComboBox(self.__checkedPlanets)
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
 
@@ -185,6 +190,7 @@ class MainWindowPresenter:
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
 
+        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
     def onNewCampaign(self, campaign: Campaign) -> None:
@@ -242,6 +248,7 @@ class MainWindowPresenter:
         else:
             self.__checkedPlanets.clear()
 
+        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)    
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
@@ -281,6 +288,8 @@ class MainWindowPresenter:
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
         self.planetNames = self.__getNames(self.__planets)
+
+        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 

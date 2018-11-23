@@ -5,6 +5,7 @@ from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.aiplayer import AIPlayer
+from gameObjects.unit import Unit
 
 class GameObjectRepository:
     '''Repository of GameObjects. Has campaigns, planets and traderoutes'''
@@ -14,6 +15,7 @@ class GameObjectRepository:
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.__factions: Set[Faction] = set()
         self.__aiplayers: Set[AIPlayer] = set()
+        self.__units: Set[Unit] = set()
 
     def addCampaign(self, campaign: Campaign) -> None:
         '''Add a Campaign to the repository'''
@@ -49,11 +51,19 @@ class GameObjectRepository:
 
     def addAIPlayer(self, aiplayer: AIPlayer) -> None:
         '''Add an AI Player to the repository'''
-        self.__aiplayer.add(faction)
+        self.__aiplayers.add(aiplayer)
 
     def removeAIPlayer(self, aiplayer: AIPlayer) -> None:
         '''Remove an AI Player from the repository'''
-        self.__aiplayer.remove(aiplayer)
+        self.__aiplayers.remove(aiplayer)
+
+    def addUnit(self, unit: Unit) -> None:
+        '''Add a unit to the repository'''
+        self.__units.add(unit)
+
+    def removeUnit(self, unit: Unit) -> None:
+        '''Remove a unit from the repository'''
+        self.__units.remove(unit)
 
 
     def emptyRepository(self) -> None:
@@ -63,6 +73,7 @@ class GameObjectRepository:
         self.__planets.clear()
         self.__factions.clear()
         self.__aiplayers.clear()
+        self.__units.clear()
 
     @property
     def campaigns(self) -> Set[Campaign]:
@@ -83,3 +94,8 @@ class GameObjectRepository:
     @property
     def aiplayers(self) -> Set[AIPlayer]:
         return set(self.__aiplayers)
+
+    @property
+    def units(self) -> Set[Unit]:
+        return set(self.__units)
+

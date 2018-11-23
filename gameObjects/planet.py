@@ -2,11 +2,12 @@
 
 
 class Planet:
-    '''Planets have a name and location (x, y)'''
+    '''Planets have a name and location (x, y), and starting forces'''
     def __init__(self, name: str):
         self.__name: str = name
         self.__x: float = 0.0
         self.__y: float = 0.0
+        self.__forces: list = []
 
     @property
     def name(self) -> str:
@@ -32,3 +33,11 @@ class Planet:
     @y.setter
     def y(self, value: float) -> None:
         self.__y = value
+
+    @property
+    def forces(self) -> list:
+        return self.__forces
+
+    @forces.setter
+    def forces(self, value: list) -> None:
+        self.__forces = value

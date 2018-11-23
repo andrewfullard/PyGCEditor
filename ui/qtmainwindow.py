@@ -2,7 +2,7 @@ from typing import List
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDialog, QHeaderView, QLabel, QMainWindow, QMenu, QMenuBar, QDialog, QSplitter, \
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+    QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget
 
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
@@ -21,11 +21,13 @@ class QtMainWindow(MainWindow):
         self.__allPlanetsChecked: bool = False
         self.__allTradeRoutesChecked: bool = False
 
+        #Main window setup
         self.__window: QMainWindow = QMainWindow()
         self.__widget: QWidget = QSplitter(self.__window)
         self.__window.setCentralWidget(self.__widget)
         self.__window.setWindowTitle("Galactic Conquest Editor")
 
+        #Left pane, GC layout tab
         self.__campaignComboBox: QComboBox = QComboBox()
         self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
         self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
@@ -35,9 +37,9 @@ class QtMainWindow(MainWindow):
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
-        self.__planetListWidget = self.__tableWidgetFactory.construct("Planets")
+        self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
 
-        self.__tradeRouteListWidget = self.__tableWidgetFactory.construct("Trade Routes")
+        self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -50,6 +52,11 @@ class QtMainWindow(MainWindow):
 
         self.__deselectAllTradeRoutesButton: QPushButton = QPushButton("Deselect All Trade Routes")
         self.__deselectAllTradeRoutesButton.clicked.connect(lambda: self.__selectAllTradeRoutesButtonClicked(self.__tradeRouteListWidget, False))
+
+        #Left pane, Forces tab
+        self.__planetComboBox: QComboBox = QComboBox()
+
+        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], 2)        
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
@@ -82,18 +89,29 @@ class QtMainWindow(MainWindow):
         self.__menuBar.addMenu(self.__addMenu)
         self.__window.setMenuWidget(self.__menuBar)
 
-        leftWidget: QWidget = QWidget()
-        leftWidget.setLayout(QVBoxLayout())
-        self.__widget.addWidget(leftWidget)
+        #Set up left pane tabs
+        self.__leftTabsWidget: QWidget = QTabWidget()
+        self.__planetsTradeRoutes: QWidget = QWidget()
+        self.__startingForces: QWidget = QWidget()
 
-        leftWidget.layout().addWidget(self.__campaignComboBox)
-        leftWidget.layout().addWidget(self.__campaignPropertiesButton)
-        leftWidget.layout().addWidget(self.__planetListWidget)
-        leftWidget.layout().addWidget(self.__selectAllPlanetsButton)
-        leftWidget.layout().addWidget(self.__deselectAllPlanetsButton)
-        leftWidget.layout().addWidget(self.__tradeRouteListWidget)
-        leftWidget.layout().addWidget(self.__selectAllTradeRoutesButton)
-        leftWidget.layout().addWidget(self.__deselectAllTradeRoutesButton)
+        self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
+        self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
+
+        self.__planetsTradeRoutes.setLayout(QVBoxLayout())
+        self.__startingForces.setLayout(QVBoxLayout())
+        self.__widget.addWidget(self.__leftTabsWidget)
+
+        self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
+        self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
+        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__tradeRouteListWidget)
+        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllTradeRoutesButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllTradeRoutesButton)
+
+        self.__startingForces.layout().addWidget(self.__planetComboBox)
+        self.__startingForces.layout().addWidget(self.__forcesListWidget)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -139,6 +157,10 @@ class QtMainWindow(MainWindow):
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
         self.__campaignComboBox.clear()
+        
+        self.__planetComboBox.clear()
+        self.__forcesListWidget.clearContents()
+        self.__forcesListWidget.setRowCount(0)
 
     def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
         '''Update the campaign combobox'''
@@ -147,6 +169,13 @@ class QtMainWindow(MainWindow):
         newCampaignIndex = self.__campaignComboBox.findText(newCampaign)
         self.__campaignComboBox.setCurrentIndex(newCampaignIndex)
         self.__onCampaignSelected(newCampaignIndex)
+    
+    def updatePlanetComboBox(self, planets: List[str]) -> None:
+        '''Update the planets combobox'''
+        self.__planetComboBox.clear()
+        if planets:
+            planets.sort()
+            self.__planetComboBox.addItems(planets)
     
     def updatePlanetSelection(self, planets: List[int]) -> None:
         '''Clears table, then checks off planets in the table from a list of indexes'''
@@ -160,7 +189,6 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
         for t in tradeRoutes:
-            print(self.__tradeRouteListWidget.item(t, 0), t)
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
 
     def displayLoadingScreen(self) -> QDialog:
