@@ -145,7 +145,7 @@ class MainWindowPresenter:
             selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
-        self.__mainWindow.updatePlanetComboBox(self.__checkedPlanets)
+        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
 
