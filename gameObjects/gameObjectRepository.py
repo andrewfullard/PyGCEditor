@@ -1,4 +1,4 @@
-from typing import Set
+from typing import List, Set
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
@@ -33,6 +33,24 @@ class GameObjectRepository:
         '''Remove a Planet from the repository'''
         self.__planets.remove(planet)
 
+    def planetExists(self, name: str) -> None:
+        try:
+            self.getPlanetByName(name)
+            return True
+        except:
+            return False
+
+    def getPlanetByName(self, name: str) -> None:
+        for planet in self.planets:
+            if planet.name == name:
+                return planet
+
+        raise RuntimeError("Searching for non existing planet " + name)
+
+    def getNames(self, inputList: list) -> List[str]:
+        '''Returns the name attribute from a list of GameObjects'''
+        return [x.name for x in inputList]
+
     def addTradeRoute(self, tradeRoute: TradeRoute) -> None:
         '''Add a TradeRoute to the repository'''
         self.__tradeRoutes.add(tradeRoute)
@@ -64,7 +82,6 @@ class GameObjectRepository:
     def removeUnit(self, unit: Unit) -> None:
         '''Remove a unit from the repository'''
         self.__units.remove(unit)
-
 
     def emptyRepository(self) -> None:
         '''Empty the repository'''

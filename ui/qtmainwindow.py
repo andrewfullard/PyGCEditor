@@ -33,7 +33,6 @@ class QtMainWindow(MainWindow):
         self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
 
         self.__campaignProperties = QtCampaignProperties()
-        self.__tradeRouteCreator = QtTradeRouteCreator()
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
@@ -174,6 +173,8 @@ class QtMainWindow(MainWindow):
         '''Update the planets combobox'''
         self.__planetComboBox.clear()
         if planets:
+            if type(planets) == set:
+                planets = list(planets)
             planets.sort()
             self.__planetComboBox.addItems(planets)
     
@@ -187,6 +188,8 @@ class QtMainWindow(MainWindow):
     def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
         '''Clears table, then checks off trade routes in the table from a list of indexes'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
+
+        print(tradeRoutes)
 
         for t in tradeRoutes:
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
@@ -254,7 +257,7 @@ class QtMainWindow(MainWindow):
     def __newTradeRoute(self) -> None:
         '''Helper function to launch the new trade route dialog'''
         if self.__presenter is not None:
-            self.__tradeRouteCreator.showDialog(self.__presenter)
+            self.__presenter.newTradeRouteCommand.execute()
 
     def __saveFile(self) -> None:    
         '''Save file dialog'''

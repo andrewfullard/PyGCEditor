@@ -2,11 +2,14 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
+from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
 from config import Config
+from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtmainwindow import QtMainWindow
+from RepositoryCreator import RepositoryCreator
 
-config: config = Config()
+config: Config = Config()
 
 numArgs = len(sys.argv)
 
@@ -17,8 +20,14 @@ else:
 
 app = QApplication([])
 
+repositoryCreator: RepositoryCreator = RepositoryCreator()
+repository = repositoryCreator.constructRepository(path)
+dialogFactory = DialogFactory(repository)
+
 qtMainWindow: QtMainWindow = QtMainWindow()
-presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, path)
+presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
+presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory, repository)
+
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()
 

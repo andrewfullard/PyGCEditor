@@ -2,11 +2,13 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
 from gameObjects.traderoute import TradeRoute
+from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.qtautocomplete import AutoCompleter
+from ui.dialogs import Dialog, DialogResult
 
-class QtTradeRouteCreator:
+class QtTradeRouteCreator(Dialog):
     '''Class for a "new trade route" dialog box'''
-    def __init__(self):
+    def __init__(self, repository: GameObjectRepository):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
@@ -38,31 +40,52 @@ class QtTradeRouteCreator:
         self.__dialog.setLayout(self.__layout)
 
         self.__presenter = None
-       
-    def showDialog(self, presenter) -> None:
-        '''Display dialog non-modally'''
-        self.__setupAutoComplete(presenter)
-        self.__presenter = presenter
-        self.__dialog.show()
 
-    def __setupAutoComplete(self, presenter) -> None:
-        autoCompleter = AutoCompleter(presenter.planetNames)
+        self.__result = DialogResult.Cancel
+
+        self.__repository = repository
+
+        self.__name = ""
+        self.__start = None
+        self.__end = None
+        
+       
+    def show(self) -> DialogResult:
+        '''Display dialog non-modally'''
+        # self.__setupAutoComplete(presenter)
+        self.__dialog.exec()
+        return self.__result
+
+    def getCreatedTradeRoute(self) -> TradeRoute:
+        '''Returns the created TradeRoute'''
+
+        tradeRoute: TradeRoute = TradeRoute(self.__name)
+        tradeRoute.start = self.__repository.getPlanetByName(self.__start)
+        tradeRoute.end = self.__repository.getPlanetByName(self.__end)
+
+        return tradeRoute      
+
+    def __setupAutoComplete(self) -> None:
+        autoCompleter = AutoCompleter(self.__repository.planets)
         planetCompleter = autoCompleter.completer()
         self.__inputStart.setCompleter(planetCompleter)
         self.__inputEnd.setCompleter(planetCompleter)
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking and adds trade route to repository'''
-        name = self.__inputName.text()
-        start = self.__inputStart.text()
-        end = self.__inputEnd.text()
+        self.__name = self.__inputName.text()
+        self.__start = self.__inputStart.text()
+        self.__end = self.__inputEnd.text()
 
-        if len(name) > 0 and len(start) > 0 and len(end) > 0:
-            self.__presenter.onNewTradeRoute(name, start, end)
-        else:
+        if not self.__tradeRouteDataIsValid():
             print("Error! Not enough trade route parameters set!")
+            return
 
+        self.__result = DialogResult.Ok
         self.__dialog.close()
+
+    def __tradeRouteDataIsValid(self) -> bool:
+        return self.__name and self.__repository.planetExists(self.__start) and self.__repository.planetExists(self.__end)
 
     def __cancelClicked(self) -> None:
         '''Cancel button handler. Closes dialog box'''

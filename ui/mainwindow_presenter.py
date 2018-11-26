@@ -72,13 +72,14 @@ class MainWindow(ABC):
 
 class MainWindowPresenter:
     '''Window display class'''
-    def __init__(self, mainWindow: MainWindow, path: str):
+    def __init__(self, mainWindow: MainWindow, repository: GameObjectRepository):
         self.__mainWindow: MainWindow = mainWindow
-        self.__path: str = path
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
-        self.__repositoryCreator: repositoryCreator = RepositoryCreator(self.__path)
-        self.__xmlWriter: xmlWriter = XMLWriter()
-        self.__xmlReader: xmlReader = XMLReader()
+        
+        self.__xmlWriter: XMLWriter = XMLWriter()
+
+        self.__repository = repository
+        self.__repositoryCreator = RepositoryCreator()
 
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
@@ -92,11 +93,11 @@ class MainWindowPresenter:
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
 
-        self.__repository = self.__repositoryCreator.constructRepository(self.__path)
-
         self.__plot.planetSelectedSignal.connect(self.planetSelectedOnPlot)
 
         self.__updateWidgets()
+
+        self.newTradeRouteCommand = None
 
 
     def onDataFolderChanged(self, folder: str) -> None:
@@ -209,37 +210,14 @@ class MainWindowPresenter:
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
-    def onNewTradeRoute(self, name: str, start: str, end: str) -> None:
-        '''If a new trade route is created, find the start and end planets, and add the trade route to the repository, selected'''
-        #Get name
-        newTradeRoute = TradeRoute(name)
+    def onNewTradeRoute(self, tradeRoute: TradeRoute):
+        self.__newTradeRoutes.append(tradeRoute)
 
-        #Get start and end
-        newTradeRoute.start = self.__xmlReader.getPlanet(start, self.__planets)
-        newTradeRoute.end = self.__xmlReader.getPlanet(end, self.__planets)
+        if tradeRoute.start in self.__checkedPlanets or tradeRoute.end in self.__checkedPlanets:
+            self.__checkedTradeRoutes.add(tradeRoute)
 
-        #Add route to repository and new route list
-        self.__repository.addTradeRoute(newTradeRoute)
-        self.__newTradeRoutes.append(newTradeRoute)
-
-        #Refresh displays
+        self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(tradeRoute)
         self.__updateWidgets()
-
-        #Add it to the checked trade routes list and check them all off
-        self.__checkedTradeRoutes.add(newTradeRoute)
-
-        selectedTradeRoutes = []
-
-        for t in self.__checkedTradeRoutes:
-            selectedTradeRoutes.append(self.__getNames(self.__tradeRoutes).index(t.name))
-
-        self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
-
-        #Add to the current campaign
-        self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(newTradeRoute)
-
-        #Update plot
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
     
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
@@ -291,7 +269,16 @@ class MainWindowPresenter:
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
 
+        self.__mainWindow.updateTradeRouteSelection(self.__getSelectedTradeRouteIndices())
+
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        
+    def __getSelectedTradeRouteIndices(self) -> List[int]:
+        selectedTradeRoutesIndices: List[int] = list()
+        for tradeRoute in self.__checkedTradeRoutes:
+            selectedTradeRoutesIndices.append(self.__tradeRoutes.index(tradeRoute))
+
+        return selectedTradeRoutesIndices
 
     def __updateAvailableTradeRoutes(self, planetList:  list):
         '''Updates the list of available trade routes based on the planets in the GC'''

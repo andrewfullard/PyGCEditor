@@ -9,9 +9,9 @@ from xml.xmlstructure import XMLStructure
 
 class RepositoryCreator:
     '''Creates a Repository of GameObjects from input XMLs'''
-    def __init__(self, folder: str):
+    def __init__(self):
         self.repository: GameObjectRepository = GameObjectRepository()
-        self.__folder: str = folder
+        self.__folder: str = ""
         self.__xml: XMLReader = XMLReader()
 
     def getNamesRootsFromXML(self, rootsList, tag: str) -> list:

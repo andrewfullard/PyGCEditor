@@ -1,3 +1,4 @@
+import os
 import lxml.etree as et
 
 class Config():
@@ -7,4 +8,7 @@ class Config():
         self.__configRoot = et.parse(self.__configFile).getroot()
 
         self.dataPath = self.__configRoot.find("DataPath").text
+
+        if not self.dataPath:
+            self.dataPath = os.getcwd()
                 
