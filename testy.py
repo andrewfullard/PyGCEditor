@@ -22,6 +22,7 @@ app = QApplication([])
 
 repositoryCreator: RepositoryCreator = RepositoryCreator()
 repository = repositoryCreator.constructRepository(path)
+
 dialogFactory = DialogFactory(repository)
 
 qtMainWindow: QtMainWindow = QtMainWindow()

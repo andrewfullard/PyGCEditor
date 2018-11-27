@@ -47,9 +47,9 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existing planet " + name)
 
-    def getNames(self, inputList: list) -> List[str]:
-        '''Returns the name attribute from a list of GameObjects'''
-        return [x.name for x in inputList]
+    def getPlanetNames(self) -> List[str]:
+        '''Returns a list containing all Planet names'''
+        return [x.name for x in self.__planets]
 
     def addTradeRoute(self, tradeRoute: TradeRoute) -> None:
         '''Add a TradeRoute to the repository'''

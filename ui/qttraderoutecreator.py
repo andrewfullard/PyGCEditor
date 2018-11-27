@@ -52,7 +52,7 @@ class QtTradeRouteCreator(Dialog):
        
     def show(self) -> DialogResult:
         '''Display dialog non-modally'''
-        # self.__setupAutoComplete(presenter)
+        self.__setupAutoComplete()
         self.__dialog.exec()
         return self.__result
 
@@ -66,7 +66,7 @@ class QtTradeRouteCreator(Dialog):
         return tradeRoute      
 
     def __setupAutoComplete(self) -> None:
-        autoCompleter = AutoCompleter(self.__repository.planets)
+        autoCompleter = AutoCompleter(self.__repository.getPlanetNames())
         planetCompleter = autoCompleter.completer()
         self.__inputStart.setCompleter(planetCompleter)
         self.__inputEnd.setCompleter(planetCompleter)
