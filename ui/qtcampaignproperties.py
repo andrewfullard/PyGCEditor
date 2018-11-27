@@ -54,20 +54,20 @@ class QtCampaignProperties:
 
     def getCampaignProperties(self) -> Campaign:
         '''Returns the Campaign properties'''
-
         campaign: Campaign = Campaign(self.__name)
         campaign.setName = self.__setName
 
         return campaign 
 
     def __okayClicked(self) -> None:
-        '''Okay button handler. Performs minor error checking and adds campaign to repository'''
+        '''Okay button handler. Performs minor error checking'''
         self.__name = self.__inputName.text()
         self.__setName = self.__inputSetName.text()
 
         if len(self.__name) == 0:
             print("Error! No campaign name set!")
 
+        self.__result = DialogResult.Ok
         self.__dialog.close()
 
     def __cancelClicked(self) -> None:

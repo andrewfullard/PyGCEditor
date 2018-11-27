@@ -25,7 +25,7 @@ class Campaign:
     def setName(self) -> str:
         return self.__setName
 
-    @name.setter
+    @setName.setter
     def setName(self, value: str) -> None:
         if value:
             self.__setName = value

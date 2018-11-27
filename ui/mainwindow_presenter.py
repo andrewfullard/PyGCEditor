@@ -86,7 +86,6 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
-        self.planetNames: List[str] = list()
 
         self.__selectedCampaignIndex: int = 0
 
@@ -103,15 +102,10 @@ class MainWindowPresenter:
 
     def onDataFolderChanged(self, folder: str) -> None:
         '''Updates the repository and refreshes the main window when a new data folder is selected'''
-        #loadingScreen = self.__mainWindow.displayLoadingScreen()
-
-        #loadingScreen.exec_()
-
         self.__repository.emptyRepository()
         self.__repository = self.__repositoryCreator.constructRepository(folder)
 
         self.__updateWidgets()
-        #loadingScreen.close()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
         '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
@@ -201,15 +195,7 @@ class MainWindowPresenter:
 
         self.__updateWidgets()
 
-        self.__checkedPlanets.clear()
-        self.__checkedTradeRoutes.clear()
-
-        self.__mainWindow.clearPlanets()
-        self.__mainWindow.clearTradeRoutes()
-
         self.__mainWindow.updateCampaignComboBox(self.__getNames(self.campaigns), campaign.name)
-
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
     def onNewTradeRoute(self, tradeRoute: TradeRoute):
         self.__newTradeRoutes.append(tradeRoute)
@@ -250,7 +236,6 @@ class MainWindowPresenter:
         '''Returns the name attribute from a list of GameObjects'''
         return [x.name for x in inputList]
 
-
     def __updateWidgets(self) -> None:
         '''Update the main window widgets'''
         self.campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
@@ -266,10 +251,7 @@ class MainWindowPresenter:
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
-        self.planetNames = self.__getNames(self.__planets)
-
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-
         self.__mainWindow.updateTradeRouteSelection(self.__getSelectedTradeRouteIndices())
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
@@ -283,14 +265,14 @@ class MainWindowPresenter:
 
     def __updateAvailableTradeRoutes(self, planetList:  list):
         '''Updates the list of available trade routes based on the planets in the GC'''
-        self.__availableTradeRoutes = []
+        privateAvailableTradeRoutes = set()
 
         if planetList is not None:
             for planet in planetList:
                 for route in self.__tradeRoutes:
                     if route.start == planet or route.end == planet:
-                        self.__availableTradeRoutes.append(route)
+                        privateAvailableTradeRoutes.add(route)
 
-        self.__availableTradeRoutes.sort(key = lambda entry: entry.name)
+        self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
 
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))

@@ -18,6 +18,7 @@ class ShowCampaignCreatorDialogCommand(Command):
         result: DialogResult = dialog.show(name)
 
         if result is DialogResult.Ok:
-            campaign: Campaign = dialog.getCreatedCampaign()
-            self.__repository.addCampaign(campaign)
-            self.__presenter.onNewCampaign(campaign)
+            campaign: Campaign = dialog.getCampaignProperties()
+            if not campaign in self.__repository.campaigns:
+                self.__repository.addCampaign(campaign)
+                self.__presenter.onNewCampaign(campaign)

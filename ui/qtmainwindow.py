@@ -188,21 +188,6 @@ class QtMainWindow(MainWindow):
         for t in tradeRoutes:
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
 
-    def displayLoadingScreen(self) -> QDialog:
-        '''Displays a loading screen'''
-        screen: QDialog = QDialog()
-        layout = QVBoxLayout()
-        label = QLabel("Loading Mod Data...")
-
-        screen.setWindowTitle("Loading...")
-        screen.setBaseSize(100, 100)
-        layout.addWidget(label)
-
-        screen.setWindowFlags(QtCore.Qt.WindowTitleHint)
-        screen.setLayout(layout)
-
-        return screen
-
     def clearPlanets(self) -> None:
         '''Helper function to clear planet selections from the presenter'''
         self.__uncheckAllTable(self.__planetListWidget)
