@@ -34,6 +34,7 @@ class GameObjectRepository:
         self.__planets.remove(planet)
 
     def planetExists(self, name: str) -> None:
+        '''Returns true if a planet exists by name, false otherwise'''
         try:
             self.getPlanetByName(name)
             return True
@@ -41,6 +42,7 @@ class GameObjectRepository:
             return False
 
     def getPlanetByName(self, name: str) -> None:
+        '''Returns a planet object given its name'''
         for planet in self.planets:
             if planet.name == name:
                 return planet

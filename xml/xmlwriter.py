@@ -2,13 +2,14 @@ import lxml.etree as et
 
 #incomplete example of writing XML files to disk
 class XMLWriter:
-
+    '''Provides XML writing functions'''
     def __init__(self):
         self.__template = "campaignTemplate.xml"
         self.__templateTree = et.parse(self.__template)
         self.__templateRoot = self.__templateTree.getroot()
 
     def campaignWriter(self, campaign, outputName: str) -> None:
+        '''Writes a campaign to file'''
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
@@ -16,9 +17,10 @@ class XMLWriter:
         self.__templateRoot.find(".//Locations").text = planets
         self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
 
-        self.__templateTree.write(outputName, xml_declaration = "1.0")
+        self.writer(self.__templateTree, outputName = outputName)
 
     def tradeRouteWriter(self, tradeRoutes) -> None:
+        '''Writes a list of trade routes to file'''
         tradeRoutesRoot = et.Element("TradeRoutes")
         tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
 
@@ -33,7 +35,7 @@ class XMLWriter:
             creditGainFactor = self.subElementText(route, "Credit_Gain_Factor", "0")
             visibleLineName = self.subElementText(route, "Visible_Line_Name", "None")
 
-        tradeRoutesTree.write("NewTradeRoutes.xml", xml_declaration = "1.0", pretty_print = True)
+        self.writer(tradeRoutesTree, outputName = "NewTradeRoutes.xml")
 
 
     def createListEntry(self, inputList):
@@ -47,10 +49,12 @@ class XMLWriter:
         return entry
 
     def subElementText(self, parent, subElementName, text):
+        '''Returns a subelement with given text'''
         element = et.SubElement(parent, subElementName)
         element.text = text
 
         return element
 
     def writer(self, XMLRoot, outputName: str) -> None:
-        XMLRoot.write(outputName, xml_declaration="1.0")
+        '''Writes XML file'''
+        XMLRoot.write(outputName, xml_declaration = "1.0", pretty_print = True)

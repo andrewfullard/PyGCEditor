@@ -29,7 +29,7 @@ class Faction:
 
     @property
     def aiplayer(self) -> AIPlayer:
-        return self.__end
+        return self.__aiplayer
 
     @aiplayer.setter
     def aiplayer(self, value: AIPlayer) -> None:

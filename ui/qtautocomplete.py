@@ -10,9 +10,11 @@ class AutoCompleter:
         self.__list: List[str] = autoCompleteList
 
     def setupModel(self, model):
+        '''Creates an autocompleter model'''
         model.setStringList(self.__list)
     
     def completer(self):
+        '''Produces the completer'''
         model = QStringListModel()
         self.__completer.setModel(model)
         self.setupModel(model)

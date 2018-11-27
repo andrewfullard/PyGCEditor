@@ -143,6 +143,7 @@ class QtMainWindow(MainWindow):
         return plot
 
     def getWindow(self) -> QMainWindow:
+        '''Returns the window'''
         return self.__window
 
     def emptyWidgets(self) -> None:
@@ -164,6 +165,10 @@ class QtMainWindow(MainWindow):
         newCampaignIndex = self.__campaignComboBox.findText(newCampaign)
         self.__campaignComboBox.setCurrentIndex(newCampaignIndex)
         self.__onCampaignSelected(newCampaignIndex)
+
+    def updateCampaignComboBoxSelection(self, index: int) -> None:
+        '''Update selected campaign'''
+        self.__campaignComboBox.setCurrentIndex(index)
     
     def updatePlanetComboBox(self, planets: List[str]) -> None:
         '''Update the planets combobox'''
@@ -281,11 +286,13 @@ class QtMainWindow(MainWindow):
         self.__presenter.onCampaignSelected(index)
 
     def __checkAllTable(self, table: QTableWidget) -> None:
+        '''Checks all rows in a table widget'''
         rowCount = table.rowCount()
         for row in range(rowCount):
             table.item(row, 0).setCheckState(QtCore.Qt.Checked)
 
     def __uncheckAllTable(self, table: QTableWidget) -> None:
+        '''Unchecks all rows in a table widget'''
         rowCount = table.rowCount()
         for row in range(rowCount):
             table.item(row, 0).setCheckState(QtCore.Qt.Unchecked)

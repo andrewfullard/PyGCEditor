@@ -46,11 +46,15 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def updateCampaignComboBox(self) -> None:
+    def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
         raise NotImplementedError()
 
     @abstractmethod
-    def updatePlanetComboBox(self) -> None:
+    def updateCampaignComboBoxSelection(self, index: int) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def updatePlanetComboBox(self, planets: List[str]) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -172,7 +176,7 @@ class MainWindowPresenter:
             self.__checkedPlanets.update(self.campaigns[index].planets)
 
             for p in self.__checkedPlanets:
-                selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
+                selectedPlanets.append(self.__planets.index(p))
 
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
         
@@ -182,7 +186,7 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
             
             for t in self.__checkedTradeRoutes:
-                selectedTradeRoutes.append(self.__getNames(self.__availableTradeRoutes).index(t.name))
+                selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
 
@@ -198,6 +202,7 @@ class MainWindowPresenter:
         self.__mainWindow.updateCampaignComboBox(self.__getNames(self.campaigns), campaign.name)
 
     def onNewTradeRoute(self, tradeRoute: TradeRoute):
+        '''Handles new trade routes'''
         self.__newTradeRoutes.append(tradeRoute)
 
         if tradeRoute.start in self.__checkedPlanets or tradeRoute.end in self.__checkedPlanets:
@@ -226,6 +231,7 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)  
 
     def saveFile(self, fileName: str) -> None:
+        '''Saves XML files'''
         campaign = self.campaigns[self.__selectedCampaignIndex]
         self.__xmlWriter.campaignWriter(campaign, fileName)
         if len(self.__newTradeRoutes) > 0:
@@ -251,6 +257,9 @@ class MainWindowPresenter:
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
+        self.__mainWindow.updateCampaignComboBoxSelection(self.__selectedCampaignIndex)
+        self.onCampaignSelected(self.__selectedCampaignIndex)
+
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
 
         if self.__getSelectedTradeRouteIndices():
@@ -259,9 +268,10 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
         
     def __getSelectedTradeRouteIndices(self) -> List[int]:
+        '''Returns the indices of selected trade routes'''
         selectedTradeRoutesIndices: List[int] = list()
         for tradeRoute in self.__checkedTradeRoutes:
-            selectedTradeRoutesIndices.append(self.__tradeRoutes.index(tradeRoute))
+            selectedTradeRoutesIndices.append(self.__availableTradeRoutes.index(tradeRoute))
 
         return selectedTradeRoutesIndices
 

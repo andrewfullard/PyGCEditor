@@ -19,6 +19,9 @@ class QtTradeRouteCreator(Dialog):
         self.__inputName: QLineEdit = QLineEdit(self.__dialog)
         self.__inputStart: QLineEdit = QLineEdit(self.__dialog)
         self.__inputEnd: QLineEdit = QLineEdit(self.__dialog)
+
+        self.__inputStart.textChanged.connect(self.__autoName)
+        self.__inputEnd.textChanged.connect(self.__autoName)
       
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -66,10 +69,15 @@ class QtTradeRouteCreator(Dialog):
         return tradeRoute      
 
     def __setupAutoComplete(self) -> None:
+        '''Sets up autocompleter with planet names'''
         autoCompleter = AutoCompleter(self.__repository.getPlanetNames())
         planetCompleter = autoCompleter.completer()
         self.__inputStart.setCompleter(planetCompleter)
         self.__inputEnd.setCompleter(planetCompleter)
+
+    def __autoName(self) -> None:
+        '''Automatically names trade routes as start_end'''
+        self.__inputName.setText(self.__inputStart.text() + "_" + self.__inputEnd.text())
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking and adds trade route to repository'''
@@ -81,11 +89,24 @@ class QtTradeRouteCreator(Dialog):
             print("Error! Not enough trade route parameters set!")
             return
 
+        if not self.__tradeRouteDoesNotExist():
+            print("Error! Trade route already exists!")
+            return
+
         self.__result = DialogResult.Ok
         self.__dialog.close()
 
     def __tradeRouteDataIsValid(self) -> bool:
+        '''Checks if the trade route data is filled in and the planets exist in the repo'''
         return self.__name and self.__repository.planetExists(self.__start) and self.__repository.planetExists(self.__end)
+
+    def __tradeRouteDoesNotExist(self) -> bool:
+        '''Checks if the trade route already exists with the same start/end'''
+        for t in self.__repository.tradeRoutes:
+            if (t.start == self.__start) and (t.end == self.__end):
+                return False
+        
+        return True
 
     def __cancelClicked(self) -> None:
         '''Cancel button handler. Closes dialog box'''

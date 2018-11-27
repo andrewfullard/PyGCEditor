@@ -77,9 +77,11 @@ class QtGalacticPlot(QWidget):
 
 
     def getWidget(self) -> QWidget:
+        '''Returns the plot widget'''
         return self.__galacticPlotWidget
 
     def __planetSelect(self, event) -> None:
+        '''Event handler for selecting a planet on the map'''
         planet_index = event.ind
         self.planetSelectedSignal.emit(list(planet_index))
 

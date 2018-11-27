@@ -26,7 +26,7 @@ The Tree is serialized and can be manipulated in memory.
 '''
 
 class XMLReader:
-
+    '''Provides XML read functions'''
     def __init__(self):
         pass
 
