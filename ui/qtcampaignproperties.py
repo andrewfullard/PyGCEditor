@@ -46,8 +46,11 @@ class QtCampaignProperties:
         if name is not -1:
             campaignList = list(self.__repository.campaigns)
             campaign = next((x for x in campaignList if x.name == name), None)
-            self.__inputName.setText(campaign.name)
-            self.__inputSetName.setText(campaign.setName)
+            if campaign is not None:
+                self.__inputName.setText(campaign.name)
+                self.__inputSetName.setText(campaign.setName)
+            else:
+                print("Campaign " + campaign + " missing from repository")
 
         self.__dialog.exec()
         return self.__result

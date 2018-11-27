@@ -252,7 +252,9 @@ class MainWindowPresenter:
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__mainWindow.updateTradeRouteSelection(self.__getSelectedTradeRouteIndices())
+
+        if self.__getSelectedTradeRouteIndices():
+            self.__mainWindow.updateTradeRouteSelection(self.__getSelectedTradeRouteIndices())
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
         
