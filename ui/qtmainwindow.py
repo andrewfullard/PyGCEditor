@@ -7,8 +7,6 @@ from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDia
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
-from ui.qtcampaignproperties import QtCampaignProperties
-from ui.qttraderoutecreator import QtTradeRouteCreator
 from ui.qttablewidgetfactory import QtTableWidgetFactory
 from xml.xmlstructure import XMLStructure
 
@@ -31,8 +29,6 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox: QComboBox = QComboBox()
         self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
         self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
-
-        self.__campaignProperties = QtCampaignProperties()
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
@@ -189,8 +185,6 @@ class QtMainWindow(MainWindow):
         '''Clears table, then checks off trade routes in the table from a list of indexes'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
-        print(tradeRoutes)
-
         for t in tradeRoutes:
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
 
@@ -244,9 +238,10 @@ class QtMainWindow(MainWindow):
         self.__presenter.onTradeRouteChecked(item.row(), checked)
 
     def __newCampaign(self) -> None:
-        '''Helper function to launch the new campaign dialog with a presenter connection'''
+        '''Helper function to launch the new campaign dialog'''
         if self.__presenter is not None:
-            self.__campaignProperties.showDialog(self.__presenter)
+            #Passes the currently selected campaign text info to the dialog
+            self.__presenter.campaignPropertiesCommand.execute()
 
     def __openFolder(self) -> None:
         '''Set data folder dialog'''
@@ -311,5 +306,7 @@ class QtMainWindow(MainWindow):
             table.item(row, 0).setCheckState(QtCore.Qt.Unchecked)
 
     def __campaignPropertiesButtonClicked(self) -> None:
-        campaign = self.__campaignComboBox.currentIndex()
-        self.__campaignProperties.showDialog(self.__presenter, campaign)
+        '''Helper function to launch the campaign properties dialog'''
+        if self.__presenter is not None:
+            #Passes the currently selected campaign text info to the dialog
+            self.__presenter.campaignPropertiesCommand.execute(str(self.__campaignComboBox.currentText()))

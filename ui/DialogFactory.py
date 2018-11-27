@@ -1,5 +1,6 @@
 from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.qttraderoutecreator import QtTradeRouteCreator
+from ui.qtcampaignproperties import QtCampaignProperties
 
 class DialogFactory:
 
@@ -8,3 +9,6 @@ class DialogFactory:
 
     def makeTradeRouteCreationDialog(self) -> QtTradeRouteCreator:
         return QtTradeRouteCreator(self.__repository)
+
+    def makeCampaignPropertiesDialog(self) -> QtCampaignProperties:
+        return QtCampaignProperties(self.__repository)

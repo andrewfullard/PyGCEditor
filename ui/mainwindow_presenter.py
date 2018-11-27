@@ -98,6 +98,7 @@ class MainWindowPresenter:
         self.__updateWidgets()
 
         self.newTradeRouteCommand = None
+        self.campaignPropertiesCommand = None
 
 
     def onDataFolderChanged(self, folder: str) -> None:
