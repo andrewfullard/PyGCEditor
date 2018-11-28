@@ -160,6 +160,18 @@ class XMLReader:
 
         return nameList
 
+    def getFactionInfo(self, XMLRoot) -> list():
+        '''XML root parser to return list of faction name and color (color in 0-1 RGBA space)'''
+        factionList = []
+
+        for element in XMLRoot:
+            if element.get("Name") is not None:
+                colorElement = element.find("Color")
+                color = [float(x.strip())/255 for x in colorElement.text.split(',')]
+                factionList.append([element.get("Name"), color])
+
+        return factionList
+
     def getUnitInfo(self, XMLRoot) -> list():
         '''XML root parser to return list of unit name, parent, combat power, and company size'''
         namePowerList = []

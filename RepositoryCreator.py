@@ -54,10 +54,11 @@ class RepositoryCreator:
         '''Takes a list of Faction GameObject XML roots and adds
         them to the repository'''
         for factionRoot in factionRoots:
-            factionNames = self.__xml.getNamesFromXML(factionRoot)
+            factionInfo = self.__xml.getFactionInfo(factionRoot)
 
-            for name in factionNames:
+            for name, color in factionInfo:
                 newFaction = Faction(name)
+                newFaction.color = color
                 self.repository.addFaction(newFaction)
 
     def addUnitsFromXML(self, unitRoots) -> None:

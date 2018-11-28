@@ -30,7 +30,7 @@ class QtGalacticPlot(QWidget):
         self.__planetNames = []
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets) -> None:
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = []) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
@@ -48,7 +48,7 @@ class QtGalacticPlot(QWidget):
             y.append(p.y)
             self.__planetNames.append(p.name)
 
-        self.__planetsScatter = self.__axes.scatter(x, y, c = 'b', alpha = 0.1, picker = 5)
+        self.__planetsScatter = self.__axes.scatter(x, y, c = 'grey', alpha = 0.1, picker = 5)
 
         x1 = 0        
         y1 = 0
@@ -67,11 +67,20 @@ class QtGalacticPlot(QWidget):
         x = []
         y = []
 
-        for p in planets:
-            x.append(p.x)
-            y.append(p.y)
+        if planetOwners:        
+            color = []
+            for p, f in zip(planets, planetOwners):
+                x.append(p.x)
+                y.append(p.y)
+                color.append(tuple(f.color))
 
-        self.__axes.scatter(x, y, c = 'b')
+            self.__axes.scatter(x, y, c = color, edgecolors = 'black')
+        else:
+            for p in planets:
+                x.append(p.x)
+                y.append(p.y)
+
+            self.__axes.scatter(x, y, c = 'grey')
 
         self.__galacticPlotCanvas.draw_idle()
 
