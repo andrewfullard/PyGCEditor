@@ -80,14 +80,20 @@ class QtCampaignProperties:
     def getCampaignProperties(self) -> Campaign:
         '''Returns the Campaign properties'''
         campaign: Campaign = Campaign(self.__name)
-        campaign.setName = self.__setName
+        campaign.setName = self.__inputSetName.text()
+        campaign.sortOrder = self.__inputSortOrder.text()
+        campaign.textID = self.__inputTextID.text()
+        campaign.descriptionText = self.__inputDescriptionText.text()
+        campaign.startingActivePlayer = self.__startingActivePlayer.text()
+        campaign.rebelStoryName = self.__rebelStoryName.text()
+        campaign.empireStoryName = self.__empireStoryName.text()
+        campaign.underworldStoryName = self.__underworldStoryName.text()
 
         return campaign 
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking'''
         self.__name = self.__inputName.text()
-        self.__setName = self.__inputSetName.text()
 
         if len(self.__name) == 0:
             print("Error! No campaign name set!")
