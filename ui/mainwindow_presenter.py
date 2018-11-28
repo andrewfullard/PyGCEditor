@@ -102,7 +102,7 @@ class MainWindowPresenter:
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
 
-        self.__selectedCampaignIndex: int = 0
+        self.__selectedCampaignIndex: int = -1
 
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
@@ -178,6 +178,10 @@ class MainWindowPresenter:
 
     def onCampaignSelected(self, index: int) -> None:
         '''If a campaign is selected by the user, clear then refresh the galaxy plot'''
+
+        if index < 0:
+            return
+
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
 
@@ -222,12 +226,13 @@ class MainWindowPresenter:
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets, planetOwners)
 
     def getSelectedCampaign(self) -> Campaign:
-        return self.campaigns[self.__selectedCampaignIndex]
+        if self.__selectedCampaignIndex > -1:
+            return self.campaigns[self.__selectedCampaignIndex]
+
+        return None
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         '''If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot'''
-        self.__repository.addCampaign(campaign)
-
         self.__updateWidgets()
 
         self.__mainWindow.updateCampaignComboBox(self.__getNames(self.campaigns), campaign.name)
@@ -298,7 +303,9 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
         self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
-        self.__updateAvailableTradeRoutes(self.getSelectedCampaign().planets)
+        selectedCampaign = self.getSelectedCampaign()
+        if selectedCampaign:
+            self.__updateAvailableTradeRoutes(selectedCampaign.planets)
 
         self.__mainWindow.emptyWidgets()
 

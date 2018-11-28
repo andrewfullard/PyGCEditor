@@ -336,4 +336,4 @@ class QtMainWindow(MainWindow):
         '''Helper function to launch the campaign properties dialog'''
         if self.__presenter is not None:
             #Passes the currently selected campaign text info to the dialog
-            self.__presenter.campaignPropertiesCommand.execute(str(self.__campaignComboBox.currentText()))
+            self.__presenter.campaignPropertiesCommand.execute()

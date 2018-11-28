@@ -8,6 +8,7 @@ from ui.mainwindow_presenter import MainWindowPresenter
 
 class ShowCampaignCreatorDialogCommand(Command):
     '''Class to handle displaying the campaign creator dialog box'''
+
     def __init__(self, mainWindowPresenter: MainWindowPresenter, dialogFactory: DialogFactory, repository: GameObjectRepository):
         self.__dialogFactory = dialogFactory
         self.__presenter = mainWindowPresenter
@@ -15,13 +16,14 @@ class ShowCampaignCreatorDialogCommand(Command):
 
     def execute(self) -> None:
         '''Runs the dialog and passes results to the presenter and repository'''
-        dialog = self.__dialogFactory.makeCampaignPropertiesDialog()
-        currentCampaign = self.__presenter.getSelectedCampaign()
-        result: DialogResult = dialog.show(currentCampaign.name)
+        currentCampaign = self.__presenter.getSelectedCampaign()    
+        dialog = self.__dialogFactory.makeCampaignPropertiesDialog(currentCampaign)
+        result: DialogResult = dialog.show()
 
         if result is DialogResult.Ok:
             campaign: Campaign = dialog.getCampaignProperties()
-            if campaign.name != currentCampaign.name:
+            if currentCampaign is None or campaign.name != currentCampaign.name:
+                self.__repository.addCampaign(campaign)
                 self.__presenter.onNewCampaign(campaign)
             else:
                 self.__presenter.onCampaignUpdate(campaign)

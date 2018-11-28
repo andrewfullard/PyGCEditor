@@ -1,3 +1,4 @@
+import os
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
@@ -158,19 +159,23 @@ class RepositoryCreator:
         tradeRouteFile = self.__folder + "/XML/TradeRouteFiles.XML"
         factionFile = self.__folder + "/XML/FactionFiles.XML"
 
-        planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
-        tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
-        factionRoots = self.__xml.findMetaFileRefs(factionFile)
-        unitRoots = set(self.__xml.findMetaFileRefs(gameObjectFile)) - set(planetRoots)
+        if os.path.exists(gameObjectFile):
+            planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
+            self.addPlanetsFromXML(planetRoots)
+            unitRoots = set(self.__xml.findMetaFileRefs(gameObjectFile)) - set(planetRoots)
+            self.addUnitsFromXML(unitRoots)
         
-        campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
+        if os.path.exists(tradeRouteFile):
+            tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
+            self.addTradeRoutesFromXML(tradeRouteRoots)
 
-        campaignNames, campaignRoots = self.getNamesRootsFromXML(campaignRootList, "Campaign")
+        if os.path.exists(factionFile):    
+            factionRoots = self.__xml.findMetaFileRefs(factionFile)
+            self.addFactionsFromXML(factionRoots)
+
+        if os.path.exists(campaignFile):
+            campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
+            campaignNames, campaignRoots = self.getNamesRootsFromXML(campaignRootList, "Campaign")
+            self.addCampaignsFromXML(campaignNames, campaignRoots)
        
-        self.addPlanetsFromXML(planetRoots)
-        self.addTradeRoutesFromXML(tradeRouteRoots)
-        self.addFactionsFromXML(factionRoots)
-        self.addUnitsFromXML(unitRoots)
-        self.addCampaignsFromXML(campaignNames, campaignRoots)
-
         return self.repository

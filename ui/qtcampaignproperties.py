@@ -7,7 +7,7 @@ from ui.dialogs import Dialog, DialogResult
 
 class QtCampaignProperties:
     '''Class for a "campaign properties" dialog box'''
-    def __init__(self, repository: GameObjectRepository):
+    def __init__(self, campaign = Campaign()):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
@@ -51,45 +51,43 @@ class QtCampaignProperties:
 
         self.__result = DialogResult.Cancel
 
-        self.__repository = repository
+        # self.__repository = repository
 
         self.__name = ""
         self.__setName = ""
-       
-    def show(self, name = -1) -> DialogResult:
-        '''Display dialog modally'''
-        if name is not -1:
-            campaignList = list(self.__repository.campaigns)
-            campaign = next((x for x in campaignList if x.name == name), None)
-            if campaign is not None:
-                self.__inputName.setText(campaign.name)
-                self.__inputSetName.setText(campaign.setName)
-                self.__inputSortOrder.setText(campaign.sortOrder)
-                self.__inputTextID.setText(campaign.textID)
-                self.__inputDescriptionText.setText(campaign.descriptionText)
-                self.__startingActivePlayer.setText(campaign.startingActivePlayer)
-                self.__rebelStoryName.setText(campaign.rebelStoryName)
-                self.__empireStoryName.setText(campaign.empireStoryName)
-                self.__underworldStoryName.setText(campaign.underworldStoryName)
-            else:
-                print("Campaign " + campaign + " missing from repository")
 
+        self.__campaign = campaign or Campaign()
+       
+    def show(self) -> DialogResult:
+        '''Display dialog modally'''
+
+        self.__inputName.setText(self.__campaign.name)
+        self.__inputSetName.setText(self.__campaign.setName)
+        self.__inputSortOrder.setText(self.__campaign.sortOrder)
+        self.__inputTextID.setText(self.__campaign.textID)
+        self.__inputDescriptionText.setText(self.__campaign.descriptionText)
+        self.__startingActivePlayer.setText(self.__campaign.startingActivePlayer)
+        self.__rebelStoryName.setText(self.__campaign.rebelStoryName)
+        self.__empireStoryName.setText(self.__campaign.empireStoryName)
+        self.__underworldStoryName.setText(self.__campaign.underworldStoryName)
+        
         self.__dialog.exec()
         return self.__result
 
     def getCampaignProperties(self) -> Campaign:
         '''Returns the Campaign properties'''
-        campaign: Campaign = Campaign(self.__name)
-        campaign.setName = self.__inputSetName.text()
-        campaign.sortOrder = self.__inputSortOrder.text()
-        campaign.textID = self.__inputTextID.text()
-        campaign.descriptionText = self.__inputDescriptionText.text()
-        campaign.startingActivePlayer = self.__startingActivePlayer.text()
-        campaign.rebelStoryName = self.__rebelStoryName.text()
-        campaign.empireStoryName = self.__empireStoryName.text()
-        campaign.underworldStoryName = self.__underworldStoryName.text()
 
-        return campaign 
+        self.__campaign.name = self.__inputName.text()
+        self.__campaign.setName = self.__inputSetName.text()
+        self.__campaign.sortOrder = self.__inputSortOrder.text()
+        self.__campaign.textID = self.__inputTextID.text()
+        self.__campaign.descriptionText = self.__inputDescriptionText.text()
+        self.__campaign.startingActivePlayer = self.__startingActivePlayer.text()
+        self.__campaign.rebelStoryName = self.__rebelStoryName.text()
+        self.__campaign.empireStoryName = self.__empireStoryName.text()
+        self.__campaign.underworldStoryName = self.__underworldStoryName.text()
+
+        return self.__campaign 
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking'''

@@ -8,7 +8,7 @@ from gameObjects.startingForce import StartingForce
 '''Campaign class definition'''
 class Campaign:
     '''Campaigns have a name, set name, planets and traderoutes'''
-    def __init__(self, name: str):
+    def __init__(self, name: str = ""):
         self.__name: str = name
         self.__setName: str = "Empty"
         self.__sortOrder: str = "0"
