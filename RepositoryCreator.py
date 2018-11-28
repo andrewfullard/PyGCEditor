@@ -64,11 +64,14 @@ class RepositoryCreator:
         '''Takes a list of unit GameObject XML roots and adds
         them to the repository'''
         for unitRoot in unitRoots:
-            unitNames = self.__xml.getNamesFromXML(unitRoot)
+            if self.__xml.hasTag(unitRoot, ".//SpaceUnit") or self.__xml.hasTag(unitRoot, ".//Squadron") or self.__xml.hasTag(unitRoot, ".//StarBase") or\
+                    self.__xml.hasTag(unitRoot, ".//GroundCompany") or self.__xml.hasTag(unitRoot, ".//SpecialStructure") or \
+                    self.__xml.hasTag(unitRoot, ".//UniqueUnit") or self.__xml.hasTag(unitRoot, ".//HeroCompany"):
+                unitNames = self.__xml.getNamesFromXML(unitRoot)
 
-            for name in unitNames:
-                newUnit = Unit(name)
-                self.repository.addUnit(newUnit)
+                for name in unitNames:
+                    newUnit = Unit(name)
+                    self.repository.addUnit(newUnit)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         '''Takes a list of Campaign GameObject XML roots and their names, and adds
