@@ -98,6 +98,14 @@ class RepositoryCreator:
 
             newCampaign = Campaign(campaign)
             newCampaign.setName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Campaign_Set")
+            newCampaign.sortOrder = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Sort_Order")
+            newCampaign.textID = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Text_ID")
+            newCampaign.descriptionText = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Description_Text")
+            newCampaign.startingActivePlayer = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Starting_Active_Player")
+            newCampaign.rebelStoryName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Rebel_Story_Name")
+            newCampaign.empireStoryName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Empire_Story_Name")
+            newCampaign.underworldStoryName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Underworld_Story_Name")
+
             campaignPlanetNames = self.__xml.getListFromXMLRoot(campaignRoot, ".//Locations")
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(campaignRoot, ".//Trade_Routes")
             campaignStartingForces = self.__xml.getMultiTag(campaignRoot, ".//Starting_Forces")

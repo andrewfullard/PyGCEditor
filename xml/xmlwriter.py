@@ -14,6 +14,15 @@ class XMLWriter:
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
         self.__templateRoot.find(".//Campaign").set("Name", campaign.name)
+        self.__templateRoot.find(".//Campaign_Set").text = campaign.setName
+        self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
+        self.__templateRoot.find(".//Text_ID").text = campaign.textID
+        self.__templateRoot.find(".//Description_Text").text = campaign.descriptionText
+        self.__templateRoot.find(".//Starting_Active_Player").text = campaign.startingActivePlayer
+        self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
+        self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
+        self.__templateRoot.find(".//Underworld_Story_Name").text = campaign.underworldStoryName
+
         self.__templateRoot.find(".//Locations").text = planets
         self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
 

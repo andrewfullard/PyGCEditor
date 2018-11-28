@@ -15,6 +15,13 @@ class QtCampaignProperties:
 
         self.__inputName: QLineEdit = QLineEdit(self.__dialog)
         self.__inputSetName: QLineEdit = QLineEdit(self.__dialog)
+        self.__inputSortOrder: QLineEdit = QLineEdit(self.__dialog)
+        self.__inputTextID: QLineEdit = QLineEdit(self.__dialog)
+        self.__inputDescriptionText: QLineEdit = QLineEdit(self.__dialog)
+        self.__startingActivePlayer: QLineEdit = QLineEdit(self.__dialog)
+        self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
+        self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
+        self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
       
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -24,6 +31,13 @@ class QtCampaignProperties:
 
         self.__formLayout.addRow("Campaign Name", self.__inputName)
         self.__formLayout.addRow("Campaign Set Name", self.__inputSetName)
+        self.__formLayout.addRow("Text ID", self.__inputTextID)
+        self.__formLayout.addRow("Sort Order", self.__inputSortOrder)
+        self.__formLayout.addRow("Description Text", self.__inputDescriptionText)
+        self.__formLayout.addRow("Starting Active Player", self.__startingActivePlayer)
+        self.__formLayout.addRow("Rebel Story Name", self.__rebelStoryName)
+        self.__formLayout.addRow("Empire Story Name", self.__empireStoryName)
+        self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
 
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
@@ -33,6 +47,7 @@ class QtCampaignProperties:
 
         self.__dialog.setWindowTitle("Campaign Properties")      
         self.__dialog.setLayout(self.__layout)
+        self.__dialog.resize(500, 300)
 
         self.__result = DialogResult.Cancel
 
@@ -49,6 +64,13 @@ class QtCampaignProperties:
             if campaign is not None:
                 self.__inputName.setText(campaign.name)
                 self.__inputSetName.setText(campaign.setName)
+                self.__inputSortOrder.setText(campaign.sortOrder)
+                self.__inputTextID.setText(campaign.textID)
+                self.__inputDescriptionText.setText(campaign.descriptionText)
+                self.__startingActivePlayer.setText(campaign.startingActivePlayer)
+                self.__rebelStoryName.setText(campaign.rebelStoryName)
+                self.__empireStoryName.setText(campaign.empireStoryName)
+                self.__underworldStoryName.setText(campaign.underworldStoryName)
             else:
                 print("Campaign " + campaign + " missing from repository")
 
