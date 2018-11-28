@@ -12,6 +12,7 @@ from xml.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.unit import Unit
 
 class QtMainWindow(MainWindow):
     '''Qt based window'''
@@ -52,6 +53,11 @@ class QtMainWindow(MainWindow):
         self.__planetComboBox: QComboBox = QComboBox()
 
         self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], columns = 2, stretch = False)   
+
+        self.__totalPlanetForceLabel: QLabel = QLabel()
+        self.__totalPlanetForceLabel.setText("Total force at planet: ")
+        self.__totalFactionForceLabel: QLabel = QLabel()
+        self.__totalPlanetForceLabel.setText("Select a campaign to see total starting forces per faction")
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
@@ -107,6 +113,8 @@ class QtMainWindow(MainWindow):
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListWidget)
+        self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
+        self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -203,16 +211,27 @@ class QtMainWindow(MainWindow):
         '''Helper function to clear traderoute selections from the presenter'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
-    def updateStartingForces(self, startingForces: List[str]) -> None:
+    def updateStartingForces(self, startingForces: List[Unit]) -> None:
         '''Update starting forces table widget'''
         self.__forcesListWidget.clearContents()
         self.__forcesListWidget.setRowCount(0)
         
+        totalForce = 0
+
         for entry in startingForces:
             rowCount = self.__forcesListWidget.rowCount()
             self.__forcesListWidget.setRowCount(rowCount + 1)
-            item: QTableWidgetItem = QTableWidgetItem(entry)
+            item: QTableWidgetItem = QTableWidgetItem(entry.name)
             self.__forcesListWidget.setItem(rowCount, 0, item)
+            item: QTableWidgetItem = QTableWidgetItem(str(entry.combatPower))
+            self.__forcesListWidget.setItem(rowCount, 1, item)
+            totalForce += entry.combatPower
+
+        self.__totalPlanetForceLabel.setText("Total force at planet: " + str(totalForce))
+
+    def updateTotalFactionForces(self, entry: str) -> None:
+        '''Updates the total faction forces label'''
+        self.__totalFactionForceLabel.setText(entry)
 
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
         '''Adds a list of rows to a table widget with checkboxes'''

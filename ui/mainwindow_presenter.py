@@ -3,11 +3,13 @@ from typing import List, Set
 
 import numpy as np
 from numpy import ndarray as NumPyArray
+from itertools import groupby
 
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.faction import Faction
+from gameObjects.unit import Unit
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
@@ -63,6 +65,14 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updateTradeRouteSelection(self, tradeRoutes: List[TradeRoute]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def updateStartingForces(self, startingForces: List[Unit]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def updateTotalFactionForces(self, entry: str) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -190,6 +200,20 @@ class MainWindowPresenter:
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
 
+        factionForces = []
+        sortedInput = sorted(self.campaigns[index].startingForces, key = lambda entry: entry.faction.name)
+        for faction, group in groupby(sortedInput, key = lambda entry: entry.faction):
+            factionPower = 0
+            for entry in group:
+                factionPower += entry.unit.combatPower
+            factionForces.append([faction, factionPower])
+
+        totalForcesText = ""
+        for entry in factionForces:
+            totalForcesText += entry[0].name + ": " + str(entry[1]) +", "
+
+        self.__mainWindow.updateTotalFactionForces(totalForcesText)
+
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
@@ -218,8 +242,7 @@ class MainWindowPresenter:
         startingForces = []
         for startingForce in campaignForces:
             if startingForce.planet.name == entry:
-                fullStartingForce = startingForce.unpack()
-                startingForces.append(fullStartingForce[2])
+                startingForces.append(startingForce.unit)
 
         self.__mainWindow.updateStartingForces(startingForces)
     

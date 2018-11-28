@@ -156,15 +156,54 @@ class XMLReader:
 
         return nameList
 
+    def getUnitInfo(self, XMLRoot) -> list():
+        '''XML root parser to return list of unit name, parent, combat power, and company size'''
+        namePowerList = []
+
+        #Loop through root
+        for element in XMLRoot:
+            #We found a named object
+            if element.get("Name") is not None:
+                #Is it a variant? Grab the parent if so
+                parentElement = element.find("Variant_Of_Existing_Type")
+                if parentElement is not None:
+                    parent = parentElement.text.strip()
+                else:
+                    parent = False
+
+                companySize = 0
+
+                #Check for a ground company or squadron
+                companyElements = element.findall("Company_Units")
+                squadronElements = element.findall("Squadron_Units")
+
+                if companyElements:
+                    for companyElement in companyElements:
+                        companySize += len(companyElement.text.split())
+                        parent = [x.strip() for x in companyElement.text.split(',')][0]
+                elif squadronElements:
+                    for squadronElement in squadronElements:
+                        companySize += len(squadronElement.text.split())
+                        parent = [x.strip() for x in squadronElement.text.split(',')][0]
+                else:
+                    companySize = 1
+  
+                #Get combat power if available
+                powerElement = element.find("AI_Combat_Power")
+                if powerElement is not None: 
+                    power = float(powerElement.text)
+                    namePowerList.append([element.get("Name"), power, False, companySize])
+                else:
+                    namePowerList.append([element.get("Name"), 0, parent, companySize])
+
+        return namePowerList
+
     def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> Planet:
         '''Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end'''
         for element in tradeRouteRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
-                for child in element.iter():
-                    if child.tag == "Point_A":
-                        start_planet = self.getObject(child.text, planetList)
-                    elif child.tag == "Point_B":
-                        end_planet = self.getObject(child.text, planetList)
+                start_planet = self.getObject(element.find("Point_A").text, planetList)
+                end_planet = self.getObject(element.find("Point_B").text, planetList)
                     
                 return start_planet, end_planet
         
@@ -180,7 +219,7 @@ class XMLReader:
         
         print("Planet " + name + " not found! getLocation")
 
-    def getObject(self, name: str, objectList: set) -> Planet:
+    def getObject(self, name: str, objectList: set):
         '''Finds a named object in a list of objects and returns it'''
         for o in objectList:
             if o.name.lower() == name.lower():

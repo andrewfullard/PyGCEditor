@@ -63,15 +63,30 @@ class RepositoryCreator:
     def addUnitsFromXML(self, unitRoots) -> None:
         '''Takes a list of unit GameObject XML roots and adds
         them to the repository'''
+        dummyUnitRepository = set()
+        dummyUnitRepositoryParents = []
+
         for unitRoot in unitRoots:
             if self.__xml.hasTag(unitRoot, ".//SpaceUnit") or self.__xml.hasTag(unitRoot, ".//Squadron") or self.__xml.hasTag(unitRoot, ".//StarBase") or\
+                    self.__xml.hasTag(unitRoot, ".//GroundVehicle") or self.__xml.hasTag(unitRoot, ".//GroundInfantry") or \
                     self.__xml.hasTag(unitRoot, ".//GroundCompany") or self.__xml.hasTag(unitRoot, ".//SpecialStructure") or \
+                    self.__xml.hasTag(unitRoot, ".//GenericHeroUnit") or self.__xml.hasTag(unitRoot, ".//HeroUnit") or \
                     self.__xml.hasTag(unitRoot, ".//UniqueUnit") or self.__xml.hasTag(unitRoot, ".//HeroCompany"):
-                unitNames = self.__xml.getNamesFromXML(unitRoot)
+                unitInfo = self.__xml.getUnitInfo(unitRoot)
 
-                for name in unitNames:
-                    newUnit = Unit(name)
-                    self.repository.addUnit(newUnit)
+                for name, power, parent, size in unitInfo:
+                    newUnit = Unit(name)                    
+                    newUnit.combatPower = power
+                    dummyUnitRepository.add(newUnit)
+                    dummyUnitRepositoryParents.append([newUnit, parent, size])
+                    
+        for newUnit, parent, size in dummyUnitRepositoryParents:
+            if parent:
+                parentUnit = self.__xml.getObject(parent, dummyUnitRepository)
+                if parentUnit:
+                    newUnit.combatPower = parentUnit.combatPower * size
+
+            self.repository.addUnit(newUnit)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         '''Takes a list of Campaign GameObject XML roots and their names, and adds
