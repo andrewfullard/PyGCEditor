@@ -1,7 +1,9 @@
 from typing import Set
+from typing import List
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.startingForce import StartingForce
 
 '''Campaign class definition'''
 class Campaign:
@@ -11,6 +13,7 @@ class Campaign:
         self.__setName: str = "Empty"
         self.__planets: Set[Planet] = set()
         self.__tradeRoutes: Set[TradeRoute] = set()
+        self.__startingForces: List[StartingForce] = list()
 
     @property
     def name(self) -> str:
@@ -47,3 +50,12 @@ class Campaign:
     def tradeRoutes(self, value: Set[TradeRoute]) -> None:
         if value:
             self.__tradeRoutes = value
+
+    @property
+    def startingForces(self) -> List[StartingForce]:
+        return self.__startingForces
+
+    @startingForces.setter
+    def startingForces(self, value: List[StartingForce]) -> None:
+        if value:
+            self.__startingForces = value

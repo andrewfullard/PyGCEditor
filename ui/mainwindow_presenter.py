@@ -210,6 +210,18 @@ class MainWindowPresenter:
 
         self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(tradeRoute)
         self.__updateWidgets()
+
+    def onPlanetSelected(self, entry: str) -> None:
+        '''If a planet is selected by the user, display the associated starting forces'''
+        campaignForces = self.campaigns[self.__selectedCampaignIndex].startingForces
+
+        startingForces = []
+        for startingForce in campaignForces:
+            if startingForce.planet.name == entry:
+                fullStartingForce = startingForce.unpack()
+                startingForces.append(fullStartingForce[2])
+
+        self.__mainWindow.updateStartingForces(startingForces)
     
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''

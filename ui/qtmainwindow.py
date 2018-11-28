@@ -51,7 +51,7 @@ class QtMainWindow(MainWindow):
         #Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
 
-        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], 2)        
+        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], columns = 2, stretch = False)   
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
@@ -178,6 +178,8 @@ class QtMainWindow(MainWindow):
                 planets = list(planets)
             planets.sort()
             self.__planetComboBox.addItems(planets)
+        
+        self.__planetComboBox.activated.connect(self.__onPlanetSelected)
     
     def updatePlanetSelection(self, planets: List[int]) -> None:
         '''Clears table, then checks off planets in the table from a list of indexes'''
@@ -201,8 +203,19 @@ class QtMainWindow(MainWindow):
         '''Helper function to clear traderoute selections from the presenter'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
+    def updateStartingForces(self, startingForces: List[str]) -> None:
+        '''Update starting forces table widget'''
+        self.__forcesListWidget.clearContents()
+        self.__forcesListWidget.setRowCount(0)
+        
+        for entry in startingForces:
+            rowCount = self.__forcesListWidget.rowCount()
+            self.__forcesListWidget.setRowCount(rowCount + 1)
+            item: QTableWidgetItem = QTableWidgetItem(entry)
+            self.__forcesListWidget.setItem(rowCount, 0, item)
+
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
-        '''Adds a list of rows to a table widget'''
+        '''Adds a list of rows to a table widget with checkboxes'''
         for entry in entries:
             rowCount = widget.rowCount()
             widget.setRowCount(rowCount + 1)
@@ -256,8 +269,6 @@ class QtMainWindow(MainWindow):
 
     def __selectAllPlanetsButtonClicked(self, table: QTableWidget, checked: bool) -> None:
         '''Cycles through a table and checks all the planet entries, then presents them'''
-        rowCount = table.rowCount()
-
         if checked:
             self.__checkAllTable(table)
             
@@ -284,6 +295,11 @@ class QtMainWindow(MainWindow):
     def __onCampaignSelected(self, index: int) -> None:
         '''Presents a selected campaign'''
         self.__presenter.onCampaignSelected(index)
+    
+    def __onPlanetSelected(self, index: int) -> None:
+        '''Presents a selected planet's starting forces'''
+        entry = self.__planetComboBox.currentText()
+        self.__presenter.onPlanetSelected(entry)
 
     def __checkAllTable(self, table: QTableWidget) -> None:
         '''Checks all rows in a table widget'''

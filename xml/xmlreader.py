@@ -2,6 +2,7 @@ import lxml.etree as et
 import os.path
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.startingForce import StartingForce
 from xml.xmlstructure import XMLStructure
 
 ''' XML with etree:
@@ -65,6 +66,7 @@ class XMLReader:
             return False
 
     def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
+        '''Returns the text from a given tag name in the given root'''
         return XMLRoot.find(XMLTag).text
 
     
@@ -160,9 +162,9 @@ class XMLReader:
             if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter():
                     if child.tag == "Point_A":
-                        start_planet = self.getPlanet(child.text, planetList)
+                        start_planet = self.getObject(child.text, planetList)
                     elif child.tag == "Point_B":
-                        end_planet = self.getPlanet(child.text, planetList)
+                        end_planet = self.getObject(child.text, planetList)
                     
                 return start_planet, end_planet
         
@@ -178,20 +180,19 @@ class XMLReader:
         
         print("Planet " + name + " not found! getLocation")
 
-    def getPlanet(self, name: str, planetList: set) -> Planet:
-        '''Finds a named planet object in a list of planet objects and returns it'''
-        for p in planetList:
-            if p.name.lower() == name.lower():
-                if p is not None:
-                    return p
+    def getObject(self, name: str, objectList: set) -> Planet:
+        '''Finds a named object in a list of objects and returns it'''
+        for o in objectList:
+            if o.name.lower() == name.lower():
+                if o is not None:
+                    return o
         
-        print("Planet " + name + " not found! getPlanet")
+        print("Object " + name + " not found!")
 
-    def getTradeRoute(self, name: str, tradeRouteList: set) -> TradeRoute:
-        '''Finds a traderoute object in a list of traderoute objects and returns it'''
-        for t in tradeRouteList:
-            if t.name.lower() == name.lower():
-                if t is not None:
-                    return t
-        
-        print("Trade Route " + name + " not found! getTradeRoute")
+    def getMultiTag(self, XMLRoot, tagName: str) -> list():
+        '''Returns a list of text from multiple of the same tag'''
+        result = []
+        for child in XMLRoot.findall(tagName):
+            result.append(child.text)
+
+        return result
