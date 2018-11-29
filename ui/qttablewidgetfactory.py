@@ -15,6 +15,7 @@ class QtTableWidgetFactory():
             tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         else:
             tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
         tableWidget.verticalHeader().setVisible(False)
         tableWidget.setSortingEnabled(True)
