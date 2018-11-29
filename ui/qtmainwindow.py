@@ -223,7 +223,9 @@ class QtMainWindow(MainWindow):
             self.__forcesListWidget.setRowCount(rowCount + 1)
             item: QTableWidgetItem = QTableWidgetItem(entry.name)
             self.__forcesListWidget.setItem(rowCount, 0, item)
-            item: QTableWidgetItem = QTableWidgetItem(str(entry.combatPower))
+            item: QTableWidgetItem = QTableWidgetItem()
+            item.setData(QtCore.Qt.DisplayRole, entry.combatPower)
+            item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
             self.__forcesListWidget.setItem(rowCount, 1, item)
             totalForce += entry.combatPower
 
