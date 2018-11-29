@@ -99,7 +99,10 @@ class QtGalacticPlot(QWidget):
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
-            contains, ind = self.__planetsScatter.contains(event)
+            if self.__planetsScatter:
+                contains, ind = self.__planetsScatter.contains(event)
+            else:
+                contains = False
 
             if contains:
                 self.__update_annotation(ind)
