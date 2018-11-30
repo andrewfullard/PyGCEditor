@@ -208,7 +208,10 @@ class MainWindowPresenter:
 
             for t in self.__checkedTradeRoutes:
                 if t is not None:
-                    selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
+                    try:
+                        selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
+                    except(ValueError):
+                        print("The trade route " + t.name + " is missing!")
                 else:
                     missingRoutes.add(t)
                     print("Trade route missing!")
@@ -327,7 +330,10 @@ class MainWindowPresenter:
         '''Returns the indices of selected trade routes'''
         selectedTradeRoutesIndices: List[int] = list()
         for tradeRoute in self.__checkedTradeRoutes:
-            selectedTradeRoutesIndices.append(self.__availableTradeRoutes.index(tradeRoute))
+            try:
+                selectedTradeRoutesIndices.append(self.__availableTradeRoutes.index(tradeRoute))
+            except(ValueError):
+                print("The trade route " + tradeRoute.name + " is missing!")
 
         return selectedTradeRoutesIndices
 

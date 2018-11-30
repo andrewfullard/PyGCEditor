@@ -13,7 +13,9 @@ class XMLWriter:
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
-        self.__templateRoot.find(".//Campaign").set("Name", campaign.name)
+        campaignElement = self.__templateRoot.find(".//Campaign")
+
+        campaignElement.set("Name", campaign.name)
         self.__templateRoot.find(".//Campaign_Set").text = campaign.setName
         self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
         self.__templateRoot.find(".//Text_ID").text = campaign.textID
@@ -25,6 +27,10 @@ class XMLWriter:
 
         self.__templateRoot.find(".//Locations").text = planets
         self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+
+        for startingForce in campaign.startingForces:
+            entry = startingForce.faction.name + ", " + startingForce.planet.name + ", " + startingForce.unit.name
+            self.subElementText(campaignElement, "Starting_Forces", entry, tail = "\n\t\t")
 
         self.writer(self.__templateTree, outputName = outputName)
 
@@ -51,16 +57,18 @@ class XMLWriter:
         '''creates a list string to insert into a file
         requires a GameObject with the name property'''
         entry = "\n"
-
+        inputList = sorted(inputList, key = lambda entry: entry.name)
         for item in inputList:
             entry += ("\t\t\t" + item.name + ",\n")
 
         return entry
 
-    def subElementText(self, parent, subElementName, text):
+    def subElementText(self, parent, subElementName, text, tail = ""):
         '''Returns a subelement with given text'''
         element = et.SubElement(parent, subElementName)
         element.text = text
+        if tail:
+            element.tail = tail
 
         return element
 
