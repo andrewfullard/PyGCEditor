@@ -54,6 +54,7 @@ class QtMainWindow(MainWindow):
 
         self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], columns = 2, stretch = False)   
 
+        self.__planetInfoLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel.setText("Total force at planet: ")
         self.__totalFactionForceLabel: QLabel = QLabel()
@@ -113,6 +114,7 @@ class QtMainWindow(MainWindow):
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListWidget)
+        self.__startingForces.layout().addWidget(self.__planetInfoLabel)
         self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
 
@@ -211,7 +213,7 @@ class QtMainWindow(MainWindow):
         '''Helper function to clear traderoute selections from the presenter'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
-    def updateStartingForces(self, startingForces: List[Unit]) -> None:
+    def updatePlanetInfoDisplay(self, startingForces: List[Unit], planet: Planet) -> None:
         '''Update starting forces table widget'''
         self.__forcesListWidget.clearContents()
         self.__forcesListWidget.setRowCount(0)
@@ -229,6 +231,9 @@ class QtMainWindow(MainWindow):
             self.__forcesListWidget.setItem(rowCount, 1, item)
             totalForce += entry.combatPower
 
+        self.__planetInfoLabel.setText("Max starbase level: " + str(planet.starbaseLevel) + \
+                "\nSpace structure slots: " + str(planet.spaceStructureSlots) + \
+                "\nGround structure slots: " + str(planet.groundStructureSlots))
         self.__totalPlanetForceLabel.setText("Total force at planet: " + str(totalForce))
 
     def updateTotalFactionForces(self, entry: str) -> None:

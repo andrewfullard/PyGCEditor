@@ -69,7 +69,7 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def updateStartingForces(self, startingForces: List[Unit]) -> None:
+    def updatePlanetInfoDisplay(self, startingForces: List[Unit], planet: Planet) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -257,15 +257,16 @@ class MainWindowPresenter:
         self.__updateWidgets()
 
     def onPlanetSelected(self, entry: str) -> None:
-        '''If a planet is selected by the user, display the associated starting forces'''
+        '''If a planet is selected by the user, display the associated starting forces and planet info'''
         campaignForces = self.getSelectedCampaign().startingForces
 
         startingForces = []
         for startingForce in campaignForces:
             if startingForce.planet.name == entry:
                 startingForces.append(startingForce.unit)
+                planet = startingForce.planet
 
-        self.__mainWindow.updateStartingForces(startingForces)
+        self.__mainWindow.updatePlanetInfoDisplay(startingForces, planet)
     
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''

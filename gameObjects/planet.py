@@ -2,12 +2,14 @@
 
 
 class Planet:
-    '''Planets have a name and location (x, y), and starting forces'''
+    '''Planets have a name and location (x, y), starbase level, and special structure slots'''
     def __init__(self, name: str):
         self.__name: str = name
         self.__x: float = 0.0
         self.__y: float = 0.0
-        self.__forces: list = []
+        self.__starbaseLevel: int = 0
+        self.__spaceStructureSlots: int = 0
+        self.__groundStructureSlots: int = 0
 
     @property
     def name(self) -> str:
@@ -35,9 +37,25 @@ class Planet:
         self.__y = value
 
     @property
-    def forces(self) -> list:
-        return self.__forces
+    def starbaseLevel(self) -> int:
+        return self.__starbaseLevel
 
-    @forces.setter
-    def forces(self, value: list) -> None:
-        self.__forces = value
+    @starbaseLevel.setter
+    def starbaseLevel(self, value: int) -> None:
+        self.__starbaseLevel = value
+
+    @property
+    def spaceStructureSlots(self) -> int:
+        return self.__spaceStructureSlots
+
+    @spaceStructureSlots.setter
+    def spaceStructureSlots(self, value: int) -> None:
+        self.__spaceStructureSlots = value
+    
+    @property
+    def groundStructureSlots(self) -> int:
+        return self.__groundStructureSlots
+
+    @groundStructureSlots.setter
+    def groundStructureSlots(self, value: int) -> None:
+        self.__groundStructureSlots = value

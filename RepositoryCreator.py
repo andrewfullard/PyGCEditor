@@ -38,6 +38,9 @@ class RepositoryCreator:
             for name in planetNames:
                 newplanet = Planet(name)
                 newplanet.x, newplanet.y = self.__xml.getLocation(name, planetRoot)
+                newplanet.starbaseLevel = int(self.__xml.getObjectProperty(name, planetRoot, ".//Max_Space_Base"))
+                newplanet.spaceStructureSlots = int(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Space"))
+                newplanet.groundStructureSlots = int(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Land"))
                 self.repository.addPlanet(newplanet)
         
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:

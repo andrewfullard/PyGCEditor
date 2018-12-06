@@ -235,6 +235,18 @@ class XMLReader:
         
         print("Planet " + name + " not found! getLocation")
 
+    def getObjectProperty(self, name: str, XMLRoot, tag: str) -> str:
+        '''Gets the text from a given tag, for a given object, in a given XML file root'''
+        for element in XMLRoot.iter():
+            if str(element.get("Name")).lower() == name.lower():
+                tagFind = element.find(tag)
+                if tagFind is not None:
+                    return tagFind.text
+                else:
+                    return "0"
+        
+        print("Object " + name + " not found!")
+
     def getObject(self, name: str, objectList: set):
         '''Finds a named object in a list of objects and returns it'''
         for o in objectList:
