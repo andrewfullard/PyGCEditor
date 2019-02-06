@@ -265,9 +265,13 @@ class MainWindowPresenter:
             if startingForce.planet.name == entry:
                 startingForces.append(startingForce.unit)
                 planet = startingForce.planet
-
-        self.__mainWindow.updatePlanetInfoDisplay(startingForces, planet)
+                self.__mainWindow.updatePlanetInfoDisplay(planet, startingForces)
+                return
     
+        planet = self.__repository.getPlanetByName(entry)
+
+        self.__mainWindow.updatePlanetInfoDisplay(planet)
+
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
         if checked:

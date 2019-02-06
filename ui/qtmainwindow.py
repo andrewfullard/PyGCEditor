@@ -213,23 +213,23 @@ class QtMainWindow(MainWindow):
         '''Helper function to clear traderoute selections from the presenter'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
-    def updatePlanetInfoDisplay(self, startingForces: List[Unit], planet: Planet) -> None:
-        '''Update starting forces table widget'''
+    def updatePlanetInfoDisplay(self, planet: Planet, startingForces: List[Unit] = []) -> None:
+        '''Update starting forces and planet info table widget. Starting forces are optional.'''
         self.__forcesListWidget.clearContents()
         self.__forcesListWidget.setRowCount(0)
         
         totalForce = 0
-
-        for entry in startingForces:
-            rowCount = self.__forcesListWidget.rowCount()
-            self.__forcesListWidget.setRowCount(rowCount + 1)
-            item: QTableWidgetItem = QTableWidgetItem(entry.name)
-            self.__forcesListWidget.setItem(rowCount, 0, item)
-            item: QTableWidgetItem = QTableWidgetItem()
-            item.setData(QtCore.Qt.DisplayRole, entry.combatPower)
-            item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
-            self.__forcesListWidget.setItem(rowCount, 1, item)
-            totalForce += entry.combatPower
+        if startingForces:
+            for entry in startingForces:
+                rowCount = self.__forcesListWidget.rowCount()
+                self.__forcesListWidget.setRowCount(rowCount + 1)
+                item: QTableWidgetItem = QTableWidgetItem(entry.name)
+                self.__forcesListWidget.setItem(rowCount, 0, item)
+                item: QTableWidgetItem = QTableWidgetItem()
+                item.setData(QtCore.Qt.DisplayRole, entry.combatPower)
+                item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
+                self.__forcesListWidget.setItem(rowCount, 1, item)
+                totalForce += entry.combatPower
 
         self.__planetInfoLabel.setText("Max starbase level: " + str(planet.starbaseLevel) + \
                 "\nSpace structure slots: " + str(planet.spaceStructureSlots) + \
