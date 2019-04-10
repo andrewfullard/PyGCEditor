@@ -289,7 +289,7 @@ class MainWindowPresenter:
         
         if len(self.__newTradeRoutes) > 0:
             #Ensure any new routes are appended to the available list for immediate use
-            privateAvailableTradeRoutes.add(*self.__newTradeRoutes)
+            privateAvailableTradeRoutes.update(self.__newTradeRoutes)
 
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
 
