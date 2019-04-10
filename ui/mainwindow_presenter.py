@@ -150,7 +150,7 @@ class MainWindowPresenter:
     
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
-        '''If a trade route is checked by the user, add it to the selecte campaign and refresh the galaxy plot'''
+        '''If a trade route is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
         if checked:
             if self.__availableTradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__availableTradeRoutes[index])
@@ -203,6 +203,7 @@ class MainWindowPresenter:
 
     def onNewTradeRoute(self, tradeRoute: TradeRoute):
         '''Handles new trade routes'''
+        self.__repository.addTradeRoute(tradeRoute)
         self.__newTradeRoutes.append(tradeRoute)
 
         if tradeRoute.start in self.__checkedPlanets or tradeRoute.end in self.__checkedPlanets:
@@ -219,6 +220,7 @@ class MainWindowPresenter:
             self.__checkedPlanets.clear()
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
+        self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)    
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
@@ -284,6 +286,10 @@ class MainWindowPresenter:
                 for route in self.__tradeRoutes:
                     if route.start == planet or route.end == planet:
                         privateAvailableTradeRoutes.add(route)
+        
+        if len(self.__newTradeRoutes) > 0:
+            #Ensure any new routes are appended to the available list for immediate use
+            privateAvailableTradeRoutes.add(*self.__newTradeRoutes)
 
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
 

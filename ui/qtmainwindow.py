@@ -256,8 +256,6 @@ class QtMainWindow(MainWindow):
 
     def __selectAllPlanetsButtonClicked(self, table: QTableWidget, checked: bool) -> None:
         '''Cycles through a table and checks all the planet entries, then presents them'''
-        rowCount = table.rowCount()
-
         if checked:
             self.__checkAllTable(table)
             

@@ -28,7 +28,7 @@ dialogFactory = DialogFactory(repository)
 
 qtMainWindow: QtMainWindow = QtMainWindow()
 presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
-presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory, repository)
+presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory)
 presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory, repository)
 
 qtMainWindow.setMainWindowPresenter(presenter)
