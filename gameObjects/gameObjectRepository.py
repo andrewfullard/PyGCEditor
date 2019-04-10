@@ -41,6 +41,14 @@ class GameObjectRepository:
         except:
             return False
 
+    def tradeRouteExists(self, startName: str, endName: str) -> None:
+        '''Returns true if a planet exists by name, false otherwise'''
+        try:
+            self.getTradeRouteByPlanets(self.getPlanetByName(startName), self.getPlanetByName(endName))
+            return True
+        except:
+            return False
+
     def getPlanetByName(self, name: str) -> None:
         '''Returns a planet object given its name'''
         for planet in self.planets:
@@ -48,6 +56,14 @@ class GameObjectRepository:
                 return planet
 
         raise RuntimeError("Searching for non existing planet " + name)
+
+    def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> None:
+        '''Returns a traderoute object given its start and end planets'''
+        for tradeRoute in self.tradeRoutes:
+            if (tradeRoute.start == start) and (tradeRoute.end == end):
+                return tradeRoute
+
+        raise RuntimeError("Searching for non existing Trade Route")
 
     def getPlanetNames(self) -> List[str]:
         '''Returns a list containing all Planet names'''

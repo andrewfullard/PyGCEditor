@@ -89,7 +89,7 @@ class QtTradeRouteCreator(Dialog):
             print("Error! Not enough trade route parameters set!")
             return
 
-        if not self.__tradeRouteDoesNotExist():
+        if self.__repository.tradeRouteExists(self.__start, self.__end):
             print("Error! Trade route already exists!")
             return
 
@@ -99,14 +99,6 @@ class QtTradeRouteCreator(Dialog):
     def __tradeRouteDataIsValid(self) -> bool:
         '''Checks if the trade route data is filled in and the planets exist in the repo'''
         return self.__name and self.__repository.planetExists(self.__start) and self.__repository.planetExists(self.__end)
-
-    def __tradeRouteDoesNotExist(self) -> bool:
-        '''Checks if the trade route already exists with the same start/end'''
-        for t in self.__repository.tradeRoutes:
-            if (t.start == self.__start) and (t.end == self.__end):
-                return False
-        
-        return True
 
     def __cancelClicked(self) -> None:
         '''Cancel button handler. Closes dialog box'''
