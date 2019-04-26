@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Set
+from typing import List, Set, Dict
 
 import numpy as np
 from numpy import ndarray as NumPyArray
@@ -13,6 +13,7 @@ from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
 from xml.xmlwriter import XMLWriter
 from xml.xmlreader import XMLReader
+from xml.xmlstructure import XMLStructure
 
 
 class MainWindowPresenter:
@@ -90,6 +91,7 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
+        self.__updatedPlanetCoords: Dict[str, List[float]] = dict()
 
         self.__selectedCampaignIndex: int = 0
 
@@ -108,6 +110,7 @@ class MainWindowPresenter:
         '''Updates the repository and refreshes the main window when a new data folder is selected'''
         self.__repository.emptyRepository()
         self.__repository = self.__repositoryCreator.constructRepository(folder)
+        XMLStructure.dataFolder = folder
 
         self.__updateWidgets()
 
@@ -217,6 +220,7 @@ class MainWindowPresenter:
         planet = self.__repository.getPlanetByName(name)
         planet.x = new_x
         planet.y = new_y
+        self.__updatedPlanetCoords[name] = [new_x, new_y]
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
     def allPlanetsChecked(self, checked: bool) -> None:
@@ -243,8 +247,16 @@ class MainWindowPresenter:
         '''Saves XML files'''
         campaign = self.campaigns[self.__selectedCampaignIndex]
         self.__xmlWriter.campaignWriter(campaign, fileName)
+
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
+
+        if len(self.__updatedPlanetCoords) > 0 :
+            xmlReader = XMLReader()
+            gameObjectFile = XMLStructure.dataFolder + "/XML/GameObjectFiles.XML"
+            planetRoots = xmlReader.findPlanetFilesAndRoots(gameObjectFile)
+            self.__xmlWriter.planetCoordinatesWriter(XMLStructure.dataFolder + "/XML/", planetRoots, self.__updatedPlanetCoords)
+
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
