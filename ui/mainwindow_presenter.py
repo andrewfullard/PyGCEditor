@@ -211,7 +211,14 @@ class MainWindowPresenter:
 
         self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(tradeRoute)
         self.__updateWidgets()
-    
+
+    def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
+        '''Updates position of a planet in the repository'''
+        planet = self.__repository.getPlanetByName(name)
+        planet.x = new_x
+        planet.y = new_y
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
         if checked:
@@ -238,6 +245,12 @@ class MainWindowPresenter:
         self.__xmlWriter.campaignWriter(campaign, fileName)
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
+
+    def getNameOfPlanetAt(self, ind: int) -> str:
+        return self.__planets[ind].name
+
+    def getPositionOfPlanetAt(self, ind: int):
+        return self.__planets[ind].x, self.__planets[ind].y
 
 
     def __getNames(self, inputList: list) -> List[str]:
