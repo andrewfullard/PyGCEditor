@@ -33,6 +33,8 @@ class QtMainWindow(MainWindow):
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
         self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
+        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.__planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
 
         self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
 
@@ -218,6 +220,9 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+
+    def __showPlanetContextMenu(self, position) -> None:
+        self.__presenter.planetContextMenu.show(self.__planetListWidget.itemAt(position), self.__planetListWidget.mapToGlobal(position))
 
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         '''If a trade route table widget item is clicked, check it and call the presenter to display it'''

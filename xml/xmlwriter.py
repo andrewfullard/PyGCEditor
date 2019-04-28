@@ -1,4 +1,5 @@
 import lxml.etree as et
+from xml.xmlreader import XMLReader
 
 #incomplete example of writing XML files to disk
 class XMLWriter:
@@ -36,6 +37,22 @@ class XMLWriter:
             visibleLineName = self.subElementText(route, "Visible_Line_Name", "None")
 
         self.writer(tradeRoutesTree, outputName = "NewTradeRoutes.xml")
+
+    def planetCoordinatesWriter(self, path, planetFilesRoots, newPlanetData):
+        '''Save updated planet coordinates'''
+        for file, root in planetFilesRoots.items():
+            for element in root.iter("Planet"):
+                name = str(element.get("Name"))
+                try:
+                    newData = newPlanetData[name]
+                    for child in element.iter("Galactic_Position"):
+                        outputList = XMLReader().commaSepListParser(child.text)
+                        pos_text = str(newData[0]) + ", " + str(newData[1]) + ", " + str(outputList[2])
+                        child.text = pos_text
+                        break
+                except(KeyError):
+                    pass
+            root.write(path + file, xml_declaration = "1.0", pretty_print = True)
 
 
     def createListEntry(self, inputList):
