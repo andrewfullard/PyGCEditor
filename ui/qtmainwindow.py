@@ -33,7 +33,7 @@ class QtMainWindow(MainWindow):
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
         self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
-        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.__planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
 
         self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
