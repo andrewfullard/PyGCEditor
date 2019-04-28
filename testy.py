@@ -7,6 +7,7 @@ from commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDial
 from config import Config
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from ui.planetcontextmenu import PlanetContextMenu
 from ui.qtmainwindow import QtMainWindow
 from RepositoryCreator import RepositoryCreator
 
@@ -28,8 +29,9 @@ dialogFactory = DialogFactory(repository)
 
 qtMainWindow: QtMainWindow = QtMainWindow()
 presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
-presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory, repository)
-presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory, repository)
+presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory)
+presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory)
+presenter.planetContextMenu = PlanetContextMenu(presenter)
 
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()

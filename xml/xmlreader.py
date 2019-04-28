@@ -127,6 +127,28 @@ class XMLReader:
         else:
             print("Not a meta file! findPlanetsFiles")
 
+    def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list():
+        '''Searches GameObjectFiles for all XML files with the Planet tag.
+            Returns a dictionary of file names and their XML roots'''
+        metaRoot = et.parse(gameObjectFile).getroot()
+        if self.isMetaFile(metaRoot):
+            fileList = self.parseMetaFile(metaRoot)
+            planetsFiles = {}
+
+            for file in fileList:
+                if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                    print(file + " not found. Continuing")
+                    continue
+
+                fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
+                if self.hasTag(fileRoot, "Planet"):
+                    planetsFiles[file] = fileRoot
+
+            return planetsFiles
+
+        else:
+            print("Not a meta file! findPlanetsFiles")
+
     def findMetaFileRefs(self, metaFile: str) -> list():
         '''Searches a metafile and returns a list of XML roots that are referenced in the metafile'''
         metaRoot = et.parse(metaFile).getroot()

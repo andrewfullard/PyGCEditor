@@ -1,21 +1,13 @@
 from abc import ABC, abstractmethod
-from itertools import groupby
-from typing import List, Set
-from xml.xmlreader import XMLReader
-from xml.xmlwriter import XMLWriter
-
-import numpy as np
-from numpy import ndarray as NumPyArray
-
-from DisplayHelpers import DisplayHelpers
 from gameObjects.campaign import Campaign
-from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.unit import Unit
 from RepositoryCreator import RepositoryCreator
-from ui.galacticplot import GalacticPlot
+from xml.xmlwriter import XMLWriter
+from xml.xmlreader import XMLReader
+from xml.xmlstructure import XMLStructure
 
 
 class MainWindowPresenter:
@@ -101,6 +93,7 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
+        self.__updatedPlanetCoords: Dict[str, List[float]] = dict()
 
         self.__selectedCampaignIndex: int = -1
 
@@ -122,6 +115,7 @@ class MainWindowPresenter:
         self.__repository.emptyRepository()
         print("Loading from folder " + folder)
         self.__repository = self.__repositoryCreator.constructRepository(folder)
+        XMLStructure.dataFolder = folder
 
         self.__updateWidgets()
 
@@ -164,7 +158,7 @@ class MainWindowPresenter:
     
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
-        '''If a trade route is checked by the user, add it to the selecte campaign and refresh the galaxy plot'''
+        '''If a trade route is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
         if checked:
             if self.__availableTradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__availableTradeRoutes[index])
@@ -248,6 +242,7 @@ class MainWindowPresenter:
 
     def onNewTradeRoute(self, tradeRoute: TradeRoute):
         '''Handles new trade routes'''
+        self.__repository.addTradeRoute(tradeRoute)
         self.__newTradeRoutes.append(tradeRoute)
 
         if tradeRoute.start in self.__checkedPlanets or tradeRoute.end in self.__checkedPlanets:
@@ -271,6 +266,14 @@ class MainWindowPresenter:
         planet = self.__repository.getPlanetByName(entry)
 
         self.__mainWindow.updatePlanetInfoDisplay(planet)
+        
+    def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
+        '''Updates position of a planet in the repository'''
+        planet = self.__repository.getPlanetByName(name)
+        planet.x = new_x
+        planet.y = new_y
+        self.__updatedPlanetCoords[name] = [new_x, new_y]
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
 
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
@@ -296,8 +299,22 @@ class MainWindowPresenter:
         '''Saves XML files'''
         campaign = self.getSelectedCampaign()
         self.__xmlWriter.campaignWriter(campaign, fileName)
+
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
+
+        if len(self.__updatedPlanetCoords) > 0 :
+            xmlReader = XMLReader()
+            gameObjectFile = XMLStructure.dataFolder + "/XML/GameObjectFiles.XML"
+            planetRoots = xmlReader.findPlanetFilesAndRoots(gameObjectFile)
+            self.__xmlWriter.planetCoordinatesWriter(XMLStructure.dataFolder + "/XML/", planetRoots, self.__updatedPlanetCoords)
+
+
+    def getNameOfPlanetAt(self, ind: int) -> str:
+        return self.__planets[ind].name
+
+    def getPositionOfPlanetAt(self, ind: int):
+        return self.__planets[ind].x, self.__planets[ind].y
 
 
     def __getNames(self, inputList: list) -> List[str]:
@@ -351,6 +368,10 @@ class MainWindowPresenter:
                 for route in self.__tradeRoutes:
                     if route.start == planet or route.end == planet:
                         privateAvailableTradeRoutes.add(route)
+        
+        if len(self.__newTradeRoutes) > 0:
+            #Ensure any new routes are appended to the available list for immediate use
+            privateAvailableTradeRoutes.update(self.__newTradeRoutes)
 
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
 

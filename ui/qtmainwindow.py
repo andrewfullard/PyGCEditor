@@ -34,8 +34,11 @@ class QtMainWindow(MainWindow):
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
         self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
+        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.__planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
 
         self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
+        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -132,14 +135,12 @@ class QtMainWindow(MainWindow):
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Add TradeRoute objects to the trade route table widget'''
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Update TradeRoute trade route table widget'''
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def addCampaigns(self, campaigns: List[str]) -> None:
         '''Add Campaign objects to the campaign combobox widget'''
@@ -257,6 +258,9 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+
+    def __showPlanetContextMenu(self, position) -> None:
+        self.__presenter.planetContextMenu.show(self.__planetListWidget.itemAt(position), self.__planetListWidget.mapToGlobal(position))
 
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         '''If a trade route table widget item is clicked, check it and call the presenter to display it'''
