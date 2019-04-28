@@ -37,6 +37,7 @@ class QtMainWindow(MainWindow):
         self.__planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
 
         self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
+        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -124,14 +125,12 @@ class QtMainWindow(MainWindow):
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Add TradeRoute objects to the trade route table widget'''
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Update TradeRoute trade route table widget'''
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def addCampaigns(self, campaigns: List[str]) -> None:
         '''Add Campaign objects to the campaign combobox widget'''
