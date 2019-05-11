@@ -171,27 +171,14 @@ class MainWindowPresenter:
         self.__checkedTradeRoutes.clear()
 
         self.__selectedCampaignIndex = index
-
-        selectedPlanets = []
-        selectedTradeRoutes = []
-
+        
         if self.campaigns[index].planets is not None:
-            self.__checkedPlanets.update(self.campaigns[index].planets)
-
-            for p in self.__checkedPlanets:
-                selectedPlanets.append(self.__planets.index(p))
-
-            self.__mainWindow.updatePlanetSelection(selectedPlanets)
+            self.__updateSelectedPlanets(index)
         
         self.__updateAvailableTradeRoutes(self.campaigns[index].planets)
         
         if self.campaigns[index].tradeRoutes is not None:
-            self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
-            
-            for t in self.__checkedTradeRoutes:
-                selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
-
-            self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
+            self.__updateSelectedTradeRoutes(index)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
@@ -289,18 +276,31 @@ class MainWindowPresenter:
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
 
-        if self.__getSelectedTradeRouteIndices():
-            self.__mainWindow.updateTradeRouteSelection(self.__getSelectedTradeRouteIndices())
+        self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
-        
-    def __getSelectedTradeRouteIndices(self) -> List[int]:
-        '''Returns the indices of selected trade routes'''
-        selectedTradeRoutesIndices: List[int] = list()
-        for tradeRoute in self.__checkedTradeRoutes:
-            selectedTradeRoutesIndices.append(self.__availableTradeRoutes.index(tradeRoute))
 
-        return selectedTradeRoutesIndices
+    def __updateSelectedPlanets(self, index: int) -> None:
+        '''Update the selected trade routes for the currently selected campaign'''
+        selectedPlanets = []
+
+        self.__checkedPlanets.update(self.campaigns[index].planets)
+
+        for p in self.__checkedPlanets:
+            selectedPlanets.append(self.__planets.index(p))
+
+        self.__mainWindow.updatePlanetSelection(selectedPlanets)
+
+    def __updateSelectedTradeRoutes(self, index: int) -> None:
+        '''Update the selected planets for the currently selected campaign'''
+        selectedTradeRoutes = []
+
+        self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
+            
+        for t in self.__checkedTradeRoutes:
+            selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
+
+        self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
 
     def __updateAvailableTradeRoutes(self, planetList:  list):
         '''Updates the list of available trade routes based on the planets in the GC'''
@@ -317,5 +317,5 @@ class MainWindowPresenter:
             privateAvailableTradeRoutes.update(self.__newTradeRoutes)
 
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
-
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))
+        self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
