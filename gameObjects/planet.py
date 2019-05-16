@@ -5,6 +5,7 @@ class Planet:
     '''Planets have a name and location (x, y), and starting forces'''
     def __init__(self, name: str):
         self.__name: str = name
+        self.__variantOf: str = ""
         self.__x: float = 0.0
         self.__y: float = 0.0
         self.__forces: list = []
@@ -17,6 +18,15 @@ class Planet:
     def name(self, value: str) -> None:
         if value:
             self.__name = value
+
+    @property
+    def variantOf(self) -> str:
+        return self.__variantOf
+
+    @variantOf.setter
+    def variantOf(self, value: str) -> None:
+        if value:
+            self.__variantOf = value
 
     @property
     def x(self) -> float:

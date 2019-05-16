@@ -2,7 +2,7 @@ import lxml.etree as et
 import os.path
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
-from xml.xmlstructure import XMLStructure
+from xmlUtil.xmlstructure import XMLStructure
 
 ''' XML with etree:
 
@@ -198,7 +198,15 @@ class XMLReader:
                     outputList = self.commaSepListParser(child.text)
                     return float(outputList[0]), float(outputList[1])
         
-        print("Planet " + name + " not found! getLocation")
+        print("Planet " + name + " has no coordinates! getLocation")
+        return None;
+
+    def getVariantOfValue(self, name: str, XMLRoot) -> str:
+        for element in XMLRoot.iter():
+            if str(element.get("Name")).lower() == name.lower():
+                for child in element.iter("Variant_Of_Existing_Type"):
+                    return child.text
+        return ""
 
     def getPlanet(self, name: str, planetList: set) -> Planet:
         '''Finds a named planet object in a list of planet objects and returns it'''
