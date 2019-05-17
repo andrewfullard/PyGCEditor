@@ -11,9 +11,9 @@ from gameObjects.faction import Faction
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
-from xml.xmlwriter import XMLWriter
-from xml.xmlreader import XMLReader
-from xml.xmlstructure import XMLStructure
+from xmlUtil.xmlwriter import XMLWriter
+from xmlUtil.xmlreader import XMLReader
+from xmlUtil.xmlstructure import XMLStructure
 
 
 class MainWindowPresenter:

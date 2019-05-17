@@ -8,7 +8,7 @@ from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qttablewidgetfactory import QtTableWidgetFactory
-from xml.xmlstructure import XMLStructure
+from xmlUtil.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute

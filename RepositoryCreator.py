@@ -4,8 +4,8 @@ from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.aiplayer import AIPlayer
-from xml.xmlreader import XMLReader
-from xml.xmlstructure import XMLStructure
+from xmlUtil.xmlreader import XMLReader
+from xmlUtil.xmlstructure import XMLStructure
 
 class RepositoryCreator:
     '''Creates a Repository of GameObjects from input XMLs'''
@@ -34,7 +34,13 @@ class RepositoryCreator:
 
             for name in planetNames:
                 newplanet = Planet(name)
-                newplanet.x, newplanet.y = self.__xml.getLocation(name, planetRoot)
+                newplanet.variantOf = self.__xml.getVariantOfValue(name, planetRoot)
+                coordinates = self.__xml.getLocation(name, planetRoot)
+                if coordinates == None:
+                    newplanet.x, newplanet.y = None, None
+                else:
+                    newplanet.x, newplanet.y = coordinates
+
                 self.repository.addPlanet(newplanet)
         
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
@@ -83,6 +89,36 @@ class RepositoryCreator:
 
             self.repository.addCampaign(newCampaign)
 
+    def runPlanetVariantOfCheck(self) -> None:
+        for planet in self.repository.planets:
+            if (planet.x is None) or (planet.y is None):
+                print(planet.name + " needs parent coordinates")
+                if planet.variantOf != "":
+                    parent = self.getPlanetParentWithCoordinates(planet)
+                    planet.x = parent.x
+                    planet.y = parent.y
+                    print(planet.name + " now uses " + parent.name + " coordinates!" + parent.x.__str__() + ", " + parent.y.__str__())
+
+                else:
+                    print(planet.name + " has no parent!")
+
+
+
+    def getPlanetParentWithCoordinates(self, planet) -> Planet:
+        p =  self.repository.getPlanetByName(planet.variantOf)
+        if p is not None:
+            if (p.x is None) & (p.y is None):
+                if p.variantOf == "":
+                    return None
+                else:
+                    return self.getPlanetParentWithCoordinates(p)
+            else:
+                return p
+        else:
+            return None
+
+
+
     def constructRepository(self, folder: str) -> GameObjectRepository:
         '''Reads a mod Data folder and searches the XML metafiles within
         Creates a repository with planets, trade routes and campaigns'''
@@ -107,5 +143,5 @@ class RepositoryCreator:
         self.addTradeRoutesFromXML(tradeRouteRoots)
         self.addFactionsFromXML(factionRoots)
         self.addCampaignsFromXML(campaignNames, campaignRoots)
-
+        self.runPlanetVariantOfCheck()
         return self.repository
