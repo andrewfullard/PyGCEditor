@@ -24,7 +24,8 @@ class DisplayHelpers:
             factionPower = 0
             for entry in group:
                 if entry is not None:
-                    factionPower += entry.unit.combatPower
+                    if entry.unit is not None:
+                        factionPower += entry.unit.combatPower
             factionForces.append([faction, factionPower])
 
         totalForcesText = ""
