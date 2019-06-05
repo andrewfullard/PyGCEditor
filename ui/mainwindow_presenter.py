@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Set, Dict
+from itertools import groupby
+from xml.xmlreader import XMLReader
+from xml.xmlwriter import XMLWriter
 
 import numpy as np
 from numpy import ndarray as NumPyArray
@@ -12,9 +15,9 @@ from gameObjects.faction import Faction
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
-from xmlUtil.xmlwriter import XMLWriter
-from xmlUtil.xmlreader import XMLReader
 from xmlUtil.xmlstructure import XMLStructure
+from DisplayHelpers import DisplayHelpers
+from gameObjects.unit import Unit
 
 
 class MainWindowPresenter:
@@ -107,53 +110,49 @@ class MainWindowPresenter:
 
         self.__plot.planetSelectedSignal.connect(self.planetSelectedOnPlot)
 
+        self.__helper = DisplayHelpers(self.__repository, self.campaigns)
+
         self.__updateWidgets()
 
         self.newTradeRouteCommand = None
         self.campaignPropertiesCommand = None
 
+
     def onDataFolderChanged(self, folder: str) -> None:
-        """Updates the repository and refreshes the main window when a new data folder is selected"""
+        '''Updates the repository and refreshes the main window when a new data folder is selected'''
         self.__repository.emptyRepository()
+        print("Loading from folder " + folder)
         self.__repository = self.__repositoryCreator.constructRepository(folder)
         XMLStructure.dataFolder = folder
 
         self.__updateWidgets()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
-        """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
+        '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
         if checked:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
-                self.campaigns[self.__selectedCampaignIndex].planets.add(
-                    self.__planets[index]
-                )
+                self.getSelectedCampaign().planets.add(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         else:
             if self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
-                self.campaigns[self.__selectedCampaignIndex].planets.remove(
-                    self.__planets[index]
-                )
+                self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__updateGalacticPlot()
-
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+    
     def planetSelectedOnPlot(self, indexes: list) -> None:
-        """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
+        '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
         for index in indexes:
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
-                self.campaigns[self.__selectedCampaignIndex].planets.add(
-                    self.__planets[index]
-                )
+                self.getSelectedCampaign().planets.add(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
             elif self.__planets[index] in self.__checkedPlanets:
                 self.__checkedPlanets.remove(self.__planets[index])
-                self.campaigns[self.__selectedCampaignIndex].planets.remove(
-                    self.__planets[index]
-                )
+                self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         selectedPlanets = []
@@ -184,25 +183,73 @@ class MainWindowPresenter:
 
     def onCampaignSelected(self, index: int) -> None:
         """If a campaign is selected by the user, clear then refresh the galaxy plot"""
+        if index < 0:
+            return
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
 
         self.__selectedCampaignIndex = index
 
-        if self.campaigns[index].planets is not None:
-            self.__updateSelectedPlanets(index)
+        selectedPlanets = []
+        selectedTradeRoutes = []
 
-        self.__updateAvailableTradeRoutes(self.campaigns[index].planets)
+        self.__helper = DisplayHelpers(self.__repository, self.campaigns)
+
+        if self.getSelectedCampaign().planets is not None:
+            self.__checkedPlanets.update(self.getSelectedCampaign().planets)
+
+            for p in self.__checkedPlanets:
+                selectedPlanets.append(self.__planets.index(p))
+
+            self.__mainWindow.updatePlanetSelection(selectedPlanets)
+        
+        self.__updateAvailableTradeRoutes(self.getSelectedCampaign().planets)
+        
+        if self.getSelectedCampaign().tradeRoutes is not None:
+            self.__checkedTradeRoutes.update(self.getSelectedCampaign().tradeRoutes)
+            missingRoutes = set()
+
+            for t in self.__checkedTradeRoutes:
+                if t is not None:
+                    try:
+                        selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
+                    except(ValueError):
+                        print("The trade route " + t.name + " is missing!")
+                else:
+                    missingRoutes.add(t)
+                    print("Trade route missing!")
+
+            #Remove missing routes to allow plotting
+            self.__checkedTradeRoutes -= missingRoutes 
+
+            self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
+
+        self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
+
+        planetOwners = self.__helper.getPlanetOwners(index, self.__checkedPlanets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
 
+    def getSelectedCampaign(self) -> Campaign:
+        if self.__selectedCampaignIndex > -1:
+            return self.campaigns[self.__selectedCampaignIndex]
+
+        return None
+
     def onNewCampaign(self, campaign: Campaign) -> None:
-        """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
+        '''If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot'''
+        self.__updateWidgets()
+
+        self.__mainWindow.updateCampaignComboBox(self.__getNames(self.campaigns), campaign.name)
+
+    def onCampaignUpdate(self, campaign: Campaign) -> None:
+        '''If a campaign is updated, update it and add the campaign to the repository, and clear then refresh the galaxy plot'''
         self.__repository.addCampaign(campaign)
 
         self.__updateWidgets()
 
+<<<<<<< HEAD
         self.__mainWindow.updateCampaignComboBox(
             self.__getNames(self.campaigns), campaign.name
         )
@@ -230,6 +277,37 @@ class MainWindowPresenter:
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         """Updates position of a planet in the repository"""
+=======
+    def onNewTradeRoute(self, tradeRoute: TradeRoute):
+        '''Handles new trade routes'''
+        self.__repository.addTradeRoute(tradeRoute)
+        self.__newTradeRoutes.append(tradeRoute)
+
+        if tradeRoute.start in self.__checkedPlanets or tradeRoute.end in self.__checkedPlanets:
+            self.__checkedTradeRoutes.add(tradeRoute)
+
+        self.getSelectedCampaign().tradeRoutes.add(tradeRoute)
+        self.__updateWidgets()
+
+    def onPlanetSelected(self, entry: str) -> None:
+        '''If a planet is selected by the user, display the associated starting forces and planet info'''
+        campaignForces = self.getSelectedCampaign().startingForces
+
+        startingForces = []
+        for startingForce in campaignForces:
+            if startingForce.planet.name == entry:
+                startingForces.append(startingForce.unit)
+                planet = startingForce.planet
+                self.__mainWindow.updatePlanetInfoDisplay(planet, startingForces)
+                return
+    
+        planet = self.__repository.getPlanetByName(entry)
+
+        self.__mainWindow.updatePlanetInfoDisplay(planet)
+        
+    def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
+        '''Updates position of a planet in the repository'''
+>>>>>>> 991c37f (Minor check for non-existant units)
         planet = self.__repository.getPlanetByName(name)
         planet.x = new_x
         planet.y = new_y
@@ -240,12 +318,12 @@ class MainWindowPresenter:
         """Select all planets handler: plots all planets"""
         if checked:
             self.__checkedPlanets.update(self.__planets)
-            self.campaigns[self.__selectedCampaignIndex].planets.update(
+            self.getSelectedCampaign().planets.update(
                 self.__availableTradeRoutes
             )
         else:
             self.__checkedPlanets.clear()
-            self.campaigns[self.__selectedCampaignIndex].planets.clear()
+            self.getSelectedCampaign().planets.clear()
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
@@ -255,32 +333,29 @@ class MainWindowPresenter:
         """Select all trade routes handler: plots all trade routes"""
         if checked:
             self.__checkedTradeRoutes.update(self.__availableTradeRoutes)
-            self.campaigns[self.__selectedCampaignIndex].tradeRoutes.update(
+            self.getSelectedCampaign().tradeRoutes.update(
                 self.__availableTradeRoutes
             )
         else:
             self.__checkedTradeRoutes.clear()
-            self.campaigns[self.__selectedCampaignIndex].tradeRoutes.clear()
+            self.getSelectedCampaign().tradeRoutes.clear()
 
         self.__updateGalacticPlot()
 
     def saveFile(self, fileName: str) -> None:
         """Saves XML files"""
-        campaign = self.campaigns[self.__selectedCampaignIndex]
+        campaign = self.getSelectedCampaign()
         self.__xmlWriter.campaignWriter(campaign, fileName)
 
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
 
-        if len(self.__updatedPlanetCoords) > 0:
+        if len(self.__updatedPlanetCoords) > 0 :
             xmlReader = XMLReader()
             gameObjectFile = XMLStructure.dataFolder + "/XML/GameObjectFiles.XML"
             planetRoots = xmlReader.findPlanetFilesAndRoots(gameObjectFile)
-            self.__xmlWriter.planetCoordinatesWriter(
-                XMLStructure.dataFolder + "/XML/",
-                planetRoots,
-                self.__updatedPlanetCoords,
-            )
+            self.__xmlWriter.planetCoordinatesWriter(XMLStructure.dataFolder + "/XML/", planetRoots, self.__updatedPlanetCoords)
+
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
@@ -288,28 +363,21 @@ class MainWindowPresenter:
     def getPositionOfPlanetAt(self, ind: int):
         return self.__planets[ind].x, self.__planets[ind].y
 
+
     def __getNames(self, inputList: list) -> List[str]:
-        """Returns the name attribute from a list of GameObjects"""
+        '''Returns the name attribute from a list of GameObjects'''
         return [x.name for x in inputList]
 
     def __updateWidgets(self) -> None:
-        """Update the main window widgets"""
-        self.campaigns: List[Campaign] = sorted(
-            self.__repository.campaigns, key=lambda entry: entry.name
-        )
-        self.__planets: List[Planet] = sorted(
-            self.__repository.planets, key=lambda entry: entry.name
-        )
-        self.__tradeRoutes: List[TradeRoute] = sorted(
-            self.__repository.tradeRoutes, key=lambda entry: entry.name
-        )
-        self.__factions: List[Faction] = sorted(
-            self.__repository.factions, key=lambda entry: entry.name
-        )
+        '''Update the main window widgets'''
+        self.campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
+        self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
+        self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
+        self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
-        self.__updateAvailableTradeRoutes(
-            self.campaigns[self.__selectedCampaignIndex].planets
-        )
+        selectedCampaign = self.getSelectedCampaign()
+        if selectedCampaign:
+            self.__updateAvailableTradeRoutes(selectedCampaign.planets)
 
         self.__mainWindow.emptyWidgets()
 

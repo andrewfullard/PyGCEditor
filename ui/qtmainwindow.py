@@ -8,10 +8,11 @@ from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qttablewidgetfactory import QtTableWidgetFactory
-from xmlUtil.xmlstructure import XMLStructure
+from xml.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from gameObjects.unit import Unit
 
 class QtMainWindow(MainWindow):
     '''Qt based window'''
@@ -54,18 +55,23 @@ class QtMainWindow(MainWindow):
         self.__deselectAllTradeRoutesButton.clicked.connect(lambda: self.__selectAllTradeRoutesButtonClicked(self.__tradeRouteListWidget, False))
 
         #Left pane, Forces tab
-        self.__planetComboBox: QComboBox = QComboBox()
-
-        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], 2)        
-
-        #set up menu and menu options
-        self.__menuBar: QMenuBar = QMenuBar()
-        self.__optionsMenu: QMenu = QMenu("Options", self.__window)
-        self.__fileMenu: QMenu = QMenu("File", self.__window)
-        self.__addMenu: QMenu = QMenu("New...", self.__window)
+        self.__planetComboBox: QComboBox = QComboBox()  
 
         self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
         self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
+        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], columns = 2, stretch = False)   
+
+        self.__planetInfoLabel: QLabel = QLabel()
+        self.__totalPlanetForceLabel: QLabel = QLabel()
+        self.__totalPlanetForceLabel.setText("Total force at planet: ")
+        self.__totalFactionForceLabel: QLabel = QLabel()
+        self.__totalFactionForceLabel.setText("Select a campaign to see total starting forces per faction")
+
+        #set up menu and menu options
+        self.__menuBar: QMenuBar = QMenuBar()
+        self.__fileMenu: QMenu = QMenu("File", self.__window)
+        self.__optionsMenu: QMenu = QMenu("Options", self.__window)
+        self.__addMenu: QMenu = QMenu("New...", self.__window)
         
         self.__newCampaignAction: QAction = QAction("Galactic Conquest...", self.__window)
         self.__newCampaignAction.triggered.connect(self.__newCampaign)
@@ -119,6 +125,9 @@ class QtMainWindow(MainWindow):
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListWidget)
+        self.__startingForces.layout().addWidget(self.__planetInfoLabel)
+        self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
+        self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -129,6 +138,7 @@ class QtMainWindow(MainWindow):
     def addPlanets(self, planets: List[str]) -> None:
         '''Add Planet objects to the planet table widget'''
         self.__addEntriesToTableWidget(self.__planetListWidget, planets)
+        self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Add TradeRoute objects to the trade route table widget'''
@@ -143,6 +153,7 @@ class QtMainWindow(MainWindow):
     def addCampaigns(self, campaigns: List[str]) -> None:
         '''Add Campaign objects to the campaign combobox widget'''
         self.__campaignComboBox.addItems(campaigns)
+        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
 
     def makeGalacticPlot(self) -> GalacticPlot:
         '''Plot planets and trade routes'''
@@ -186,6 +197,8 @@ class QtMainWindow(MainWindow):
                 planets = list(planets)
             planets.sort()
             self.__planetComboBox.addItems(planets)
+        
+        self.__planetComboBox.activated.connect(self.__onPlanetSelected)
     
     def updatePlanetSelection(self, planets: List[int]) -> None:
         '''Clears table, then checks off planets in the table from a list of indexes'''
@@ -209,8 +222,35 @@ class QtMainWindow(MainWindow):
         '''Helper function to clear traderoute selections from the presenter'''
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
+    def updatePlanetInfoDisplay(self, planet: Planet, startingForces: List[Unit] = []) -> None:
+        '''Update starting forces and planet info table widget. Starting forces are optional.'''
+        self.__forcesListWidget.clearContents()
+        self.__forcesListWidget.setRowCount(0)
+        
+        totalForce = 0
+        if startingForces:
+            for entry in startingForces:
+                rowCount = self.__forcesListWidget.rowCount()
+                self.__forcesListWidget.setRowCount(rowCount + 1)
+                item: QTableWidgetItem = QTableWidgetItem(entry.name)
+                self.__forcesListWidget.setItem(rowCount, 0, item)
+                item: QTableWidgetItem = QTableWidgetItem()
+                item.setData(QtCore.Qt.DisplayRole, entry.combatPower)
+                item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
+                self.__forcesListWidget.setItem(rowCount, 1, item)
+                totalForce += entry.combatPower
+
+        self.__planetInfoLabel.setText("Max starbase level: " + str(planet.starbaseLevel) + \
+                "\nSpace structure slots: " + str(planet.spaceStructureSlots) + \
+                "\nGround structure slots: " + str(planet.groundStructureSlots))
+        self.__totalPlanetForceLabel.setText("Total force at planet: " + str(totalForce))
+
+    def updateTotalFactionForces(self, entry: str) -> None:
+        '''Updates the total faction forces label'''
+        self.__totalFactionForceLabel.setText(entry)
+
     def __addEntriesToTableWidget(self, widget: QTableWidget, entries: List[str]) -> None:
-        '''Adds a list of rows to a table widget'''
+        '''Adds a list of rows to a table widget with checkboxes'''
         for entry in entries:
             rowCount = widget.rowCount()
             widget.setRowCount(rowCount + 1)
@@ -296,6 +336,11 @@ class QtMainWindow(MainWindow):
     def __onCampaignSelected(self, index: int) -> None:
         '''Presents a selected campaign'''
         self.__presenter.onCampaignSelected(index)
+    
+    def __onPlanetSelected(self, index: int) -> None:
+        '''Presents a selected planet's starting forces'''
+        entry = self.__planetComboBox.currentText()
+        self.__presenter.onPlanetSelected(entry)
 
     def __checkAllTable(self, table: QTableWidget) -> None:
         '''Checks all rows in a table widget'''
@@ -313,4 +358,4 @@ class QtMainWindow(MainWindow):
         '''Helper function to launch the campaign properties dialog'''
         if self.__presenter is not None:
             #Passes the currently selected campaign text info to the dialog
-            self.__presenter.campaignPropertiesCommand.execute(str(self.__campaignComboBox.currentText()))
+            self.__presenter.campaignPropertiesCommand.execute()

@@ -11,11 +11,16 @@ class ShowCampaignCreatorDialogCommand(Command):
         self.__dialogFactory = dialogFactory
         self.__presenter = mainWindowPresenter
 
-    def execute(self, name = -1) -> None:
+    def execute(self) -> None:
         '''Runs the dialog and passes results to the presenter and repository'''
-        dialog = self.__dialogFactory.makeCampaignPropertiesDialog()
-        result: DialogResult = dialog.show(name)
+        currentCampaign = self.__presenter.getSelectedCampaign()    
+        dialog = self.__dialogFactory.makeCampaignPropertiesDialog(currentCampaign)
+        result: DialogResult = dialog.show()
 
-        if result is DialogResult.Ok and name == -1:
+        if result is DialogResult.Ok:
             campaign: Campaign = dialog.getCampaignProperties()
-            self.__presenter.onNewCampaign(campaign)
+            if currentCampaign is None or campaign.name != currentCampaign.name:
+                self.__repository.addCampaign(campaign)
+                self.__presenter.onNewCampaign(campaign)
+            else:
+                self.__presenter.onCampaignUpdate(campaign)
