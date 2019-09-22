@@ -1,5 +1,5 @@
 import lxml.etree as et
-from xml.xmlreader import XMLReader
+from xmlUtil.xmlreader import XMLReader
 
 #incomplete example of writing XML files to disk
 class XMLWriter:

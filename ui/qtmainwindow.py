@@ -8,7 +8,7 @@ from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qttablewidgetfactory import QtTableWidgetFactory
-from xml.xmlstructure import XMLStructure
+from xmlUtil.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
@@ -27,16 +27,19 @@ class QtMainWindow(MainWindow):
 
         #Left pane, GC layout tab
         self.__campaignComboBox: QComboBox = QComboBox()
+        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
         self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
         self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
         self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
+        self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
         self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.__planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
 
         self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(["Trade Routes"])
+        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
@@ -119,24 +122,20 @@ class QtMainWindow(MainWindow):
     def addPlanets(self, planets: List[str]) -> None:
         '''Add Planet objects to the planet table widget'''
         self.__addEntriesToTableWidget(self.__planetListWidget, planets)
-        self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Add TradeRoute objects to the trade route table widget'''
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
         '''Update TradeRoute trade route table widget'''
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
         self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
-        self.__tradeRouteListWidget.itemClicked.connect(self.__onTradeRouteTableWidgetItemClicked)
 
     def addCampaigns(self, campaigns: List[str]) -> None:
         '''Add Campaign objects to the campaign combobox widget'''
         self.__campaignComboBox.addItems(campaigns)
-        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
 
     def makeGalacticPlot(self) -> GalacticPlot:
         '''Plot planets and trade routes'''
