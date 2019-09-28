@@ -91,10 +91,14 @@ class MainWindowPresenter:
 
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
+        self.__visiblePlanets: List[Planet] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
         self.__updatedPlanetCoords: Dict[str, List[float]] = dict()
+
+        self.__planetFileBlacklist: List[String] = []
+        self.__planetPlotIndexToRepoIndexMap: List[int] = list()
 
         self.__selectedCampaignIndex: int = 0
 
@@ -135,9 +139,10 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
     
-    def planetSelectedOnPlot(self, indexes: list) -> None:
+    def planetSelectedOnPlot(self, plotIndexes: list) -> None:
         '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
-        for index in indexes:
+        for plotInd in plotIndexes:
+            index = self.__planetPlotIndexToRepoIndex(plotInd)
             if self.__planets[index] not in self.__checkedPlanets:
                 self.__checkedPlanets.add(self.__planets[index])
                 self.campaigns[self.__selectedCampaignIndex].planets.add(self.__planets[index])
@@ -271,6 +276,7 @@ class MainWindowPresenter:
         '''Update the main window widgets'''
         self.campaigns: List[Campaign] = sorted(self.__repository.campaigns, key = lambda entry: entry.name)
         self.__planets: List[Planet] = sorted(self.__repository.planets, key = lambda entry: entry.name)
+        self.__determineVisiblePlanetsAndIndexes()
         self.__tradeRoutes: List[TradeRoute] = sorted(self.__repository.tradeRoutes, key = lambda entry: entry.name)
         self.__factions: List[Faction] = sorted(self.__repository.factions, key = lambda entry: entry.name)
 
@@ -338,7 +344,16 @@ class MainWindowPresenter:
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets, autoConnectionDistance)
-            
+    
+    def __planetPlotIndexToRepoIndex(self, ind):
+        return self.__planetPlotIndexToRepoIndexMap[ind]
+    
+    def __determineVisiblePlanetsAndIndexes(self):
+        for i in range(len(self.__planets)):
+            p = self.__planets[i]
+            if not p.containingFile in self.__planetFileBlacklist:
+                self.__planetPlotIndexToRepoIndexMap.append(i)
+                self.__visiblePlanets.append(p)
     
     @property
     def config(self):

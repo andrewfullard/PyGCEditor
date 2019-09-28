@@ -26,14 +26,15 @@ class RepositoryCreator:
 
         return names, roots
             
-    def addPlanetsFromXML(self, planetRoots) -> None:
+    def addPlanetsFromXML(self, planetFilesAndRoots) -> None:
         '''Takes a list of Planet GameObject XML roots and adds
         them to the repository with x and y positions'''
-        for planetRoot in planetRoots:
+        for file, planetRoot in planetFilesAndRoots.items():
             planetNames = self.__xml.getNamesFromXML(planetRoot)
 
             for name in planetNames:
                 newplanet = Planet(name)
+                newplanet.containingFile = file
                 newplanet.variantOf = self.__xml.getVariantOfValue(name, planetRoot)
                 coordinates = self.__xml.getLocation(name, planetRoot)
                 if coordinates == None:

@@ -6,6 +6,7 @@ class Planet:
     '''Planets have a name and location (x, y), and starting forces'''
     def __init__(self, name: str):
         self.__name: str = name
+        self.__containingFile = ""
         self.__variantOf: str = ""
         self.__x: float = 0.0
         self.__y: float = 0.0
@@ -31,6 +32,15 @@ class Planet:
     def variantOf(self, value: str) -> None:
         if value:
             self.__variantOf = value
+
+    @property
+    def containingFile(self) -> str:
+        return self.__containingFile
+
+    @containingFile.setter
+    def containingFile(self, value: str) -> None:
+        if value:
+            self.__containingFile = value
 
     @property
     def x(self) -> float:

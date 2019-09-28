@@ -105,7 +105,7 @@ class XMLReader:
         metaRoot = et.parse(gameObjectFile).getroot()
         if self.isMetaFile(metaRoot):
             fileList = self.parseMetaFile(metaRoot)
-            planetsFiles = []
+            planetsFiles = {}
 
             for file in fileList:
                 if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
@@ -114,7 +114,7 @@ class XMLReader:
 
                 fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
                 if self.hasTag(fileRoot, "Planet"):
-                    planetsFiles.append(fileRoot.getroot())
+                    planetsFiles[file] = fileRoot.getroot()
                 
             return planetsFiles
 
