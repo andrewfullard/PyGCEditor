@@ -10,7 +10,7 @@ class QtGalacticPlot(QWidget):
     #signal to send to main window presenter when a planet is selected in the plot
     planetSelectedSignal = pyqtSignal(list)
 
-    def __init__(self, parent: QWidget = None, autoPlanetConnectionDistance: int = 0):
+    def __init__(self, parent: QWidget = None):
         super(QtGalacticPlot, self).__init__()
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
@@ -29,10 +29,8 @@ class QtGalacticPlot(QWidget):
         self.__annotate.set_visible(False)
         self.__planetNames = []
         self.__planetsScatter = None
-        
-        self.__autoPlanetConnectionDistance: int = autoPlanetConnectionDistance
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets) -> None:
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets, autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
@@ -67,13 +65,13 @@ class QtGalacticPlot(QWidget):
             self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.4)
         
         #Create automatic connections between planets
-        if self.__autoPlanetConnectionDistance > 0:
+        if autoPlanetConnectionDistance > 0:
             for p1 in planets:
                 for p2 in planets:
                     if p1 == p2:
                         break
                     dist: float = p1.distanceTo(p2)
-                    if dist < self.__autoPlanetConnectionDistance:
+                    if dist < autoPlanetConnectionDistance:
                         self.__axes.plot([p1.x, p2.x], [p1.y, p2.y], 'k-', alpha=0.1)
 
         x = []

@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication
 
 from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
 from commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDialogCommand
+from commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
 from config import Config
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
@@ -27,11 +28,12 @@ repository = repositoryCreator.constructRepository(path)
 
 dialogFactory = DialogFactory(repository)
 
-qtMainWindow: QtMainWindow = QtMainWindow(config.autoPlanetConnectionDistance)
-presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
+qtMainWindow: QtMainWindow = QtMainWindow()
+presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository, config)
 presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory)
 presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory)
 presenter.planetContextMenu = PlanetContextMenu(presenter)
+presenter.autoConnectionSettingsCommand = AutoConnectionSettingsCommand(presenter, dialogFactory)
 
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()

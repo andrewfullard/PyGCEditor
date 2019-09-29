@@ -15,7 +15,7 @@ from gameObjects.traderoute import TradeRoute
 
 class QtMainWindow(MainWindow):
     '''Qt based window'''
-    def __init__(self, autoPlanetConnectionDistance: int = 0):
+    def __init__(self):
         self.__allPlanetsChecked: bool = False
         self.__allTradeRoutesChecked: bool = False
 
@@ -60,8 +60,12 @@ class QtMainWindow(MainWindow):
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
+        self.__optionsMenu: QMenu = QMenu("Options", self.__window)
         self.__fileMenu: QMenu = QMenu("File", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
+
+        self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
+        self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
         
         self.__newCampaignAction: QAction = QAction("Galactic Conquest...", self.__window)
         self.__newCampaignAction.triggered.connect(self.__newCampaign)
@@ -78,15 +82,18 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
         
+        self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
+        
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
         self.__fileMenu.addAction(self.__quitAction)
 
         self.__addMenu.addAction(self.__newCampaignAction)
         self.__addMenu.addAction(self.__newTradeRouteAction)
-
+        
         self.__menuBar.addMenu(self.__fileMenu)
         self.__menuBar.addMenu(self.__addMenu)
+        self.__menuBar.addMenu(self.__optionsMenu)
         self.__window.setMenuWidget(self.__menuBar)
 
         #Set up left pane tabs
@@ -114,8 +121,6 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__forcesListWidget)
 
         self.__presenter: MainWindowPresenter = None
-        
-        self.__autoPlanetConnectionDistance: int = autoPlanetConnectionDistance
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
         '''Set the presenter class for the window'''
@@ -141,7 +146,7 @@ class QtMainWindow(MainWindow):
 
     def makeGalacticPlot(self) -> GalacticPlot:
         '''Plot planets and trade routes'''
-        plot: QtGalacticPlot = QtGalacticPlot(self.__widget, self.__autoPlanetConnectionDistance)
+        plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
         self.__widget.addWidget(plot.getWidget())
         return plot
 
@@ -221,6 +226,9 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+        
+    def __showAutoConnectionSettings(self):
+        self.__presenter.autoConnectionSettingsCommand.execute()
 
     def __showPlanetContextMenu(self, position) -> None:
         self.__presenter.planetContextMenu.show(self.__planetListWidget.itemAt(position), self.__planetListWidget.mapToGlobal(position))

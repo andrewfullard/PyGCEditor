@@ -4,6 +4,7 @@ from typing import List, Set, Dict
 import numpy as np
 from numpy import ndarray as NumPyArray
 
+from config import Config
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
@@ -77,7 +78,7 @@ class MainWindow(ABC):
 
 class MainWindowPresenter:
     '''Window display class'''
-    def __init__(self, mainWindow: MainWindow, repository: GameObjectRepository):
+    def __init__(self, mainWindow: MainWindow, repository: GameObjectRepository, config: Config):
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: GalacticPlot = self.__mainWindow.makeGalacticPlot()
         
@@ -85,6 +86,8 @@ class MainWindowPresenter:
 
         self.__repository = repository
         self.__repositoryCreator = RepositoryCreator()
+        
+        self.__config = config
 
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
@@ -97,6 +100,8 @@ class MainWindowPresenter:
 
         self.__checkedPlanets: Set[Planet] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
+        
+        self.__showAutoConnections = True
 
         self.__plot.planetSelectedSignal.connect(self.planetSelectedOnPlot)
 
@@ -128,7 +133,7 @@ class MainWindowPresenter:
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
     
     def planetSelectedOnPlot(self, indexes: list) -> None:
         '''If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot'''
@@ -149,7 +154,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
     
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
@@ -163,7 +168,7 @@ class MainWindowPresenter:
                 self.__checkedTradeRoutes.remove(self.__availableTradeRoutes[index])
                 self.campaigns[self.__selectedCampaignIndex].tradeRoutes.remove(self.__availableTradeRoutes[index])
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
 
     def onCampaignSelected(self, index: int) -> None:
         '''If a campaign is selected by the user, clear then refresh the galaxy plot'''
@@ -178,7 +183,7 @@ class MainWindowPresenter:
         self.__updateAvailableTradeRoutes(self.campaigns[index].planets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         '''If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot'''
@@ -199,13 +204,18 @@ class MainWindowPresenter:
         self.campaigns[self.__selectedCampaignIndex].tradeRoutes.add(tradeRoute)
         self.__updateWidgets()
 
+    def onAutoConnectionSettingChanged(self, newAutoConnectionDistance, showAutoConnections):
+        self.__config.autoPlanetConnectionDistance = newAutoConnectionDistance
+        self.__showAutoConnections = showAutoConnections
+        self.__updateWidgets()
+
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         '''Updates position of a planet in the repository'''
         planet = self.__repository.getPlanetByName(name)
         planet.x = new_x
         planet.y = new_y
         self.__updatedPlanetCoords[name] = [new_x, new_y]
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
 
     def allPlanetsChecked(self, checked: bool) -> None:
         '''Select all planets handler: plots all planets'''
@@ -216,7 +226,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)    
+        self.__updateGalacticPlot()
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
         '''Select all trade routes handler: plots all trade routes'''
@@ -227,7 +237,7 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes.clear()
             self.campaigns[self.__selectedCampaignIndex].tradeRoutes.clear()
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)  
+        self.__updateGalacticPlot()  
 
     def saveFile(self, fileName: str) -> None:
         '''Saves XML files'''
@@ -277,7 +287,7 @@ class MainWindowPresenter:
 
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
 
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
+        self.__updateGalacticPlot()
 
     def __updateSelectedPlanets(self, index: int) -> None:
         '''Update the selected trade routes for the currently selected campaign'''
@@ -320,3 +330,18 @@ class MainWindowPresenter:
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
+    
+    def __updateGalacticPlot(self):
+        autoConnectionDistance = self.config.autoPlanetConnectionDistance
+        if not self.__showAutoConnections:
+            autoConnectionDistance = 0
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets, autoConnectionDistance)
+            
+    
+    @property
+    def config(self):
+        return self.__config
+
+    @property
+    def showAutoConnections(self):
+        return self.__showAutoConnections
