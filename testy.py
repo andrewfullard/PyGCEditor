@@ -27,7 +27,7 @@ repository = repositoryCreator.constructRepository(path)
 
 dialogFactory = DialogFactory(repository)
 
-qtMainWindow: QtMainWindow = QtMainWindow()
+qtMainWindow: QtMainWindow = QtMainWindow(config.autoPlanetConnectionDistance)
 presenter: MainWindowPresenter = MainWindowPresenter(qtMainWindow, repository)
 presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, dialogFactory)
 presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory)

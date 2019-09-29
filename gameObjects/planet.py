@@ -1,3 +1,4 @@
+from math import sqrt
 '''Planet class definition'''
 
 
@@ -9,6 +10,9 @@ class Planet:
         self.__x: float = 0.0
         self.__y: float = 0.0
         self.__forces: list = []
+    
+    def distanceTo(self, target):
+        return sqrt((self.x - target.x)**2 + (self.y - target.y)**2)
 
     @property
     def name(self) -> str:

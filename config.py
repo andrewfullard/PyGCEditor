@@ -8,6 +8,7 @@ class Config():
         self.__configRoot = et.parse(self.__configFile).getroot()
 
         self.dataPath = self.__configRoot.find("DataPath").text
+        self.autoPlanetConnectionDistance = int(self.__configRoot.find("MaximumFleetMovementDistance").text)
 
         if not self.dataPath:
             self.dataPath = os.getcwd()

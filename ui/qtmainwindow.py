@@ -15,7 +15,7 @@ from gameObjects.traderoute import TradeRoute
 
 class QtMainWindow(MainWindow):
     '''Qt based window'''
-    def __init__(self):
+    def __init__(self, autoPlanetConnectionDistance: int = 0):
         self.__allPlanetsChecked: bool = False
         self.__allTradeRoutesChecked: bool = False
 
@@ -114,6 +114,8 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__forcesListWidget)
 
         self.__presenter: MainWindowPresenter = None
+        
+        self.__autoPlanetConnectionDistance: int = autoPlanetConnectionDistance
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
         '''Set the presenter class for the window'''
@@ -139,7 +141,7 @@ class QtMainWindow(MainWindow):
 
     def makeGalacticPlot(self) -> GalacticPlot:
         '''Plot planets and trade routes'''
-        plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
+        plot: QtGalacticPlot = QtGalacticPlot(self.__widget, self.__autoPlanetConnectionDistance)
         self.__widget.addWidget(plot.getWidget())
         return plot
 
