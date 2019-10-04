@@ -176,9 +176,6 @@ class MainWindowPresenter:
             self.__updateSelectedPlanets(index)
         
         self.__updateAvailableTradeRoutes(self.campaigns[index].planets)
-        
-        if self.campaigns[index].tradeRoutes is not None:
-            self.__updateSelectedTradeRoutes(index)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)
@@ -225,8 +222,10 @@ class MainWindowPresenter:
         '''Select all trade routes handler: plots all trade routes'''
         if checked:
             self.__checkedTradeRoutes.update(self.__availableTradeRoutes)
+            self.campaigns[self.__selectedCampaignIndex].tradeRoutes.update(self.__availableTradeRoutes)
         else:
             self.__checkedTradeRoutes.clear()
+            self.campaigns[self.__selectedCampaignIndex].tradeRoutes.clear()
 
         self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets)  
 
@@ -295,7 +294,7 @@ class MainWindowPresenter:
         '''Update the selected planets for the currently selected campaign'''
         selectedTradeRoutes = []
 
-        self.__checkedTradeRoutes.update(self.campaigns[index].tradeRoutes)
+        self.__checkedTradeRoutes = self.campaigns[index].tradeRoutes.intersection(self.__availableTradeRoutes)
             
         for t in self.__checkedTradeRoutes:
             selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
@@ -316,6 +315,8 @@ class MainWindowPresenter:
             #Ensure any new routes are appended to the available list for immediate use
             privateAvailableTradeRoutes.update(self.__newTradeRoutes)
 
+        self.campaigns[self.__selectedCampaignIndex].tradeRoutes = self.campaigns[self.__selectedCampaignIndex].tradeRoutes.intersection(privateAvailableTradeRoutes)
+        
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
