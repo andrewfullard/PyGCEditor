@@ -36,7 +36,7 @@ class Campaign:
 
     @planets.setter
     def planets(self, value: Set[Planet]) -> None:
-        if value:
+        if value is not None:
             self.__planets = value
 
     @property
@@ -45,5 +45,5 @@ class Campaign:
 
     @tradeRoutes.setter
     def tradeRoutes(self, value: Set[TradeRoute]) -> None:
-        if value:
+        if value is not None:
             self.__tradeRoutes = value

@@ -315,6 +315,8 @@ class MainWindowPresenter:
             #Ensure any new routes are appended to the available list for immediate use
             privateAvailableTradeRoutes.update(self.__newTradeRoutes)
 
+        self.campaigns[self.__selectedCampaignIndex].tradeRoutes = self.campaigns[self.__selectedCampaignIndex].tradeRoutes.intersection(privateAvailableTradeRoutes)
+        
         self.__availableTradeRoutes = sorted(privateAvailableTradeRoutes, key = lambda entry: entry.name)
         self.__mainWindow.updateTradeRoutes(self.__getNames(self.__availableTradeRoutes))
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
