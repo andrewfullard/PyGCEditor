@@ -207,7 +207,7 @@ class MainWindowPresenter:
     def onAutoConnectionSettingChanged(self, newAutoConnectionDistance, showAutoConnections):
         self.__config.autoPlanetConnectionDistance = newAutoConnectionDistance
         self.__showAutoConnections = showAutoConnections
-        self.__updateWidgets()
+        self.__updateGalacticPlot()
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         '''Updates position of a planet in the repository'''
@@ -221,8 +221,10 @@ class MainWindowPresenter:
         '''Select all planets handler: plots all planets'''
         if checked:
             self.__checkedPlanets.update(self.__planets)
+            self.campaigns[self.__selectedCampaignIndex].planets.update(self.__availableTradeRoutes)
         else:
             self.__checkedPlanets.clear()
+            self.campaigns[self.__selectedCampaignIndex].planets.clear()
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
