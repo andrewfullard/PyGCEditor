@@ -64,6 +64,9 @@ class QtMainWindow(MainWindow):
         self.__fileMenu: QMenu = QMenu("File", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
 
+        self.__openHidePlanetsFromFilesAction: QAction = QAction("Hide planets from files", self.__window)
+        self.__openHidePlanetsFromFilesAction.triggered.connect(self.__showHidePlanetsFromFilesSettings)
+
         self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
         self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
         
@@ -83,6 +86,7 @@ class QtMainWindow(MainWindow):
         self.__quitAction.triggered.connect(self.__quit)
         
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
+        self.__optionsMenu.addAction(self.__openHidePlanetsFromFilesAction)
         
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
@@ -226,6 +230,9 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+        
+    def __showHidePlanetsFromFilesSettings(self):
+        self.__presenter.showPlanetFileHiderCommand.execute()
         
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication
 from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
 from commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDialogCommand
 from commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
+from commands.ShowPlanetFileHiderCommand import ShowPlanetFileHiderCommand
 from config import Config
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
@@ -34,6 +35,7 @@ presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(presenter, d
 presenter.campaignPropertiesCommand = ShowCampaignCreatorDialogCommand(presenter, dialogFactory)
 presenter.planetContextMenu = PlanetContextMenu(presenter)
 presenter.autoConnectionSettingsCommand = AutoConnectionSettingsCommand(presenter, dialogFactory)
+presenter.showPlanetFileHiderCommand = ShowPlanetFileHiderCommand(presenter, dialogFactory)
 
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()

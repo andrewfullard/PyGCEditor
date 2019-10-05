@@ -260,6 +260,9 @@ class MainWindowPresenter:
             planetRoots = xmlReader.findPlanetFilesAndRoots(gameObjectFile)
             self.__xmlWriter.planetCoordinatesWriter(XMLStructure.dataFolder + "/XML/", planetRoots, self.__updatedPlanetCoords)
 
+    def onPlanetFileBlacklistUpdated(self, updatedBlackList):
+        self.__planetFileBlacklist = updatedBlackList
+        self.__updateGalacticPlot()
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
@@ -343,12 +346,15 @@ class MainWindowPresenter:
         autoConnectionDistance = self.config.autoPlanetConnectionDistance
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets, autoConnectionDistance)
+        self.__determineVisiblePlanetsAndIndexes()
+        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__visiblePlanets, autoConnectionDistance)
     
     def __planetPlotIndexToRepoIndex(self, ind):
         return self.__planetPlotIndexToRepoIndexMap[ind]
     
     def __determineVisiblePlanetsAndIndexes(self):
+        self.__visiblePlanets = []
+        self.__planetPlotIndexToRepoIndexMap = []
         for i in range(len(self.__planets)):
             p = self.__planets[i]
             if not p.containingFile in self.__planetFileBlacklist:
@@ -362,3 +368,7 @@ class MainWindowPresenter:
     @property
     def showAutoConnections(self):
         return self.__showAutoConnections
+    
+    @property
+    def planetFileBlacklist(self):
+        return self.__planetFileBlacklist

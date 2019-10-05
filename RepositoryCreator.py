@@ -131,6 +131,8 @@ class RepositoryCreator:
         campaignFile = self.__folder + "/XML/CampaignFiles.XML"
         tradeRouteFile = self.__folder + "/XML/TradeRouteFiles.XML"
         factionFile = self.__folder + "/XML/FactionFiles.XML"
+        
+        XMLStructure.planetFiles = self.__xml.findPlanetsFiles(gameObjectFile).keys()
 
         planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
         tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)

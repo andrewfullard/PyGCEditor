@@ -2,6 +2,8 @@ from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.qttraderoutecreator import QtTradeRouteCreator
 from ui.qtcampaignproperties import QtCampaignProperties
 from ui.qtautoconnectionsettings import QtAutoConnectionSettings
+from ui.qtautoconnectionsettings import QtAutoConnectionSettings
+from ui.qtplanetfilehider import QtPlanetFileHider
 
 class DialogFactory:
     '''Produces dialog boxes'''
@@ -16,3 +18,6 @@ class DialogFactory:
 
     def makeAutoConnectionSettingsDialog(self) -> QtAutoConnectionSettings:
         return QtAutoConnectionSettings(self.__repository)
+
+    def makePlanetFileHiderDialog(self) -> QtPlanetFileHider:
+        return QtPlanetFileHider(self.__repository)
