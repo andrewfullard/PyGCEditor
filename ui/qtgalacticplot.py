@@ -30,7 +30,7 @@ class QtGalacticPlot(QWidget):
         self.__planetNames = []
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets) -> None:
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets, autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
@@ -62,7 +62,17 @@ class QtGalacticPlot(QWidget):
             x2 = t.end.x
             y2 = t.end.y
             # plot each route (start, end)            
-            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.3)
+            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.4)
+        
+        #Create automatic connections between planets
+        if autoPlanetConnectionDistance > 0:
+            for p1 in planets:
+                for p2 in planets:
+                    if p1 == p2:
+                        break
+                    dist: float = p1.distanceTo(p2)
+                    if dist < autoPlanetConnectionDistance:
+                        self.__axes.plot([p1.x, p2.x], [p1.y, p2.y], 'k-', alpha=0.1)
 
         x = []
         y = []

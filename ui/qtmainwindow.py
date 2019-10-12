@@ -60,8 +60,12 @@ class QtMainWindow(MainWindow):
 
         #set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
+        self.__optionsMenu: QMenu = QMenu("Options", self.__window)
         self.__fileMenu: QMenu = QMenu("File", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
+
+        self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
+        self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
         
         self.__newCampaignAction: QAction = QAction("Galactic Conquest...", self.__window)
         self.__newCampaignAction.triggered.connect(self.__newCampaign)
@@ -78,15 +82,18 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
         
+        self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
+        
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
         self.__fileMenu.addAction(self.__quitAction)
 
         self.__addMenu.addAction(self.__newCampaignAction)
         self.__addMenu.addAction(self.__newTradeRouteAction)
-
+        
         self.__menuBar.addMenu(self.__fileMenu)
         self.__menuBar.addMenu(self.__addMenu)
+        self.__menuBar.addMenu(self.__optionsMenu)
         self.__window.setMenuWidget(self.__menuBar)
 
         #Set up left pane tabs
@@ -219,6 +226,9 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
+        
+    def __showAutoConnectionSettings(self):
+        self.__presenter.autoConnectionSettingsCommand.execute()
 
     def __showPlanetContextMenu(self, position) -> None:
         self.__presenter.planetContextMenu.show(self.__planetListWidget.itemAt(position), self.__planetListWidget.mapToGlobal(position))
