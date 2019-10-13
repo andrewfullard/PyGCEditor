@@ -64,7 +64,7 @@ class QtMainWindow(MainWindow):
         self.__fileMenu: QMenu = QMenu("File", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
 
-        self.__openHidePlanetsFromFilesAction: QAction = QAction("Hide planets from files", self.__window)
+        self.__openHidePlanetsFromFilesAction: QAction = QAction("Filter shown planets", self.__window)
         self.__openHidePlanetsFromFilesAction.triggered.connect(self.__showHidePlanetsFromFilesSettings)
 
         self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)

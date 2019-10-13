@@ -15,7 +15,12 @@ class QtPlanetFileHider(Dialog):
         self.__buttonLayout: QHBoxLayout = QHBoxLayout()
 
         self.__fileListWidget: QtTableWidgetFactory = QtTableWidgetFactory().construct(["Show planet from:"])
-        #self.__fileListWidget.itemClicked.connect(self.__onFileTableItemClicked)
+        
+        self.__selectAllFilesButton: QPushButton = QPushButton("Select All Files")
+        self.__selectAllFilesButton.clicked.connect(lambda: self.__selectAllFilesButtonClicked(True))
+
+        self.__deselectAllFilesButton: QPushButton = QPushButton("Deselect All Files")
+        self.__deselectAllFilesButton.clicked.connect(lambda: self.__selectAllFilesButtonClicked(False))
 
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -27,6 +32,8 @@ class QtPlanetFileHider(Dialog):
         self.__buttonLayout.addWidget(self.__cancelButton)
 
         self.__layout.addWidget(self.__fileListWidget)
+        self.__layout.addWidget(self.__selectAllFilesButton)
+        self.__layout.addWidget(self.__deselectAllFilesButton)
         self.__layout.addLayout(self.__buttonLayout)
 
         self.__dialog.setWindowTitle("Choose files from which to show planets")
@@ -61,6 +68,18 @@ class QtPlanetFileHider(Dialog):
     def getHiddenFiles(self):
         '''Returns the hidden files'''
         return self.__hiddenFileList
+        
+    
+    def __selectAllFilesButtonClicked(self, checked: bool) -> None:
+        '''Cycles through a table and checks all the planet entries, then presents them'''
+        rowCount = self.__fileListWidget.rowCount()
+        if checked:
+            newState = QtCore.Qt.Checked
+        else:
+            newState = QtCore.Qt.Unchecked
+        
+        for row in range(rowCount):
+            self.__fileListWidget.item(row, 0).setCheckState(newState)
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking'''
