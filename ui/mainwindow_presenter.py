@@ -347,7 +347,8 @@ class MainWindowPresenter:
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
         self.__determineVisiblePlanetsAndIndexes()
-        self.__plot.plotGalaxy(self.__checkedPlanets, self.__checkedTradeRoutes, self.__visiblePlanets, autoConnectionDistance)
+        
+        self.__plot.plotGalaxy(self.__checkedPlanets.intersection(self.__visiblePlanets), self.__checkedTradeRoutes, self.__visiblePlanets, autoConnectionDistance)
     
     def __planetPlotIndexToRepoIndex(self, ind):
         return self.__planetPlotIndexToRepoIndexMap[ind]
