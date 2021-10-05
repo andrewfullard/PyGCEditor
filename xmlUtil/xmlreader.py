@@ -196,6 +196,8 @@ class XMLReader:
             if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter("Galactic_Position"):
                     outputList = self.commaSepListParser(child.text)
+                    if not all(outputList):
+                        break
                     return float(outputList[0]), float(outputList[1])
         
         print("Planet " + name + " has no coordinates! getLocation")
