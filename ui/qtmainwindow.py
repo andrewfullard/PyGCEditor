@@ -3,6 +3,7 @@ from typing import List
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDialog, QHeaderView, QLabel, QMainWindow, QMenu, QMenuBar, QDialog, QSplitter, \
     QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget
+from ui.betterqtgalacticplot import BetterQtGalacticPlot
 
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
@@ -146,8 +147,10 @@ class QtMainWindow(MainWindow):
 
     def makeGalacticPlot(self) -> GalacticPlot:
         '''Plot planets and trade routes'''
-        plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
-        self.__widget.addWidget(plot.getWidget())
+        # plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
+        plot = BetterQtGalacticPlot(self.__widget)
+        self.__widget.addWidget(plot)
+
         return plot
 
     def getWindow(self) -> QMainWindow:
