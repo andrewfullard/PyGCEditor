@@ -1,9 +1,9 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
-from gameObjects.campaign import Campaign
-from gameObjects.gameObjectRepository import GameObjectRepository
-from ui.dialogs import Dialog, DialogResult
+from gceditor.gameObjects.campaign import Campaign
+from gceditor.gameObjects.gameObjectRepository import GameObjectRepository
+from gceditor.ui.dialogs import Dialog, DialogResult
 
 class QtCampaignProperties:
     '''Class for a "campaign properties" dialog box'''

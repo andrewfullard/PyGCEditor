@@ -1,18 +1,18 @@
 import math
 from dataclasses import dataclass, field
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import numpy.linalg as linalg
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
-from graph.kdtree import kdtree
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
+from gceditor.graph.kdtree import kdtree
 
 from PyQt5.QtCore import QPoint, pyqtSignal, Qt
-from PyQt5.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent, QPen, QResizeEvent, QWheelEvent
+from PyQt5.QtGui import QMouseEvent, QPainter, QPaintEvent, QResizeEvent, QWheelEvent
 from PyQt5.QtWidgets import QWidget
 
-from ui.galacticplot import GalacticPlot
+from gceditor.ui.galacticplot import GalacticPlot
 
 
 class CoordinateSystem:
@@ -47,8 +47,8 @@ class CoordinateTransformer:
         self.view = CoordinateSystem()
         self.world = CoordinateSystem()
 
-        self._trans_matrix = []
-        self._inv_trans_matrix = []
+        self._trans_matrix = np.zeros((3, 3))
+        self._inv_trans_matrix = np.zeros((3, 3))
 
     def transformation_matrix(self):
         s = self.scale_factor()
@@ -120,7 +120,7 @@ class CoordinateTransformer:
 
 
 
-@dataclass
+@dataclass(order=True)
 class PlotPlanet:
     x: int
     y: int
@@ -129,7 +129,7 @@ class PlotPlanet:
 
     @classmethod
     def from_planet(cls, planet: Planet, index: int):
-        return PlotPlanet(planet.x, planet.y, planet, index)
+        return PlotPlanet(int(planet.x), int(planet.y), planet, index)
 
     def __getitem__(self, index: int):
         if index == 0:
@@ -145,7 +145,7 @@ class PlotPlanet:
 
 class BetterQtGalacticPlot(QWidget):
 
-    planetSelectedSignal = pyqtSignal(list)
+    planetSelectedSignal = pyqtSignal(int)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -156,21 +156,21 @@ class BetterQtGalacticPlot(QWidget):
 
         self._transformer = CoordinateTransformer()
 
-        self._tree: kdtree[PlotPlanet] = None
+        self._tree: Optional[kdtree[PlotPlanet]] = None
         self._planets: List[Planet] = []
         self._traderoutes: List[TradeRoute] = []
-        self._nearest = None
+        self._nearest: Optional[PlotPlanet] = None
         self._first_paint = True
         self._world_planet_radius = 10
 
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
-        view_dist = self._find_nearest_and_get_view_dist(event)
+        nearest, view_dist = self._find_nearest_and_view_dist(event)
         if view_dist <= 10:
-            self.planetSelectedSignal.emit([self._nearest.index])
+            self.planetSelectedSignal.emit(nearest.index)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        view_dist = self._find_nearest_and_get_view_dist(event)
+        _, view_dist = self._find_nearest_and_view_dist(event)
         if view_dist <= 10:
             self.repaint(self.rect())
 
@@ -180,13 +180,13 @@ class BetterQtGalacticPlot(QWidget):
         self._transformer.zoom(dir * 0.1, event.x(), event.y())
         self.repaint()
 
-    def _find_nearest_and_get_view_dist(self, event):
+    def _find_nearest_and_view_dist(self, event):
         if not self._tree:
-            return math.inf
+            return None, math.inf
 
         point = self._transformer.to_world_point((event.x(), event.y()))
         self._nearest = self._tree.nearest_to(point)
-        return self._transformer.to_view_length(math.dist(point, self._nearest))
+        return self._nearest, self._transformer.to_view_length(math.dist(point, self._nearest))
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         self._update_view_bounds_and_transformation_matrix()

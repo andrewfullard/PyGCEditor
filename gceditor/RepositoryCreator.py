@@ -1,11 +1,11 @@
-from gameObjects.gameObjectRepository import GameObjectRepository
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
-from gameObjects.campaign import Campaign
-from gameObjects.faction import Faction
-from gameObjects.aiplayer import AIPlayer
-from xmlUtil.xmlreader import XMLReader
-from xmlUtil.xmlstructure import XMLStructure
+from gceditor.gameObjects.gameObjectRepository import GameObjectRepository
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
+from gceditor.gameObjects.campaign import Campaign
+from gceditor.gameObjects.faction import Faction
+from gceditor.gameObjects.aiplayer import AIPlayer
+from gceditor.xmlUtil.xmlreader import XMLReader
+from gceditor.xmlUtil.xmlstructure import XMLStructure
 
 class RepositoryCreator:
     '''Creates a Repository of GameObjects from input XMLs'''

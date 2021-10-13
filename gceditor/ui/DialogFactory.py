@@ -1,7 +1,7 @@
-from gameObjects.gameObjectRepository import GameObjectRepository
-from ui.qttraderoutecreator import QtTradeRouteCreator
-from ui.qtcampaignproperties import QtCampaignProperties
-from ui.qtautoconnectionsettings import QtAutoConnectionSettings
+from gceditor.gameObjects.gameObjectRepository import GameObjectRepository
+from gceditor.ui.qttraderoutecreator import QtTradeRouteCreator
+from gceditor.ui.qtcampaignproperties import QtCampaignProperties
+from gceditor.ui.qtautoconnectionsettings import QtAutoConnectionSettings
 
 class DialogFactory:
     '''Produces dialog boxes'''

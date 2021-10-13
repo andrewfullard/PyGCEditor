@@ -2,15 +2,15 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
-from commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDialogCommand
-from commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
+from gceditor.commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
+from gceditor.commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDialogCommand
+from gceditor.commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
 from config import Config
-from ui.DialogFactory import DialogFactory
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
-from ui.planetcontextmenu import PlanetContextMenu
-from ui.qtmainwindow import QtMainWindow
-from RepositoryCreator import RepositoryCreator
+from gceditor.ui.DialogFactory import DialogFactory
+from gceditor.ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from gceditor.ui.planetcontextmenu import PlanetContextMenu
+from gceditor.ui.qtmainwindow import QtMainWindow
+from gceditor.RepositoryCreator import RepositoryCreator
 
 config: Config = Config()
 

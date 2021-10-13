@@ -1,11 +1,11 @@
 #from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
-from gameObjects.planet import Planet
-from gameObjects.gameObjectRepository import GameObjectRepository
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
-from ui.qtautocomplete import AutoCompleter
-from ui.dialogs import Dialog, DialogResult
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.gameObjectRepository import GameObjectRepository
+from gceditor.ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from gceditor.ui.qtautocomplete import AutoCompleter
+from gceditor.ui.dialogs import Dialog, DialogResult
 
 class PlanetPositionChanger(Dialog):
     '''Class for a "change planet position" dialog box'''

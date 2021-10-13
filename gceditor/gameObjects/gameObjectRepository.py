@@ -1,11 +1,11 @@
 from typing import List, Set
 
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
-from gameObjects.campaign import Campaign
-from gameObjects.faction import Faction
-from gameObjects.aiplayer import AIPlayer
-from gameObjects.unit import Unit
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
+from gceditor.gameObjects.campaign import Campaign
+from gceditor.gameObjects.faction import Faction
+from gceditor.gameObjects.aiplayer import AIPlayer
+from gceditor.gameObjects.unit import Unit
 
 class GameObjectRepository:
     '''Repository of GameObjects. Has campaigns, planets and traderoutes'''
@@ -33,7 +33,7 @@ class GameObjectRepository:
         '''Remove a Planet from the repository'''
         self.__planets.remove(planet)
 
-    def planetExists(self, name: str) -> None:
+    def planetExists(self, name: str) -> bool:
         '''Returns true if a planet exists by name, false otherwise'''
         try:
             self.getPlanetByName(name)
@@ -41,7 +41,7 @@ class GameObjectRepository:
         except:
             return False
 
-    def tradeRouteExists(self, startName: str, endName: str) -> None:
+    def tradeRouteExists(self, startName: str, endName: str) -> bool:
         '''Returns true if a planet exists by name, false otherwise'''
         try:
             self.getTradeRouteByPlanets(self.getPlanetByName(startName), self.getPlanetByName(endName))
@@ -49,7 +49,7 @@ class GameObjectRepository:
         except:
             return False
 
-    def getPlanetByName(self, name: str) -> None:
+    def getPlanetByName(self, name: str) -> Planet:
         '''Returns a planet object given its name'''
         for planet in self.planets:
             if planet.name == name:
@@ -57,7 +57,7 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existing planet " + name)
 
-    def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> None:
+    def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> TradeRoute:
         '''Returns a traderoute object given its start and end planets'''
         for tradeRoute in self.tradeRoutes:
             if (tradeRoute.start == start) and (tradeRoute.end == end):

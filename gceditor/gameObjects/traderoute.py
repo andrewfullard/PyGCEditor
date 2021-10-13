@@ -1,4 +1,4 @@
-from gameObjects.planet import Planet
+from gceditor.gameObjects.planet import Planet
 '''Trade route class definition'''
 
 

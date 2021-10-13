@@ -1,7 +1,7 @@
 from typing import Set
 
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
 
 '''Campaign class definition'''
 class Campaign:

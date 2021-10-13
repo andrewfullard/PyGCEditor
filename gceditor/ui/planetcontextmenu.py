@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QMenu
 
-from ui.dialogs import Dialog, DialogResult
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
-from ui.planetpositionchanger import PlanetPositionChanger
+from gceditor.ui.dialogs import Dialog, DialogResult
+from gceditor.ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from gceditor.ui.planetpositionchanger import PlanetPositionChanger
 
 
 class PlanetContextMenu():

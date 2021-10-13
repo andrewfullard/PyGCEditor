@@ -1,8 +1,8 @@
 import lxml.etree as et
 import os.path
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
-from xmlUtil.xmlstructure import XMLStructure
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
+from gceditor.xmlUtil.xmlstructure import XMLStructure
 
 ''' XML with etree:
 

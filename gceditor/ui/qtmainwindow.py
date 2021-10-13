@@ -3,16 +3,16 @@ from typing import List
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QAction, QPushButton, QCheckBox, QComboBox, QFileDialog, QHeaderView, QLabel, QMainWindow, QMenu, QMenuBar, QDialog, QSplitter, \
     QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget
-from ui.betterqtgalacticplot import BetterQtGalacticPlot
+from gceditor.ui.betterqtgalacticplot import BetterQtGalacticPlot
 
-from ui.galacticplot import GalacticPlot
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
-from ui.qtgalacticplot import QtGalacticPlot
-from ui.qttablewidgetfactory import QtTableWidgetFactory
-from xmlUtil.xmlstructure import XMLStructure
+from gceditor.ui.galacticplot import GalacticPlot
+from gceditor.ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from gceditor.ui.qtgalacticplot import QtGalacticPlot
+from gceditor.ui.qttablewidgetfactory import QtTableWidgetFactory
+from gceditor.xmlUtil.xmlstructure import XMLStructure
 
-from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.traderoute import TradeRoute
 
 class QtMainWindow(MainWindow):
     '''Qt based window'''

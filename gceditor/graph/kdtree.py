@@ -1,17 +1,39 @@
 import math
-from typing import Generic, List, TypeVar
+from typing import Generic, List, Optional, Sized, TypeVar, Protocol
 
 
-T = TypeVar('T')
+
+class SupportsSizedGetItemAndComparison(Sized, Protocol):
+
+    def __le__(self, other) -> bool:
+        pass
+
+    def __lt__(self, other) -> bool:
+        pass
+
+    def __ge__(self, other) -> bool:
+        pass
+
+    def __gt__(self, other) -> bool:
+        pass
+
+    def __eq__(self, other) -> bool:
+        pass
+
+    def __getitem__(self, index: int):
+        pass
+
+
+T = TypeVar('T', bound=SupportsSizedGetItemAndComparison)
 
 
 class _kdtreenode(Generic[T]):
 
     def __init__(self, values: List[T], dimensions: int, depth: int) -> None:
         self.dimension = depth % dimensions
-        self.value = None
-        self._left = None
-        self._right = None
+        self.value: T = None # type: ignore[assignment]
+        self._left: '_kdtreenode[T]' = None # type: ignore[assignment]
+        self._right: '_kdtreenode[T]' = None # type: ignore[assignment]
         if not values:
             return
 
@@ -93,7 +115,7 @@ class _kdtreenode(Generic[T]):
 
     def _dist(self, a, b) -> float:
         if not all((a, b)):
-            return (math.inf, math.inf)
+            return math.inf
 
         return math.dist(a, b)
 
@@ -105,7 +127,7 @@ class _kdtreenode(Generic[T]):
         return other_child.nearest_to(search_value,
                                       best_node, [])
 
-    def _child_by_comparison(self, search_value: T) -> '_kdtreenode':
+    def _child_by_comparison(self, search_value: T) -> Optional['_kdtreenode[T]']:
         if self._left and search_value[self.dimension] <= self.value[self.dimension]:
             return self._left
 
@@ -136,7 +158,7 @@ class _kdtreenode(Generic[T]):
 class kdtree(Generic[T]):
 
     def __init__(self, values: List[T]):
-        self._root: _kdtreenode = None
+        self._root: _kdtreenode[T] = None # type: ignore[assignment]
 
         if values:
             dimensions = len(values[0])

@@ -1,6 +1,6 @@
 '''Faction class definition'''
-from gameObjects.planet import Planet
-from gameObjects.aiplayer import AIPlayer
+from gceditor.gameObjects.planet import Planet
+from gceditor.gameObjects.aiplayer import AIPlayer
 
 class Faction:
     '''Factions have a name, capital planet, and AI'''

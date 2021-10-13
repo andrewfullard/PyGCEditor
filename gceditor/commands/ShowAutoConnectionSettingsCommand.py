@@ -1,7 +1,7 @@
-from commands.Command import Command
-from ui.dialogs import Dialog, DialogResult
-from ui.DialogFactory import DialogFactory
-from ui.mainwindow_presenter import MainWindowPresenter
+from gceditor.commands.Command import Command
+from gceditor.ui.dialogs import Dialog, DialogResult
+from gceditor.ui.DialogFactory import DialogFactory
+from gceditor.ui.mainwindow_presenter import MainWindowPresenter
 
 class AutoConnectionSettingsCommand(Command):
     '''Class to handle displaying the trade route creator dialog box'''

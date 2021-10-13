@@ -1,10 +1,10 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
-from gameObjects.traderoute import TradeRoute
-from gameObjects.gameObjectRepository import GameObjectRepository
-from ui.qtautocomplete import AutoCompleter
-from ui.dialogs import Dialog, DialogResult
+from gceditor.gameObjects.traderoute import TradeRoute
+from gceditor.gameObjects.gameObjectRepository import GameObjectRepository
+from gceditor.ui.qtautocomplete import AutoCompleter
+from gceditor.ui.dialogs import Dialog, DialogResult
 
 class QtTradeRouteCreator(Dialog):
     '''Class for a "new trade route" dialog box'''
