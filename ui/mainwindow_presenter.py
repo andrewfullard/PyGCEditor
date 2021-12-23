@@ -3,6 +3,7 @@ from itertools import groupby
 from typing import List, Set, Dict
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlwriter import XMLWriter
+import pandas as pd
 
 import numpy as np
 from numpy import ndarray as NumPyArray
@@ -72,7 +73,7 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updatePlanetInfoDisplay(
-        self, startingForces: List[Unit], planet: Planet
+        self, planet: Planet, startingForces: pd.DataFrame(),
     ) -> None:
         raise NotImplementedError()
 
@@ -290,19 +291,16 @@ class MainWindowPresenter:
 
     def onPlanetSelected(self, entry: str) -> None:
         """If a planet is selected by the user, display the associated starting forces and planet info"""
-        campaignForces = self.getSelectedCampaign().startingForces
-
-        startingForces = []
-        for startingForce in campaignForces:
-            if startingForce.planet.name == entry:
-                startingForces.append(startingForce.unit)
-                planet = startingForce.planet
-                self.__mainWindow.updatePlanetInfoDisplay(planet, startingForces)
-                return
-
         planet = self.__repository.getPlanetByName(entry)
 
-        self.__mainWindow.updatePlanetInfoDisplay(planet)
+        campaignForces = self.getSelectedCampaign().startingForces
+        try:
+            planetForces = campaignForces[campaignForces["Planet"] == entry]
+        except KeyError:
+            self.__mainWindow.updatePlanetInfoDisplay(planet, None)
+            return
+
+        self.__mainWindow.updatePlanetInfoDisplay(planet, planetForces)
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         """Updates position of a planet in the repository"""
