@@ -1,13 +1,17 @@
 from typing import Set
 from typing import List
+import pandas as pd
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.startingForce import StartingForce
 
-'''Campaign class definition'''
+"""Campaign class definition"""
+
+
 class Campaign:
-    '''Campaigns have a name, set name, planets and traderoutes'''
+    """Campaigns have a name, set name, planets and traderoutes"""
+
     def __init__(self, name: str = ""):
         self.__name: str = name
         self.__setName: str = "Empty"
@@ -40,7 +44,7 @@ class Campaign:
     def setName(self, value: str) -> None:
         if value:
             self.__setName = value
-    
+
     @property
     def sortOrder(self) -> str:
         return self.__sortOrder
@@ -76,7 +80,7 @@ class Campaign:
     def startingActivePlayer(self, value: str) -> None:
         if value:
             self.__startingActivePlayer = value
-    
+
     @property
     def rebelStoryName(self) -> str:
         return self.__rebelStoryName
