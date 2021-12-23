@@ -1,4 +1,5 @@
 from typing import List
+import pandas as pd
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
@@ -15,6 +16,7 @@ from PyQt5.QtWidgets import (
     QDialog,
     QSplitter,
     QTableWidget,
+    QTableView,
     QTableWidgetItem,
     QTabWidget,
     QVBoxLayout,
@@ -24,6 +26,7 @@ from PyQt5.QtWidgets import (
 from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
+from ui.qtPandasModel import PandasModel
 from ui.qttablewidgetfactory import QtTableWidgetFactory
 from xmlTools.xmlstructure import XMLStructure
 
@@ -84,7 +87,7 @@ class QtMainWindow(MainWindow):
 
         self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
         self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
-        self.__forcesListWidget = self.__tableWidgetFactory.construct(["Unit", "Power"], columns = 2, stretch = False)   
+        self.__forcesListTable = QTableView()
 
         self.__planetInfoLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel: QLabel = QLabel()
@@ -153,7 +156,7 @@ class QtMainWindow(MainWindow):
         )
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
-        self.__startingForces.layout().addWidget(self.__forcesListWidget)
+        self.__startingForces.layout().addWidget(self.__forcesListTable)
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
         # self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         # self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
@@ -205,8 +208,7 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox.clear()
 
         self.__planetComboBox.clear()
-        self.__forcesListWidget.clearContents()
-        self.__forcesListWidget.setRowCount(0)
+        self.__forcesListTable.setModel(None)
 
     def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
         """Update the campaign combobox"""
@@ -254,24 +256,21 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
     def updatePlanetInfoDisplay(
-        self, planet: Planet, startingForces: List[Unit] = []
+        self, planet: Planet, startingForces: pd.DataFrame
     ) -> None:
         """Update starting forces and planet info table widget. Starting forces are optional."""
-        self.__forcesListWidget.clearContents()
-        self.__forcesListWidget.setRowCount(0)
 
-        totalForce = 0
-        if startingForces:
-            for entry in startingForces:
-                rowCount = self.__forcesListWidget.rowCount()
-                self.__forcesListWidget.setRowCount(rowCount + 1)
-                item: QTableWidgetItem = QTableWidgetItem(entry.name)
-                self.__forcesListWidget.setItem(rowCount, 0, item)
-                # item: QTableWidgetItem = QTableWidgetItem()
-                # item.setData(QtCore.Qt.DisplayRole, entry.combatPower)
-                # item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
-                # self.__forcesListWidget.setItem(rowCount, 1, item)
-                # totalForce += entry.combatPower
+        if startingForces is not None:
+            model = PandasModel(startingForces)
+
+            self.__forcesListTable.setModel(model)
+        else:
+            model = PandasModel(
+                pd.DataFrame(columns=["Planet", "Era", "Owner", "ObjectType", "Amount"])
+            )
+
+            self.__forcesListTable.setModel(model)
+            self.__forcesListTable.resizeColumnsToContents()
 
         self.__planetInfoLabel.setText(
             "Max starbase level: "
@@ -281,7 +280,6 @@ class QtMainWindow(MainWindow):
             + "\nGround structure slots: "
             + str(planet.groundStructureSlots)
         )
-        # self.__totalPlanetForceLabel.setText("Total force at planet: " + str(totalForce))
 
     def updateTotalFactionForces(self, entry: str) -> None:
         """Updates the total faction forces label"""

@@ -22,10 +22,11 @@ class Campaign:
         self.__rebelStoryName: str = ""
         self.__empireStoryName: str = ""
         self.__underworldStoryName: str = ""
+        self.__era = 1
 
         self.__planets: Set[Planet] = set()
         self.__tradeRoutes: Set[TradeRoute] = set()
-        self.__startingForces: List[StartingForce] = list()
+        self.startingForces = pd.DataFrame()
 
     @property
     def name(self) -> str:
@@ -127,10 +128,5 @@ class Campaign:
             self.__tradeRoutes = value
 
     @property
-    def startingForces(self) -> List[StartingForce]:
-        return self.__startingForces
-
-    @startingForces.setter
-    def startingForces(self, value: List[StartingForce]) -> None:
-        if value:
-            self.__startingForces = value
+    def era(self) -> int:
+        return self.__era

@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from typing import List
 
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
@@ -11,6 +12,8 @@ from gameObjects.unit import Unit
 from gameObjects.startingForce import StartingForce
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
+
+from util import getObject
 
 
 class RepositoryCreator:
@@ -147,25 +150,23 @@ class RepositoryCreator:
             )
 
             for p in campaignPlanetNames:
-                newPlanet = self.__xml.getObject(p, self.repository.planets)
+                newPlanet = getObject(p, self.repository.planets)
                 newCampaignPlanets.add(newPlanet)
 
             for t in campaignTradeRouteNames:
-                newRoute = self.__xml.getObject(t, self.repository.tradeRoutes)
+                newRoute = getObject(t, self.repository.tradeRoutes)
                 newCampaignTradeRoutes.add(newRoute)
 
             for s in campaignStartingForces:
-                startingForcesEntry = self.getStartingForces(
-                    s,
-                    self.repository.planets,
-                    self.repository.units,
-                    self.repository.factions,
-                )
+                startingForcesEntry = self.getStartingForces(s)
                 newCampaignStartingForces.append(startingForcesEntry)
 
             newCampaign.planets = newCampaignPlanets
             newCampaign.tradeRoutes = newCampaignTradeRoutes
-            newCampaign.startingForces = newCampaignStartingForces
+            newCampaign.startingForces = pd.DataFrame(
+                newCampaignStartingForces,
+                columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
+            )
 
             self.repository.addCampaign(newCampaign)
 
@@ -202,17 +203,14 @@ class RepositoryCreator:
         '''Produces a starting forces object from an XML entry'''
         entry = entry.replace(', ', ' ')
         entry = entry.split()
-        factionName = entry[0]
-        planetName = entry[1]
-        unitName = entry[2]
-
-        faction = self.__xml.getObject(factionName, factionList)
-        planet = self.__xml.getObject(planetName, planetList)
-        unit = self.__xml.getObject(unitName, unitList)
-
-        startingForce = StartingForce(planet, faction, unit)
-
-        return startingForce
+        if len(entry) == 3:
+            factionName = entry[0]
+            planetName = entry[1]
+            unitName = entry[2]
+            return [planetName, 0, factionName, unitName, 1]
+        else:
+            print("Malformed starting forces entry ", entry)
+            return ["Empty", 0, "Neutral", "Empty", 1]
 
     def getStartingForcesLibrary(self, libraryURL: str):
 

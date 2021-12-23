@@ -1,9 +1,9 @@
 import lxml.etree as et
 import os.path
 from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
-from gameObjects.startingForce import StartingForce
 from xmlTools.xmlstructure import XMLStructure
+
+from util import getObject
 
 """ XML with etree:
 
@@ -238,8 +238,8 @@ class XMLReader:
         """Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end"""
         for element in tradeRouteRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
-                start_planet = self.getObject(element.find("Point_A").text, planetList)
-                end_planet = self.getObject(element.find("Point_B").text, planetList)
+                start_planet = getObject(element.find("Point_A").text, planetList)
+                end_planet = getObject(element.find("Point_B").text, planetList)
 
                 return start_planet, end_planet
 
@@ -251,7 +251,11 @@ class XMLReader:
             if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter("Galactic_Position"):
                     outputList = self.commaSepListParser(child.text)
-                    return float(outputList[0]), float(outputList[1])
+                    if len(outputList) == 3:
+                        return float(outputList[0]), float(outputList[1])
+                    else:
+                        print("Planet " + name + " has no proper XYZ location set!")
+                        return 0.0, 0.0
 
         print("Planet " + name + " not found! getLocation")
 
@@ -264,15 +268,6 @@ class XMLReader:
                     return tagFind.text
                 else:
                     return "0"
-
-        print("Object " + name + " not found!")
-
-    def getObject(self, name: str, objectList: set):
-        """Finds a named object in a list of objects and returns it"""
-        for o in objectList:
-            if o.name.lower() == name.lower():
-                if o is not None:
-                    return o
 
         print("Object " + name + " not found!")
 
