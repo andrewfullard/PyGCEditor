@@ -106,6 +106,7 @@ class QtMainWindow(MainWindow):
         self.__planetComboBox: QComboBox = QComboBox()
 
         self.__forcesListTable = QTableView()
+        self.__forcesListTable.setSortingEnabled(True)
 
         self.__planetInfoLabel: QLabel = QLabel()
         # self.__totalPlanetForceLabel: QLabel = QLabel()
