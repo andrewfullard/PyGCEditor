@@ -88,6 +88,7 @@ class QtMainWindow(MainWindow):
         self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
         self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
         self.__forcesListTable = QTableView()
+        self.__forcesListTable.setSortingEnabled(True)
 
         self.__planetInfoLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel: QLabel = QLabel()

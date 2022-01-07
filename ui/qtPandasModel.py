@@ -20,7 +20,8 @@ class PandasModel(QAbstractTableModel):
 
     def setData(self, index, value, role):
         if role == Qt.EditRole:
-            self._data.iloc[index.row(), index.column()] = value
+            self._data.loc[index.row(), index.column()] = value
+            self.dataChanged.emit(index, index)
             return True
         return False
 
@@ -30,3 +31,12 @@ class PandasModel(QAbstractTableModel):
 
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+
+    def sort(self, column, order):
+        colname = self._data.columns.tolist()[column]
+        self.layoutAboutToBeChanged.emit()
+        self._data.sort_values(
+            colname, ascending=order == Qt.AscendingOrder, inplace=True
+        )
+        self._data.reset_index(inplace=True, drop=True)
+        self.layoutChanged.emit()
