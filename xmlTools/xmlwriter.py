@@ -34,17 +34,14 @@ class XMLWriter:
         self.__templateRoot.find(".//Locations").text = planets
         self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
 
-        for startingForce in campaign.startingForces:
-            entry = (
-                startingForce.faction.name
-                + ", "
-                + startingForce.planet.name
-                + ", "
-                + startingForce.unit.name
-            )
-            self.subElementText(
-                campaignElement, "Starting_Forces", entry, tail="\n\t\t"
-            )
+        for index, row in campaign.startingForces.iterrows():
+            i = 0
+            while i < row[4]:
+                i = i + 1
+                entry = str(row[0]) + " , " + str(row[2]) +" , " + str(row[3])
+                self.subElementText(
+                    campaignElement, "Starting_Forces", entry, tail="\n\t\t"
+                )
 
         self.writer(self.__templateTree, outputName=outputName)
 
