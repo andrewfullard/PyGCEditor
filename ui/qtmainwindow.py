@@ -101,6 +101,7 @@ class QtMainWindow(MainWindow):
                 self.__tradeRouteListWidget, False
             )
         )
+        self.__planetCountLabel: QLabel = QLabel()
 
         # Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
@@ -154,13 +155,14 @@ class QtMainWindow(MainWindow):
 
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
-
+        
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
         self.__startingForces.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
 
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
         self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
@@ -169,6 +171,7 @@ class QtMainWindow(MainWindow):
         self.__planetsTradeRoutes.layout().addWidget(
             self.__deselectAllTradeRoutesButton
         )
+
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
@@ -269,6 +272,14 @@ class QtMainWindow(MainWindow):
     def clearTradeRoutes(self) -> None:
         """Helper function to clear traderoute selections from the presenter"""
         self.__uncheckAllTable(self.__tradeRouteListWidget)
+
+    def updatePlanetCountDisplay(self, planets: List[int]) -> None:
+        """Updates count of planets on main window."""
+
+        self.__planetCountLabel.setText(
+            "Planet Count: "
+            + str(len(planets))
+        )
 
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame

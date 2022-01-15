@@ -78,6 +78,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def updatePlanetCountDisplay(self, planets: List[Planet]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def updateTotalFactionForces(self, entry: str) -> None:
         raise NotImplementedError()
 
@@ -174,6 +178,7 @@ class MainWindowPresenter:
             selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
+        self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__plot.plotGalaxy(
             self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets
@@ -221,6 +226,8 @@ class MainWindowPresenter:
                 selectedPlanets.append(self.__planets.index(p))
 
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
+            self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
+
 
         self.__updateAvailableTradeRoutes(self.getSelectedCampaign().planets)
 
