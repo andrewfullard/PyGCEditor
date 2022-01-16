@@ -138,5 +138,14 @@ class Campaign:
             self.__tradeRoutes = value
 
     @property
+    def tradeRoutes(self) -> Set[TradeRoute]:
+        return self.__tradeRoutes
+
+    @tradeRoutes.setter
+    def tradeRoutes(self, value: Set[TradeRoute]) -> None:
+        if value:
+            self.__tradeRoutes = value
+
+    @property
     def era(self) -> int:
         return self.__era
