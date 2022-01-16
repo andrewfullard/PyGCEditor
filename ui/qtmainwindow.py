@@ -270,17 +270,20 @@ class QtMainWindow(MainWindow):
         )
 
     def updatePlanetInfoDisplay(
-        self, planet: Planet, startingForces: pd.DataFrame
+        self, planet: Planet, startingForces: pd.DataFrame, filter: str
     ) -> None:
         """Update starting forces and planet info table widget. Starting forces are optional."""
 
         if startingForces is not None:
-            model = PandasModel(startingForces)
+            model = PandasModel(startingForces, filter)
 
             self.__forcesListTable.setModel(model)
         else:
             model = PandasModel(
-                pd.DataFrame(columns=["Planet", "Era", "Owner", "ObjectType", "Amount"])
+                pd.DataFrame(
+                    columns=["Planet", "Era", "Owner", "ObjectType", "Amount"]
+                ),
+                False,
             )
 
             self.__forcesListTable.setModel(model)

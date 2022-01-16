@@ -301,12 +301,12 @@ class MainWindowPresenter:
 
         campaignForces = self.getSelectedCampaign().startingForces
         try:
-            planetForces = campaignForces[campaignForces["Planet"] == entry]
+            campaignForces["Planet"] == entry
         except KeyError:
-            self.__mainWindow.updatePlanetInfoDisplay(planet, None)
+            self.__mainWindow.updatePlanetInfoDisplay(planet, None, filter=False)
             return
 
-        self.__mainWindow.updatePlanetInfoDisplay(planet, planetForces)
+        self.__mainWindow.updatePlanetInfoDisplay(planet, campaignForces, filter=entry)
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         """Updates position of a planet in the repository"""
