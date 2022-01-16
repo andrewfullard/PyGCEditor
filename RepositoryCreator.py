@@ -1,18 +1,15 @@
 import os
 import pandas as pd
-from typing import List
 
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
-from gameObjects.aiplayer import AIPlayer
 from gameObjects.unit import Unit
 from gameObjects.startingForce import StartingForce
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
-from config import Config
 
 from util import getObject
 
@@ -52,9 +49,10 @@ class RepositoryCreator:
                 else:
                     newplanet.x, newplanet.y = coordinates
 
-                newplanet.starbaseLevel = int(self.__xml.getObjectProperty(name, planetRoot, ".//Max_Space_Base"))
-                newplanet.spaceStructureSlots = int(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Space"))
-                newplanet.groundStructureSlots = int(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Land"))
+                #TODO better way than this hack to convert to int
+                newplanet.starbaseLevel = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Max_Space_Base")))
+                newplanet.spaceStructureSlots = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Space")))
+                newplanet.groundStructureSlots = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Land")))
                 self.repository.addPlanet(newplanet)
 
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
@@ -167,13 +165,11 @@ class RepositoryCreator:
 
             newCampaign.planets = newCampaignPlanets
             newCampaign.tradeRoutes = newCampaignTradeRoutes
+            # TODO sum up identical entries into the Amount column
             newCampaign.startingForces = pd.DataFrame(
                 newCampaignStartingForces,
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
-            
-            #Loads generated forces automatically
-            #newCampaign.startingForces = self.getStartingForcesLibrary(Config().startingForcesLibraryURL)
 
             self.repository.addCampaign(newCampaign)
 
@@ -208,7 +204,7 @@ class RepositoryCreator:
     
     def getStartingForces(self, entry: str) -> StartingForce:
         '''Produces a starting forces object from an XML entry'''
-        entry = entry.replace(', ', ' ')
+        entry = entry.replace(',', ' ')
         entry = entry.split()
         if len(entry) == 3:
             factionName = entry[0]

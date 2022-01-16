@@ -19,26 +19,6 @@ class DisplayHelpers:
         self.repository = repository
         self.campaigns = campaigns
 
-    """
-    def calculateForcesSum(self, index: int) -> str:
-        '''Calculates the total forces of a given faction in the map, and returns them as a text string for display'''
-        factionForces = []
-        
-        for faction, group in groupby(self.__sortInput(index), key = lambda entry: entry.faction):
-            factionPower = 0
-            for entry in group:
-                if entry is not None:
-                    if entry.unit is not None:
-                        factionPower += entry.unit.combatPower
-            factionForces.append([faction, factionPower])
-
-        totalForcesText = ""
-        for entry in factionForces:
-            totalForcesText += entry[0].name + ": " + str(entry[1]) +", "
-
-        return totalForcesText
-    """
-
     def getPlanetOwners(self, index: int, planetList: List[Planet]) -> List[Faction]:
         """Gets a list of owners of planets in the GC selected by index"""
         owners_names = []
@@ -54,11 +34,17 @@ class DisplayHelpers:
         """Gets the owner of a planet in the GC selected by index and era"""
 
         try:
-            planet_info = self.campaigns[index].startingForces["Planet"][planet]
+            sf = self.campaigns[index].startingForces
+            planet_info = sf.loc[(sf.Planet == planet)].groupby(sf.Planet).head(1)
         except KeyError:
             return self.__getNeutralFaction()
 
-        return planet_info["Era"].values[0]
+        try:
+            faction_name = planet_info.values[0][2]
+        except IndexError:
+            return self.__getNeutralFaction()
+
+        return getObject(faction_name, self.repository.factions)
 
     def __getNeutralFaction(self) -> Faction:
         """Gets the Neutral faction entry, if possible"""
@@ -67,8 +53,3 @@ class DisplayHelpers:
                 return faction
 
         print("Error! Neutral faction not found!")
-
-    def __sortInput(self, index: int) -> List[StartingForce]:
-        return sorted(
-            self.campaigns[index].startingForces, key=lambda entry: entry.faction.name
-        )

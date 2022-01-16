@@ -111,6 +111,7 @@ class MainWindowPresenter:
 
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
+        self.__planetOwners: List[Faction] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
@@ -157,9 +158,7 @@ class MainWindowPresenter:
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__plot.plotGalaxy(
-            self.__checkedPlanets, self.__checkedTradeRoutes, self.__planets
-        )
+        self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, indexes: list) -> None:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
@@ -246,7 +245,7 @@ class MainWindowPresenter:
 
         # self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
 
-        planetOwners = self.__helper.getPlanetOwners(index, self.__checkedPlanets)
+        self.__planetOwners = self.__helper.getPlanetOwners(index, self.__checkedPlanets)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
@@ -463,6 +462,7 @@ class MainWindowPresenter:
             self.__checkedPlanets,
             self.__checkedTradeRoutes,
             self.__planets,
+            self.__planetOwners,
             autoPlanetConnectionDistance = autoConnectionDistance,
         )
 
