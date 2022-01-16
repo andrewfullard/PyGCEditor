@@ -27,6 +27,8 @@ class XMLWriter:
         ).text = campaign.startingActivePlayer
         self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
         self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
+        self.__templateRoot.find(".//Era_Start").text = campaign.eraStart
+
         self.__templateRoot.find(
             ".//Underworld_Story_Name"
         ).text = campaign.underworldStoryName

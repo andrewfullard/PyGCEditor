@@ -18,5 +18,14 @@
 		<Trade_Routes>
 		</Trade_Routes>
 
+		<Starting_Active_Player>Rebel</Starting_Active_Player>
+
+		<Era_Start>1</Era_Start>
+
+		<Rebel_Story_Name></Rebel_Story_Name>
+		<Empire_Story_Name></Empire_Story_Name>
+		<Underworld_Story_Name></Underworld_Story_Name>
+		
+		
     </Campaign>
 </Campaigns>
