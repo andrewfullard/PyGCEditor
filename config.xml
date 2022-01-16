@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Config>
-    <DataPath>C:/Program Files (x86)/Steam/SteamApps/common/Star Wars Empire at War/corruption/Mods/Source/Data</DataPath>
+    <DataPath>C:\Program Files (x86)\Steam\steamapps\common\Star Wars Empire at War\corruption\Mods\Editor\Data</DataPath>
     <StartingForcesLibraryURL>http://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=1vAFaQ1Xu4ygGcgPlucXPBvmZTWpEnkDBKIThoIQoIhY&amp;exportFormat=csv&amp;gid=1709445525</StartingForcesLibraryURL>
 </Config>

@@ -23,6 +23,11 @@ class QtCampaignProperties:
         self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
+
+        self.__importStartingForcesButton: QPushButton = QPushButton("Import Default Forces")
+        self.__importStartingForcesButton.clicked.connect(
+            self.__importStartingForcesButtonClicked
+        )
       
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -41,6 +46,7 @@ class QtCampaignProperties:
         self.__formLayout.addRow("Empire Story Name", self.__empireStoryName)
         self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
 
+        self.__buttonLayout.layout().addWidget(self.__importStartingForcesButton)
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
         
@@ -52,6 +58,8 @@ class QtCampaignProperties:
         self.__dialog.resize(500, 300)
 
         self.__result = DialogResult.Cancel
+
+        
 
         # self.__repository = repository
 
@@ -92,6 +100,10 @@ class QtCampaignProperties:
         self.__campaign.underworldStoryName = self.__underworldStoryName.text()
 
         return self.__campaign 
+
+    def __importStartingForcesButtonClicked(self) -> None:
+        """Imports all starting forces from spreadsheets"""
+        self.__campaign.startingForces = GameObjectRepository.startingForcesLibrary
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking'''

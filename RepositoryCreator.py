@@ -12,6 +12,7 @@ from gameObjects.unit import Unit
 from gameObjects.startingForce import StartingForce
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
+from config import Config
 
 from util import getObject
 
@@ -182,6 +183,9 @@ class RepositoryCreator:
                 newCampaignStartingForces,
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
+            
+            #Loads generated forces automatically
+            #newCampaign.startingForces = self.getStartingForcesLibrary(Config().startingForcesLibraryURL)
 
             self.repository.addCampaign(newCampaign)
 
