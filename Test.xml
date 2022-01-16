@@ -1,0 +1,448 @@
+<?xml version='1.0' encoding='ASCII'?>
+<Campaigns>
+	<Campaign Name="Sandbox_FTGU_Zsinj">
+
+		<Campaign_Set> Sandbox_FTGU </Campaign_Set>
+		<Sort_Order>29</Sort_Order>
+
+		<Text_ID> TEXT_CAMPAIGN_SINGLE_FTGU </Text_ID>
+		<Description_Text> TEXT_CAMPAIGN_SINGLE_DESCRIPTION_FTGU </Description_Text>
+
+		<Camera_Shift_X> 0.0 </Camera_Shift_X>
+		<Camera_Shift_Y> 0.0 </Camera_Shift_Y>
+		<Camera_Distance> 1000.0 </Camera_Distance>
+
+		<Locations>
+			Agamar,
+			Antemeridias,
+			Axxila,
+			Bandomeer,
+			Belsmuth,
+			Bimmiel,
+			Bimmisaari,
+			Bonadan,
+			Brentaal,
+			Carida,
+			Cauldron_Nebula,
+			Celanon,
+			Centares,
+			Chandrila,
+			Charros,
+			Ciutric,
+			Columex,
+			Comkin,
+			Contruum,
+			Corsin,
+			Corulag,
+			Coruscant,
+			Corvis_Minor,
+			Dathomir,
+			Desevro,
+			Emmer,
+			EolSha,
+			Ession,
+			Etti,
+			Felucia,
+			Feriae_Junction,
+			Galaxy_Core_Art_Model,
+			Garos,
+			Gravan,
+			Hast,
+			Hewett,
+			Jomark,
+			Kauron,
+			Korriban,
+			Levian,
+			Lianna,
+			Liinade,
+			Mandalore,
+			Maridun,
+			Metalorn,
+			Mon_Calamari,
+			Myrkr,
+			Nespis,
+			Obroa_Skai,
+			Ossus,
+			Paarin_Minor,
+			Phindar,
+			Poderis,
+			Roche,
+			Ryvester,
+			Selaggis,
+			Serenno,
+			Sifkric,
+			Tangrene,
+			Taris,
+			Tartaglia,
+			Telos,
+			Thanos,
+			Togoria,
+			Vrosynri,
+			Wayland,
+			Yavin,
+</Locations>
+
+		<Trade_Routes>
+			Agamar_Bimmiel,
+			Agamar_Paarin_Minor,
+			Antemeridias_Centares,
+			Antemeridias_Columex,
+			Antemeridias_Ryvester,
+			Axxila_Celanon,
+			Axxila_Dathomir,
+			Axxila_Liinade,
+			Axxila_Tangrene,
+			Bandomeer_Dathomir,
+			Bandomeer_Mandalore,
+			Bandomeer_Wayland,
+			Belsmuth_Celanon,
+			Belsmuth_Dathomir,
+			Belsmuth_Garos,
+			Belsmuth_Phindar,
+			Belsmuth_Yavin,
+			Bimmiel_Cauldron_Nebula,
+			Bimmisaari_Charros,
+			Bimmisaari_Jomark,
+			Bimmisaari_Mon_Calamari,
+			Bonadan_Ession,
+			Bonadan_Etti,
+			Brentaal_Carida,
+			Brentaal_Chandrila,
+			Brentaal_Poderis,
+			Carida_Gravan,
+			Carida_Togoria,
+			Cauldron_EolSha,
+			Cauldron_Nebula_Kauron,
+			Celanon_Feriae_Junction,
+			Centares_Jomark,
+			Centares_Phindar,
+			Centares_Roche,
+			Chandrila_Corulag,
+			Charros_Thanos,
+			Ciutric_Corvis_Minor,
+			Ciutric_Hewett,
+			Ciutric_Liinade,
+			Ciutric_Vrosynri,
+			Columex_Lianna,
+			Columex_Maridun,
+			Columex_Ossus,
+			Comkin_Corsin,
+			Comkin_Levian,
+			Contruum_Garos,
+			Contruum_Gravan,
+			Contruum_Mandalore,
+			Contruum_Roche,
+			Contruum_Thanos,
+			Corsin_Hewett,
+			Corsin_Sifkric,
+			Corsin_Tartaglia,
+			Corulag_Coruscant,
+			Corvis_Minor_Tangrene,
+			Dathomir_Selaggis,
+			Desevro_Emmer,
+			Desevro_Ession,
+			Desevro_Lianna,
+			Emmer_Ession,
+			Emmer_Mon_Calamari,
+			EolSha_Etti,
+			Ession_Etti,
+			Ession_Hast,
+			Etti_Telos,
+			Felucia_Lianna,
+			Felucia_Yavin,
+			Feriae_Junction_Serenno,
+			Feriae_Junction_Tangrene,
+			Garos_Phindar,
+			Gravan_Obroa_Skai,
+			Hast_Mon_Calamari,
+			Hewett_Paarin_Minor,
+			Jomark_Metalorn,
+			Jomark_Nespis,
+			Jomark_Ryvester,
+			Kauron_Serenno,
+			Kauron_Tangrene,
+			Kauron_Telos,
+			Korriban_Telos,
+			Korriban_Yavin,
+			Levian_Myrkr,
+			Levian_Obroa_Skai,
+			Levian_Sifkric,
+			Maridun_Phindar,
+			Metalorn_Roche,
+			Mon_Calamari_Nespis,
+			Mon_Calamari_Ossus,
+			Myrkr_Wayland,
+			Nespis_Ossus,
+			Obroa_Skai_Poderis,
+			Paarin_Minor_Tartaglia,
+			Roche_Thanos,
+			Selaggis_Taris,
+			Serenno_Yavin,
+			Taris_Wayland,
+			Thanos_Togoria,
+</Trade_Routes>
+
+		<Starting_Active_Player> Pirates </Starting_Active_Player>
+
+		<Era_Start>5</Era_Start>
+
+		<Rebel_Story_Name>Conquests\FTGU\Story_Plots_Sandbox_FTGU_Rebel.xml</Rebel_Story_Name>
+		<Empire_Story_Name>Conquests\FTGU\Story_Plots_Sandbox_FTGU_Empire.xml</Empire_Story_Name>
+		<Underworld_Story_Name>Conquests\FTGU\Story_Plots_Sandbox_FTGU_Container.xml</Underworld_Story_Name>
+		
+    <Starting_Forces>Celanon , Pirates , Empire_Star_Base_2</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Zsinj_Shipyard_Level_Two</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Nebulon_B_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , CR90_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , CR90_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Zsinj_MoffPalace</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Z_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Rancor_Base</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Empire_Star_Base_2</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Remnant_Capital</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_AT_ST_Company</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Generic_Victory_Destroyer_Two</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Centares , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Columex , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Katana_Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Katana_Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Carida , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Alliance_Assault_frigate</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Corellian_Gunboat</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Alliance_Assault_frigate</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Dreadnaught_Rebel</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , NewRep_Senate</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Alliance_Assault_Frigate</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Empire_Star_Base_2</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Zsinj_Shipyard_Level_Two</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Nebulon_B_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , CR90_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , CR90_Zsinj</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Zsinj_MoffPalace</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Z_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Rancor_Base</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Celanon , Pirates , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Empire_Star_Base_2</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Remnant_Capital</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Coruscant , Empire , Imperial_AT_ST_Company</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Bonadan , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Generic_Victory_Destroyer_Two</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Centares , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Centares , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Selaggis , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Roche , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Generic_Venator</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Bandomeer , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Vindicator_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Carrack_Cruiser</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Columex , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Columex , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Katana_Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Katana_Dreadnaught_Empire</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Strike_Cruiser</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Escort_Carrier</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Lancer_Frigate</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Empire_MoffPalace</Starting_Forces>
+		<Starting_Forces>Carida , Empire , E_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Carida , Empire , Imperial_Stormtrooper_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Alliance_Assault_frigate</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Corellian_Gunboat</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Yavin , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Alliance_Assault_frigate</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Mon_Calamari , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Chandrila , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Dreadnaught_Rebel</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , BAC</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Corellian_Corvette</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , R_Ground_Barracks</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , NewRep_Senate</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Contruum , Rebel , Rebel_T2B_Company</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Sacheen</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Quaser</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Alliance_Assault_Frigate</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , NewRep_SenatorsOffice</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , Rebel_Infantry_Squad</Starting_Forces>
+		<Starting_Forces>Hast , Rebel , R_Ground_Barracks</Starting_Forces>
+		</Campaign>
+</Campaigns>

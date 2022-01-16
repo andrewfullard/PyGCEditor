@@ -138,6 +138,9 @@ class RepositoryCreator:
             newCampaign.descriptionText = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Description_Text"
             )
+            newCampaign.eraStart = self.__xml.getValueFromXMLRoot(
+                campaignRoot, ".//Era_Start"
+            )
             newCampaign.startingActivePlayer = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Starting_Active_Player"
             )
