@@ -278,3 +278,10 @@ class XMLReader:
             result.append(child.text)
 
         return result
+
+    def getVariantOfValue(self, name: str, XMLRoot) -> str:
+        for element in XMLRoot.iter():
+            if str(element.get("Name")).lower() == name.lower():
+                for child in element.iter("Variant_Of_Existing_Type"):
+                    return child.text
+        return ""

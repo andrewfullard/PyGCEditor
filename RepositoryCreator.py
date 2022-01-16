@@ -206,7 +206,7 @@ class RepositoryCreator:
             return None
 
     
-    def getStartingForces(self, entry: str, planetList: set, unitList: set, factionList: set) -> StartingForce:
+    def getStartingForces(self, entry: str) -> StartingForce:
         '''Produces a starting forces object from an XML entry'''
         entry = entry.replace(', ', ' ')
         entry = entry.split()

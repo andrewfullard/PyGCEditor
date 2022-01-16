@@ -10,10 +10,16 @@ class PandasModel(QAbstractTableModel):
         self._mask = self._data[self._filter_column] == self._filter
 
     def rowCount(self, index):
-        return self._data.shape[0]
+        if self._filter:
+            return self._data.loc[self._mask].shape[0]
+        else:
+            return self._data.shape[0]
 
     def columnCount(self, parent=None):
-        return self._data.shape[1]
+        if self._filter:
+            return self._data.loc[self._mask].shape[1]
+        else:
+            return self._data.shape[1]
 
     def data(self, index, role=Qt.DisplayRole):
         if index.isValid():

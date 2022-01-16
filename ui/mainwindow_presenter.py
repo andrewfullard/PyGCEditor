@@ -16,7 +16,7 @@ from gameObjects.faction import Faction
 from gameObjects.campaign import Campaign
 from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
-from xmlUtil.xmlstructure import XMLStructure
+from xmlTools.xmlstructure import XMLStructure
 from DisplayHelpers import DisplayHelpers
 from gameObjects.unit import Unit
 
@@ -463,7 +463,7 @@ class MainWindowPresenter:
             self.__checkedPlanets,
             self.__checkedTradeRoutes,
             self.__planets,
-            autoConnectionDistance,
+            autoPlanetConnectionDistance = autoConnectionDistance,
         )
 
     @property
