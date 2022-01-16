@@ -2,9 +2,12 @@ from PyQt5.QtCore import QAbstractTableModel, Qt
 
 
 class PandasModel(QAbstractTableModel):
-    def __init__(self, data):
+    def __init__(self, data, filter):
         super().__init__()
         self._data = data
+        self._filter = filter
+        self._filter_column = "Planet"
+        self._mask = self._data[self._filter_column] == self._filter
 
     def rowCount(self, index):
         return self._data.shape[0]
@@ -15,12 +18,19 @@ class PandasModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         if index.isValid():
             if role == Qt.DisplayRole or role == Qt.EditRole:
-                value = self._data.iloc[index.row(), index.column()]
+                if self._filter:
+                    # Attempt to filter the view in-place
+                    value = self._data.loc[self._mask].iat[index.row(), index.column()]
+                else:
+                    value = self._data.iloc[index.row(), index.column()]
                 return str(value)
 
     def setData(self, index, value, role):
         if role == Qt.EditRole:
-            self._data.loc[index.row(), index.column()] = value
+            if self._filter:
+                self._data.iloc[self._mask, (index.row(), index.column()),] = value
+            else:
+                self._data.loc[index.row(), index.column()] = value
             self.dataChanged.emit(index, index)
             return True
         return False
