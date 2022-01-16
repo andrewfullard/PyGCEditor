@@ -19,7 +19,7 @@ class GameObjectRepository:
         self.__factions: Set[Faction] = set()
         self.__aiplayers: Set[AIPlayer] = set()
         self.__units: Set[Unit] = set()
-        self.__startingForcesLibrary: pd.DataFrame
+        self.__startingForcesLibrary: pd.DataFrame = pd.DataFrame()
 
     def addCampaign(self, campaign: Campaign) -> None:
         """Add a Campaign to the repository"""
@@ -141,7 +141,7 @@ class GameObjectRepository:
         return set(self.__units)
 
     @property
-    def startingForcesLibrary(self):
+    def startingForcesLibrary(self) -> pd.DataFrame:
         return self.__startingForcesLibrary
 
     @startingForcesLibrary.setter

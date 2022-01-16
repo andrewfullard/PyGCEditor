@@ -34,7 +34,8 @@ class PandasModel(QAbstractTableModel):
     def setData(self, index, value, role):
         if role == Qt.EditRole:
             if self._filter:
-                self._data.iloc[self._mask, (index.row(), index.column()),] = value
+                start_index = self._data.loc[self._mask].index[0]
+                self._data.iloc[index.row() + start_index, index.column()] = value
             else:
                 self._data.loc[index.row(), index.column()] = value
             self.dataChanged.emit(index, index)
