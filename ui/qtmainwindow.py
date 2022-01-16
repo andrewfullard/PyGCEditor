@@ -115,6 +115,11 @@ class QtMainWindow(MainWindow):
         # self.__totalFactionForceLabel: QLabel = QLabel()
         # self.__totalPlanetForceLabel.setText("Select a campaign to see total starting forces per faction")
 
+        self.__importStartingForcesButton: QPushButton = QPushButton("Import Default Forces")
+        self.__importStartingForcesButton.clicked.connect(
+            self.__importStartingForcesButtonClicked
+        )
+
         # set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
         self.__fileMenu: QMenu = QMenu("File", self.__window)
@@ -176,6 +181,8 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
+        self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
+
         # self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         # self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
 
@@ -392,6 +399,8 @@ class QtMainWindow(MainWindow):
             self.__uncheckAllTable(table)
 
             self.__presenter.allPlanetsChecked(False)
+    def __importStartingForcesButtonClicked(self) -> None:
+        """Imports all starting forces from spreadsheets"""
 
     def __selectAllTradeRoutesButtonClicked(
         self, table: QTableWidget, checked: bool
