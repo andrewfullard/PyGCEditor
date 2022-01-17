@@ -133,6 +133,11 @@ class MainWindowPresenter:
         self.newTradeRouteCommand = None
         self.campaignPropertiesCommand = None
 
+    
+    def importStartingForces(self) -> None:
+        """Imports all starting forces from spreadsheets"""
+        self.getSelectedCampaign().startingForces = self.__repository.startingForcesLibrary
+
     def onDataFolderChanged(self, folder: str) -> None:
         """Updates the repository and refreshes the main window when a new data folder is selected"""
         self.__repository.emptyRepository()

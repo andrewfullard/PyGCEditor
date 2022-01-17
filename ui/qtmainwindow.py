@@ -34,7 +34,6 @@ from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.unit import Unit
 
-
 class QtMainWindow(MainWindow):
     """Qt based window"""
 
@@ -53,6 +52,11 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
         self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
         self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
+
+        self.__importStartingForcesButton: QPushButton = QPushButton("Import Default Forces")
+        self.__importStartingForcesButton.clicked.connect(
+            self.__importStartingForcesButtonClicked
+        )
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
@@ -163,6 +167,8 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
+        self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
+
 
         # self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         # self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
@@ -405,6 +411,10 @@ class QtMainWindow(MainWindow):
         """Presents a selected campaign"""
         self.__presenter.onCampaignSelected(index)
 
+    def __importStartingForcesButtonClicked(self) -> None:
+        """Imports all starting forces from spreadsheets"""
+        self.__presenter.importStartingForces()
+    
     def __onPlanetSelected(self, index: int) -> None:
         """Presents a selected planet's starting forces"""
         entry = self.__planetComboBox.currentText()
