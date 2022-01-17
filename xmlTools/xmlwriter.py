@@ -40,10 +40,12 @@ class XMLWriter:
             i = 0
             while i < row[4]:
                 i = i + 1
-                entry = str(row[0]) + " , " + str(row[2]) +" , " + str(row[3])
-                self.subElementText(
-                    campaignElement, "Starting_Forces", entry, tail="\n\t\t"
-                )
+                entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
+                for planet in campaign.planets: 
+                    if planet.name.upper() == row[0]:
+                        self.subElementText(
+                            campaignElement, "Starting_Forces", entry, tail="\n\t\t"
+                        )
 
         self.writer(self.__templateTree, outputName=outputName)
 
