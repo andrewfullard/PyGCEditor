@@ -161,8 +161,8 @@ class MainWindowPresenter:
                 self.__checkedPlanets.remove(self.__planets[index])
                 self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
-
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
+        self.__planetOwners = self.__helper.getPlanetOwners(self.__selectedCampaignIndex, self.__checkedPlanets)
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, indexes: list) -> None:
@@ -183,6 +183,7 @@ class MainWindowPresenter:
             selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
+        self.__planetOwners = self.__helper.getPlanetOwners(self.__selectedCampaignIndex, self.__checkedPlanets)
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
