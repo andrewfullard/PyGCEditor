@@ -65,7 +65,7 @@ class XMLWriter:
                 route, "Political_Control_Gain", "0"
             )
             creditGainFactor = self.subElementText(route, "Credit_Gain_Factor", "0")
-            visibleLineName = self.subElementText(route, "Visible_Line_Name", "None")
+            visibleLineName = self.subElementText(route, "Visible_Line_Name", "DEFAULT")
 
         self.writer(tradeRoutesTree, outputName="NewTradeRoutes.xml")
 
