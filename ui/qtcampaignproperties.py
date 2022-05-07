@@ -7,7 +7,7 @@ from ui.dialogs import Dialog, DialogResult
 
 class QtCampaignProperties:
     '''Class for a "campaign properties" dialog box'''
-    def __init__(self, repository: GameObjectRepository):
+    def __init__(self, campaign = Campaign()):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
@@ -15,7 +15,15 @@ class QtCampaignProperties:
 
         self.__inputName: QLineEdit = QLineEdit(self.__dialog)
         self.__inputSetName: QLineEdit = QLineEdit(self.__dialog)
-      
+        self.__inputSortOrder: QLineEdit = QLineEdit(self.__dialog)
+        self.__inputTextID: QLineEdit = QLineEdit(self.__dialog)
+        self.__inputDescriptionText: QLineEdit = QLineEdit(self.__dialog)
+        self.__eraStart: QLineEdit = QLineEdit(self.__dialog)
+        self.__startingActivePlayer: QLineEdit = QLineEdit(self.__dialog)
+        self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
+        self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
+        self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
+     
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
         
@@ -24,6 +32,14 @@ class QtCampaignProperties:
 
         self.__formLayout.addRow("Campaign Name", self.__inputName)
         self.__formLayout.addRow("Campaign Set Name", self.__inputSetName)
+        self.__formLayout.addRow("Text ID", self.__inputTextID)
+        self.__formLayout.addRow("Sort Order", self.__inputSortOrder)
+        self.__formLayout.addRow("Description Text", self.__inputDescriptionText)
+        self.__formLayout.addRow("Starting Era", self.__eraStart)
+        self.__formLayout.addRow("Starting Active Player", self.__startingActivePlayer)
+        self.__formLayout.addRow("Rebel Story Name", self.__rebelStoryName)
+        self.__formLayout.addRow("Empire Story Name", self.__empireStoryName)
+        self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
 
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
@@ -33,39 +49,55 @@ class QtCampaignProperties:
 
         self.__dialog.setWindowTitle("Campaign Properties")      
         self.__dialog.setLayout(self.__layout)
+        self.__dialog.resize(500, 300)
 
         self.__result = DialogResult.Cancel
 
-        self.__repository = repository
+        
+
+        # self.__repository = repository
 
         self.__name = ""
         self.__setName = ""
-       
-    def show(self, name = -1) -> DialogResult:
-        '''Display dialog modally'''
-        if name is not -1:
-            campaignList = list(self.__repository.campaigns)
-            campaign = next((x for x in campaignList if x.name == name), None)
-            if campaign is not None:
-                self.__inputName.setText(campaign.name)
-                self.__inputSetName.setText(campaign.setName)
-            else:
-                print("Campaign " + campaign + " missing from repository")
 
+        self.__campaign = campaign or Campaign()
+       
+    def show(self) -> DialogResult:
+        '''Display dialog modally'''
+
+        self.__inputName.setText(self.__campaign.name)
+        self.__inputSetName.setText(self.__campaign.setName)
+        self.__inputSortOrder.setText(self.__campaign.sortOrder)
+        self.__inputTextID.setText(self.__campaign.textID)
+        self.__inputDescriptionText.setText(self.__campaign.descriptionText)
+        self.__eraStart.setText(self.__campaign.eraStart)
+        self.__startingActivePlayer.setText(self.__campaign.startingActivePlayer)
+        self.__rebelStoryName.setText(self.__campaign.rebelStoryName)
+        self.__empireStoryName.setText(self.__campaign.empireStoryName)
+        self.__underworldStoryName.setText(self.__campaign.underworldStoryName)
+        
         self.__dialog.exec()
         return self.__result
 
     def getCampaignProperties(self) -> Campaign:
         '''Returns the Campaign properties'''
-        campaign: Campaign = Campaign(self.__name)
-        campaign.setName = self.__setName
 
-        return campaign 
+        self.__campaign.name = self.__inputName.text()
+        self.__campaign.setName = self.__inputSetName.text()
+        self.__campaign.sortOrder = self.__inputSortOrder.text()
+        self.__campaign.textID = self.__inputTextID.text()
+        self.__campaign.descriptionText = self.__inputDescriptionText.text()
+        self.__campaign.eraStart = self.__eraStart.text()
+        self.__campaign.startingActivePlayer = self.__startingActivePlayer.text()
+        self.__campaign.rebelStoryName = self.__rebelStoryName.text()
+        self.__campaign.empireStoryName = self.__empireStoryName.text()
+        self.__campaign.underworldStoryName = self.__underworldStoryName.text()
+
+        return self.__campaign 
 
     def __okayClicked(self) -> None:
         '''Okay button handler. Performs minor error checking'''
         self.__name = self.__inputName.text()
-        self.__setName = self.__inputSetName.text()
 
         if len(self.__name) == 0:
             print("Error! No campaign name set!")

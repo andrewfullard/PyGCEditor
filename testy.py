@@ -24,7 +24,9 @@ else:
 app = QApplication([])
 
 repositoryCreator: RepositoryCreator = RepositoryCreator()
-repository = repositoryCreator.constructRepository(path)
+repository = repositoryCreator.constructRepository(
+    path, config.startingForcesLibraryURL
+)
 
 dialogFactory = DialogFactory(repository)
 

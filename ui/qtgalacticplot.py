@@ -30,7 +30,7 @@ class QtGalacticPlot(QWidget):
         self.__planetNames = []
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets, autoPlanetConnectionDistance: int = 0) -> None:
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         self.__axes.clear()
 
@@ -48,7 +48,7 @@ class QtGalacticPlot(QWidget):
             y.append(p.y)
             self.__planetNames.append(p.name)
 
-        self.__planetsScatter = self.__axes.scatter(x, y, c = 'b', alpha = 0.1, picker = 5)
+        self.__planetsScatter = self.__axes.scatter(x, y, c = 'grey', alpha = 0.1, picker = 5, zorder=2)
 
         x1 = 0        
         y1 = 0
@@ -62,7 +62,7 @@ class QtGalacticPlot(QWidget):
             x2 = t.end.x
             y2 = t.end.y
             # plot each route (start, end)            
-            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.4)
+            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.4, zorder=1)
         
         #Create automatic connections between planets
         if autoPlanetConnectionDistance > 0:
@@ -72,16 +72,25 @@ class QtGalacticPlot(QWidget):
                         break
                     dist: float = p1.distanceTo(p2)
                     if dist < autoPlanetConnectionDistance:
-                        self.__axes.plot([p1.x, p2.x], [p1.y, p2.y], 'k-', alpha=0.1)
+                        self.__axes.plot([p1.x, p2.x], [p1.y, p2.y], 'k-', alpha=0.1, zorder=1)
 
         x = []
         y = []
 
-        for p in planets:
-            x.append(p.x)
-            y.append(p.y)
+        if planetOwners:        
+            color = []
+            for p, f in zip(planets, planetOwners):
+                x.append(p.x)
+                y.append(p.y)
+                color.append(tuple(f.color))
 
-        self.__axes.scatter(x, y, c = 'b')
+            self.__axes.scatter(x, y, c = color, edgecolors = 'black', zorder=4)
+        else:
+            for p in planets:
+                x.append(p.x)
+                y.append(p.y)
+
+            self.__axes.scatter(x, y, c = 'grey', zorder=3)
 
         self.__galacticPlotCanvas.draw_idle()
 
@@ -100,7 +109,10 @@ class QtGalacticPlot(QWidget):
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
-            contains, ind = self.__planetsScatter.contains(event)
+            if self.__planetsScatter:
+                contains, ind = self.__planetsScatter.contains(event)
+            else:
+                contains = False
 
             if contains:
                 self.__update_annotation(ind)

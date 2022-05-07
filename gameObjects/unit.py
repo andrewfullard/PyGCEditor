@@ -1,4 +1,4 @@
-'''Unit class definition'''
+"""Unit class definition"""
 
 
 class Unit:
