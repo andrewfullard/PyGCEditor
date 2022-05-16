@@ -185,8 +185,9 @@ class XMLReader:
         for element in XMLRoot:
             if element.get("Name") is not None:
                 colorElement = element.find("Color")
+                basic_ai = element.find("Basic_AI")
                 color = [float(x.strip()) / 255 for x in colorElement.text.split(",")]
-                factionList.append([element.get("Name"), color])
+                factionList.append([element.get("Name"), basic_ai, color])
 
         return factionList
 
