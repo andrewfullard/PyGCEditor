@@ -232,6 +232,8 @@ class QtMainWindow(MainWindow):
         self.__planetListWidget.setRowCount(0)
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
+        self.__factionListWidget.clearContents()
+        self.__factionListWidget.setRowCount(0)
         self.__campaignComboBox.clear()
 
         self.__planetComboBox.clear()
