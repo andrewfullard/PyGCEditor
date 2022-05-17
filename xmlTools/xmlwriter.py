@@ -12,40 +12,42 @@ class XMLWriter:
 
     def campaignWriter(self, campaign, outputName: str) -> None:
         """Writes a campaign to file"""
+
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
-        campaignElement = self.__templateRoot.find(".//Campaign")
+        for playableFaction in campaign.playableFactions:
+            campaignElement = self.__templateRoot.find(".//Campaign")
 
-        campaignElement.set("Name", campaign.name)
-        self.__templateRoot.find(".//Campaign_Set").text = campaign.setName
-        self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
-        self.__templateRoot.find(".//Text_ID").text = campaign.textID
-        self.__templateRoot.find(".//Description_Text").text = campaign.descriptionText
-        self.__templateRoot.find(
-            ".//Starting_Active_Player"
-        ).text = campaign.startingActivePlayer
-        self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
-        self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
-        self.__templateRoot.find(".//Era_Start").text = campaign.eraStart
+            campaignElement.set("Name", campaign.name + "_" + playableFaction.name)
+            self.__templateRoot.find(".//Campaign_Set").text = campaign.setName
+            self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
+            self.__templateRoot.find(".//Text_ID").text = campaign.textID
+            self.__templateRoot.find(".//Description_Text").text = campaign.descriptionText
+            self.__templateRoot.find(
+                ".//Starting_Active_Player"
+            ).text = playableFaction.name
+            self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
+            self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
+            self.__templateRoot.find(".//Era_Start").text = campaign.eraStart
 
-        self.__templateRoot.find(
-            ".//Underworld_Story_Name"
-        ).text = campaign.underworldStoryName
+            self.__templateRoot.find(
+                ".//Underworld_Story_Name"
+            ).text = campaign.underworldStoryName
 
-        self.__templateRoot.find(".//Locations").text = planets
-        self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+            self.__templateRoot.find(".//Locations").text = planets
+            self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
 
-        for index, row in campaign.startingForces.iterrows():
-            i = 0
-            while i < row[4]:
-                i = i + 1
-                entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
-                for planet in campaign.planets: 
-                    if planet.name.upper() == row[0]:
-                        self.subElementText(
-                            campaignElement, "Starting_Forces", entry, tail="\n\t\t"
-                        )
+            for index, row in campaign.startingForces.iterrows():
+                i = 0
+                while i < row[4]:
+                    i = i + 1
+                    entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
+                    for planet in campaign.planets: 
+                        if planet.name.upper() == row[0]:
+                            self.subElementText(
+                                campaignElement, "Starting_Forces", entry, tail="\n\t\t"
+                            )
 
         self.writer(self.__templateTree, outputName=outputName)
 

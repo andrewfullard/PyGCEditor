@@ -35,6 +35,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def addFactions(self, factions: List[str]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         raise NotImplementedError()
 
@@ -112,6 +116,7 @@ class MainWindowPresenter:
         self.campaigns: List[Campaign] = list()
         self.__planets: List[Planet] = list()
         self.__planetOwners: List[Faction] = list()
+        self.__playableFactions: List[Faction] = list()
         self.__tradeRoutes: List[TradeRoute] = list()
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
@@ -120,6 +125,7 @@ class MainWindowPresenter:
         self.__selectedCampaignIndex: int = 0
 
         self.__checkedPlanets: Set[Planet] = set()
+        self.__checkedPlayableFactions: Set[Faction] = set()
         self.__checkedTradeRoutes: Set[TradeRoute] = set()
 
         self.__showAutoConnections = True
@@ -202,6 +208,17 @@ class MainWindowPresenter:
                 self.getSelectedCampaign().tradeRoutes.remove(self.__availableTradeRoutes[index])
 
         self.__updateGalacticPlot()
+
+    def onFactionChecked(self, index: int, checked: bool) -> None:
+        """If a faction is checked by the user, add it to the selected campaign"""
+        if checked:
+            if self.__playableFactions[index] not in self.__checkedPlayableFactions:
+                self.__checkedPlayableFactions.add(self.__playableFactions[index])
+                self.getSelectedCampaign().playableFactions.add(self.__playableFactions[index])
+        else:
+            if self.__playableFactions[index] in self.__checkedPlayableFactions:
+                self.__checkedPlayableFactions.remove(self.__playableFactions[index])
+                self.getSelectedCampaign().playableFactions.remove(self.__playableFactions[index])
 
     def onCampaignSelected(self, index: int) -> None:
         """If a campaign is selected by the user, clear then refresh the galaxy plot"""
@@ -388,6 +405,9 @@ class MainWindowPresenter:
         self.__tradeRoutes: List[TradeRoute] = sorted(
             self.__repository.tradeRoutes, key=lambda entry: entry.name
         )
+        self.__playableFactions: List[Faction] = sorted(
+            self.__repository.factions, key=lambda entry: entry.name
+        )
         self.__factions: List[Faction] = sorted(
             self.__repository.factions, key=lambda entry: entry.name
         )
@@ -400,6 +420,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
+        self.__mainWindow.addFactions(self.__getNames(self.__factions))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
         self.__mainWindow.updateCampaignComboBoxSelection(self.__selectedCampaignIndex)
