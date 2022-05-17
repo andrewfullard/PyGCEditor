@@ -17,6 +17,11 @@ class XMLWriter:
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
         for playableFaction in campaign.playableFactions:
+
+            self.__template = "campaignTemplate.xml"
+            self.__templateTree = et.parse(self.__template)
+            self.__templateRoot = self.__templateTree.getroot()
+            
             campaignElement = self.__templateRoot.find(".//Campaign")
 
             campaignElement.set("Name", campaign.name + "_" + playableFaction.name)
@@ -24,6 +29,10 @@ class XMLWriter:
             self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
             self.__templateRoot.find(".//Text_ID").text = campaign.textID
             self.__templateRoot.find(".//Description_Text").text = campaign.descriptionText
+
+            self.__templateRoot.find(".//Locations").text = planets
+            self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+
             self.__templateRoot.find(
                 ".//Starting_Active_Player"
             ).text = playableFaction.name
@@ -35,8 +44,11 @@ class XMLWriter:
                 ".//Underworld_Story_Name"
             ).text = campaign.underworldStoryName
 
-            self.__templateRoot.find(".//Locations").text = planets
-            self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+            for faction in campaign.playableFactions:
+                if faction.name is not playableFaction.name:
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", "+ faction.name, tail="\n\t\t")
+                else: 
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman", tail="\n\t\t")
 
             for index, row in campaign.startingForces.iterrows():
                 i = 0
@@ -49,7 +61,7 @@ class XMLWriter:
                                 campaignElement, "Starting_Forces", entry, tail="\n\t\t"
                             )
 
-        self.writer(self.__templateTree, outputName=outputName)
+            self.writer(self.__templateTree, outputName=campaign.name + "_" + playableFaction.name + "_Era_" + campaign.eraStart + ".XML")
 
     def tradeRouteWriter(self, tradeRoutes) -> None:
         """Writes a list of trade routes to file"""
