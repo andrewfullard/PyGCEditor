@@ -3,12 +3,13 @@ from gameObjects.planet import Planet
 from gameObjects.aiplayer import AIPlayer
 
 class Faction:
-    '''Factions have a name, capital planet, AI, and color'''
+    '''Factions have a name, capital planet, AI, story script, and color'''
     def __init__(self, name: str):
         self.__name: str = name
         self.__capital: Planet = None
         self.__aiplayer: AIPlayer = None
         self.__color: list = [0, 0, 0, 0]
+        #self.__story: str = story 
 
     @property
     def name(self) -> str:
@@ -45,3 +46,12 @@ class Faction:
     def color(self, value: list) -> None:
         if value is not None:
             self.__color = value
+
+    # @property
+    # def story(self) -> str:
+    #     return self.__story
+
+    # @story.setter
+    # def story(self, value: str) -> None:
+    #     if value:
+    #         self.__story = value

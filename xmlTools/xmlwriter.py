@@ -38,17 +38,22 @@ class XMLWriter:
             ).text = playableFaction.name
             self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
             self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
+            self.__templateRoot.find(".//Underworld_Story_Name").text = campaign.underworldStoryName
             self.__templateRoot.find(".//Era_Start").text = campaign.eraStart
-
-            self.__templateRoot.find(
-                ".//Underworld_Story_Name"
-            ).text = campaign.underworldStoryName
 
             for faction in campaign.playableFactions:
                 if faction.name is not playableFaction.name:
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", "+ faction.name, tail="\n\t\t")
                 else: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman", tail="\n\t\t")
+
+            for faction in campaign.playableFactions:
+                self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints", tail="\n\t\t")
+
+            for faction in campaign.playableFactions:
+                self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000", tail="\n\t\t")
+                self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1", tail="\n\t\t")
+                self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5", tail="\n\t\t")
 
             for index, row in campaign.startingForces.iterrows():
                 i = 0
