@@ -43,7 +43,7 @@ class XMLWriter:
 
             for faction in campaign.playableFactions:
                 if faction.name is not playableFaction.name:
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", "+ faction.name, tail="\n\t\t")
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", "+ faction.aiplayer, tail="\n\t\t")
                 else: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman", tail="\n\t\t")
 
