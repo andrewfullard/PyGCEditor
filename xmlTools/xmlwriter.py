@@ -58,8 +58,8 @@ class XMLWriter:
                 self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5", tail="\n\t\t")
 
             for index, row in campaign.startingForces.iterrows():
-                i = 0
-                if row[1] == campaign.eraStart:
+                if str(row[1]) == campaign.eraStart:
+                    i = 0
                     while i < row[4]:
                         i = i + 1
                         entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
