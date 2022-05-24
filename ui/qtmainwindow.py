@@ -262,7 +262,6 @@ class QtMainWindow(MainWindow):
 
         self.__planetComboBox.activated.connect(self.__onPlanetSelected)
 
-
     def updatePlanetSelection(self, planets: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
         self.__uncheckAllTable(self.__planetListWidget)

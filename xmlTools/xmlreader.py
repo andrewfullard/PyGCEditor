@@ -3,7 +3,7 @@ import os.path
 from gameObjects.planet import Planet
 from xmlTools.xmlstructure import XMLStructure
 
-from util import getObject
+from util import getObject, commaSepListParser, commaReplaceInList
 
 """ XML with etree:
 
@@ -32,21 +32,6 @@ class XMLReader:
 
     def __init__(self):
         pass
-
-    """ Generic Python functions that are helpful for XML, should be moved to another class? """
-
-    def commaSepListParser(self, entry: str) -> list():
-        """Parses a comma-separated string into a Python List"""
-        entry = entry.replace(",", " ")
-        return entry.split()
-
-    def commaReplaceInList(self, listToReplace: list) -> list():
-        """Replaces spurious commas in a Python List"""
-        outputList = []
-        for text in listToReplace:
-            newText = text.replace(",", "")
-            outputList.append(newText)
-        return outputList
 
     """ General XML file parsing """
 
@@ -79,7 +64,7 @@ class XMLReader:
         et.strip_tags(XMLRoot, et.Comment)
 
         for child in XMLRoot.findall(XMLTag):
-            entry = self.commaReplaceInList(child.text.split())
+            entry = commaReplaceInList(child.text.split())
             outputSet.update(entry)
 
         return outputSet
@@ -251,7 +236,7 @@ class XMLReader:
         for element in XMLRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
                 for child in element.iter("Galactic_Position"):
-                    outputList = self.commaSepListParser(child.text)
+                    outputList = commaSepListParser(child.text)
                     if len(outputList) == 3:
                         return float(outputList[0]), float(outputList[1])
                     else:

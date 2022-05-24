@@ -3,7 +3,7 @@ from gameObjects.planet import Planet
 from gameObjects.aiplayer import AIPlayer
 
 class Faction:
-    '''Factions have a name, capital planet, AI, story script, and color'''
+    '''Factions have a name, capital planet, AI, and color'''
     def __init__(self, name: str):
         self.__name: str = name
         self.__capital: Planet = None
