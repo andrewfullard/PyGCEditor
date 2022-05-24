@@ -132,6 +132,16 @@ class RepositoryCreator:
             newCampaign.startingActivePlayer = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Starting_Active_Player"
             )
+
+            ai_player_entries = self.__xml.getMultiTag(
+                campaignRoot, ".//AI_Player_Control"
+            )
+
+            if self.repository.factions is not None:
+                for entry in ai_player_entries:
+                    faction_name = entry.split(',')[0]
+                    newCampaign.playableFactions.add(self.repository.getFactionByName(faction_name.strip()))
+
             newCampaign.rebelStoryName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Rebel_Story_Name"
             )
