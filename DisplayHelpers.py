@@ -7,7 +7,6 @@ from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.startingForce import StartingForce
 from gameObjects.traderoute import TradeRoute
-from gameObjects.unit import Unit
 
 from util import getObject
 

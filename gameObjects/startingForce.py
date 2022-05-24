@@ -1,19 +1,21 @@
 from typing import List
 
 from gameObjects.planet import Planet
-from gameObjects.unit import Unit
 from gameObjects.faction import Faction
 
-'''Starting Forces class definition'''
+"""Starting Forces class definition"""
+
+
 class StartingForce:
-    '''Starting Forces have a planet, faction and unit'''
-    def __init__(self, planet: Planet, faction: Planet, unit: Planet):
+    """Starting Forces have a planet, faction and unit"""
+
+    def __init__(self, planet: Planet, faction: Faction, unit: str):
         self.__planet: Planet = planet
         self.__faction: Faction = faction
-        self.__unit: Unit = unit
-    
+        self.__unit: str = unit
+
     def unpack(self) -> List[str]:
-        return [self.__faction.name, self.__planet.name, self.__unit.name]
+        return [self.__faction.name, self.__planet.name, self.__unit]
 
     @property
     def planet(self) -> Planet:
@@ -32,12 +34,12 @@ class StartingForce:
     def faction(self, value: Faction) -> None:
         if value:
             self.__faction = value
-            
+
     @property
-    def unit(self) -> Unit:
+    def unit(self) -> str:
         return self.__unit
 
     @unit.setter
-    def unit(self, value: Unit) -> None:
+    def unit(self, value: str) -> None:
         if value:
             self.__unit = value

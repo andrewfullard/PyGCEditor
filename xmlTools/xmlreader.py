@@ -255,9 +255,10 @@ class XMLReader:
                         return float(outputList[0]), float(outputList[1])
                     else:
                         print("Planet " + name + " has no proper XYZ location set!")
-                        return 0.0, 0.0
+                        return None
 
         print("Planet " + name + " not found! getLocation")
+        return None
 
     def getObjectProperty(self, name: str, XMLRoot, tag: str) -> str:
         """Gets the text from a given tag, for a given object, in a given XML file root"""

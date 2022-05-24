@@ -32,7 +32,7 @@ from xmlTools.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
-from gameObjects.unit import Unit
+
 
 class QtMainWindow(MainWindow):
     """Qt based window"""
@@ -50,10 +50,16 @@ class QtMainWindow(MainWindow):
         # Left pane, GC layout tab
         self.__campaignComboBox: QComboBox = QComboBox()
         self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
-        self.__campaignPropertiesButton: QPushButton = QPushButton("Campaign Properties")
-        self.__campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
+        self.__campaignPropertiesButton: QPushButton = QPushButton(
+            "Campaign Properties"
+        )
+        self.__campaignPropertiesButton.clicked.connect(
+            self.__campaignPropertiesButtonClicked
+        )
 
-        self.__importStartingForcesButton: QPushButton = QPushButton("Import Default Forces")
+        self.__importStartingForcesButton: QPushButton = QPushButton(
+            "Import Default Forces"
+        )
         self.__importStartingForcesButton.clicked.connect(
             self.__importStartingForcesButtonClicked
         )
@@ -61,7 +67,9 @@ class QtMainWindow(MainWindow):
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
         self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
-        self.__planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
+        self.__planetListWidget.itemClicked.connect(
+            self.__onPlanetTableWidgetItemClicked
+        )
         self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.__planetListWidget.customContextMenuRequested.connect(
             self.__showPlanetContextMenu
@@ -75,23 +83,45 @@ class QtMainWindow(MainWindow):
         )
 
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
-        self.__selectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True))
+        self.__selectAllPlanetsButton.clicked.connect(
+            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True)
+        )
 
-        self.__deselectAllPlanetsButton: QPushButton = QPushButton("Deselect All Planets")
-        self.__deselectAllPlanetsButton.clicked.connect(lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, False))
+        self.__deselectAllPlanetsButton: QPushButton = QPushButton(
+            "Deselect All Planets"
+        )
+        self.__deselectAllPlanetsButton.clicked.connect(
+            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, False)
+        )
 
-        self.__selectAllTradeRoutesButton: QPushButton = QPushButton("Select All Trade Routes")
-        self.__selectAllTradeRoutesButton.clicked.connect(lambda: self.__selectAllTradeRoutesButtonClicked(self.__tradeRouteListWidget, True))
+        self.__selectAllTradeRoutesButton: QPushButton = QPushButton(
+            "Select All Trade Routes"
+        )
+        self.__selectAllTradeRoutesButton.clicked.connect(
+            lambda: self.__selectAllTradeRoutesButtonClicked(
+                self.__tradeRouteListWidget, True
+            )
+        )
 
-        self.__deselectAllTradeRoutesButton: QPushButton = QPushButton("Deselect All Trade Routes")
-        self.__deselectAllTradeRoutesButton.clicked.connect(lambda: self.__selectAllTradeRoutesButtonClicked(self.__tradeRouteListWidget, False))
+        self.__deselectAllTradeRoutesButton: QPushButton = QPushButton(
+            "Deselect All Trade Routes"
+        )
+        self.__deselectAllTradeRoutesButton.clicked.connect(
+            lambda: self.__selectAllTradeRoutesButtonClicked(
+                self.__tradeRouteListWidget, False
+            )
+        )
         self.__planetCountLabel: QLabel = QLabel()
 
-        #Left pane, Forces tab
-        self.__planetComboBox: QComboBox = QComboBox()  
+        # Left pane, Forces tab
+        self.__planetComboBox: QComboBox = QComboBox()
 
-        self.__openAutoConnectionSettingsAction: QAction = QAction("Auto connection settings", self.__window)
-        self.__openAutoConnectionSettingsAction.triggered.connect(self.__showAutoConnectionSettings)
+        self.__openAutoConnectionSettingsAction: QAction = QAction(
+            "Auto connection settings", self.__window
+        )
+        self.__openAutoConnectionSettingsAction.triggered.connect(
+            self.__showAutoConnectionSettings
+        )
         self.__forcesListTable = QTableView()
         self.__forcesListTable.setSortingEnabled(False)
 
@@ -99,8 +129,9 @@ class QtMainWindow(MainWindow):
         self.__totalPlanetForceLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel.setText("Total force at planet: ")
         self.__totalFactionForceLabel: QLabel = QLabel()
-        self.__totalFactionForceLabel.setText("Select a campaign to see total starting forces per faction")
-
+        self.__totalFactionForceLabel.setText(
+            "Select a campaign to see total starting forces per faction"
+        )
 
         # set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
@@ -124,16 +155,16 @@ class QtMainWindow(MainWindow):
 
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
-        
+
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
-        
+
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
         self.__fileMenu.addAction(self.__quitAction)
 
         self.__addMenu.addAction(self.__newCampaignAction)
         self.__addMenu.addAction(self.__newTradeRouteAction)
-        
+
         self.__menuBar.addMenu(self.__fileMenu)
         self.__menuBar.addMenu(self.__addMenu)
         self.__menuBar.addMenu(self.__optionsMenu)
@@ -146,7 +177,7 @@ class QtMainWindow(MainWindow):
 
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
-        
+
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
         self.__startingForces.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
@@ -163,12 +194,10 @@ class QtMainWindow(MainWindow):
             self.__deselectAllTradeRoutesButton
         )
 
-
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
         self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
-
 
         # self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         # self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
@@ -270,10 +299,7 @@ class QtMainWindow(MainWindow):
     def updatePlanetCountDisplay(self, planets: List[int]) -> None:
         """Updates count of planets on main window."""
 
-        self.__planetCountLabel.setText(
-            "Planet Count: "
-            + str(len(planets))
-        )
+        self.__planetCountLabel.setText("Planet Count: " + str(len(planets)))
 
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame, filter: str
@@ -327,7 +353,7 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
-        
+
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()
 
@@ -414,7 +440,7 @@ class QtMainWindow(MainWindow):
     def __importStartingForcesButtonClicked(self) -> None:
         """Imports all starting forces from spreadsheets"""
         self.__presenter.importStartingForces()
-    
+
     def __onPlanetSelected(self, index: int) -> None:
         """Presents a selected planet's starting forces"""
         entry = self.__planetComboBox.currentText()
