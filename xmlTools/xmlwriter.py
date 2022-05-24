@@ -18,6 +18,7 @@ class XMLWriter:
 
         for playableFaction in campaign.playableFactions:
 
+            # Duplicated from above so things don't double up with each write, can remove this or top once actual writing done -Corey
             self.__template = "campaignTemplate.xml"
             self.__templateTree = et.parse(self.__template)
             self.__templateRoot = self.__templateTree.getroot()
@@ -43,7 +44,8 @@ class XMLWriter:
 
             for faction in campaign.playableFactions:
                 if faction.name is not playableFaction.name:
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", "+ faction.aiplayer, tail="\n\t\t")
+                    # Right now the players don't import properly
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None", tail="\n\t\t")
                 else: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman", tail="\n\t\t")
 
@@ -57,14 +59,15 @@ class XMLWriter:
 
             for index, row in campaign.startingForces.iterrows():
                 i = 0
-                while i < row[4]:
-                    i = i + 1
-                    entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
-                    for planet in campaign.planets: 
-                        if planet.name.upper() == row[0]:
-                            self.subElementText(
-                                campaignElement, "Starting_Forces", entry, tail="\n\t\t"
-                            )
+                if row[1] == campaign.eraStart:
+                    while i < row[4]:
+                        i = i + 1
+                        entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
+                        for planet in campaign.planets: 
+                            if planet.name.upper() == row[0]:
+                                self.subElementText(
+                                    campaignElement, "Starting_Forces", entry, tail="\n\t\t"
+                                )
 
             self.writer(self.__templateTree, outputName=campaign.name + "_" + playableFaction.name + "_Era_" + campaign.eraStart + ".XML")
 
