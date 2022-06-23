@@ -29,6 +29,9 @@ class XMLWriter:
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
             self.subElementText(campaignElement, "Is_Listed", "False")
 
+            self.subElementText(campaignElement, "Supports_Custom_Settings", "False")
+            self.subElementText(campaignElement, "Show_Completed_Tab", "True")
+
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
             self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
 
@@ -50,6 +53,9 @@ class XMLWriter:
 
             for faction in campaign.playableFactions:
                 self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
+
+            self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
+            self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
 
             for faction in campaign.playableFactions:
                 self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
