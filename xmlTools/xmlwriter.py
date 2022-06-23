@@ -60,7 +60,7 @@ class XMLWriter:
                 i = 0
                 while i < row.Amount:
                     i = i + 1
-                    entry = str(row.Planet) + ", " + str(row.Owner) +", " + str(row.ObjectType)
+                    entry = str(row.Owner) + ", " + str(row.Planet) +", " + str(row.ObjectType)
                     for planet in campaign.planets:
                         if planet.name.upper() == row.Planet.upper():
                             self.subElementText(
