@@ -57,6 +57,8 @@ class XMLWriter:
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
             self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
 
+            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nTeradoc, Conquests\Story_Plots_Generic_Teradoc.xml,\nPirates, Conquests\Story_Plots_Generic_Pirates.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nHutts, Conquests\Story_Plots_Generic_Hutts.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml")
+
             for faction in campaign.playableFactions:
                 self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                 self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
@@ -73,7 +75,7 @@ class XMLWriter:
                                 campaignElement, "Starting_Forces", entry
                             )
         tree = et.ElementTree(self.root)
-        self.writer(tree, outputName=campaign.name + "_Era_" + campaign.eraStart + ".XML")
+        self.writer(tree, outputName=campaign.name + ".XML")
 
     def tradeRouteWriter(self, tradeRoutes) -> None:
         """Writes a list of trade routes to file"""
