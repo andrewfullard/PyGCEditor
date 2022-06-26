@@ -24,7 +24,7 @@ class XMLWriter:
         for playableFaction in campaign.playableFactions:
             campaignElement = et.SubElement(self.root, "Campaign")
 
-            campaignElement.set("Name", campaign.name + "_" + playableFaction.name)
+            campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
             self.subElementText(campaignElement, "Campaign_Set", campaign.setName)
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
             self.subElementText(campaignElement, "Is_Listed", "False")
@@ -34,6 +34,7 @@ class XMLWriter:
 
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
             self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
+            self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
 
             self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
             self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
@@ -75,7 +76,7 @@ class XMLWriter:
                                 campaignElement, "Starting_Forces", entry
                             )
         tree = et.ElementTree(self.root)
-        self.writer(tree, outputName=campaign.name + ".XML")
+        self.writer(tree, outputName=campaign.setName + ".XML")
 
     def tradeRouteWriter(self, tradeRoutes) -> None:
         """Writes a list of trade routes to file"""
