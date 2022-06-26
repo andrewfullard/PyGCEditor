@@ -82,7 +82,10 @@ class QtGalacticPlot(QWidget):
             for p, f in zip(planets, planetOwners):
                 x.append(p.x)
                 y.append(p.y)
-                color.append(tuple(f.color))
+                if f.color:
+                    color.append(tuple(f.color))
+                else:
+                    color.append((0, 0, 0))
 
             self.__axes.scatter(x, y, c = color, edgecolors = 'black', zorder=4)
         else:
