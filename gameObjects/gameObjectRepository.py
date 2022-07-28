@@ -63,6 +63,14 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existing planet " + name)
 
+    def getFactionByName(self, name: str) -> None:
+        """Returns a planet object given its name"""
+        for faction in self.factions:
+            if faction.name == name:
+                return faction
+
+        raise RuntimeError("Searching for non existing faction " + name)
+
     def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> None:
         """Returns a traderoute object given its start and end planets"""
         for tradeRoute in self.tradeRoutes:

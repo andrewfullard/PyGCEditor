@@ -6,48 +6,77 @@ class XMLWriter:
     """Provides XML writing functions"""
 
     def __init__(self):
-        self.__template = "campaignTemplate.xml"
-        self.__templateTree = et.parse(self.__template)
-        self.__templateRoot = self.__templateTree.getroot()
+        self.__root_name = "Campaigns"
+        self.root = None
 
     def campaignWriter(self, campaign, outputName: str) -> None:
         """Writes a campaign to file"""
+
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
-        campaignElement = self.__templateRoot.find(".//Campaign")
+        self.root = et.Element(self.__root_name)
 
-        campaignElement.set("Name", campaign.name)
-        self.__templateRoot.find(".//Campaign_Set").text = campaign.setName
-        self.__templateRoot.find(".//Sort_Order").text = campaign.sortOrder
-        self.__templateRoot.find(".//Text_ID").text = campaign.textID
-        self.__templateRoot.find(".//Description_Text").text = campaign.descriptionText
-        self.__templateRoot.find(
-            ".//Starting_Active_Player"
-        ).text = campaign.startingActivePlayer
-        self.__templateRoot.find(".//Rebel_Story_Name").text = campaign.rebelStoryName
-        self.__templateRoot.find(".//Empire_Story_Name").text = campaign.empireStoryName
-        self.__templateRoot.find(".//Era_Start").text = campaign.eraStart
+        era_limiter = campaign.startingForces.Era == int(campaign.eraStart)
 
-        self.__templateRoot.find(
-            ".//Underworld_Story_Name"
-        ).text = campaign.underworldStoryName
+        filtered_starting_forces = campaign.startingForces[era_limiter]
 
-        self.__templateRoot.find(".//Locations").text = planets
-        self.__templateRoot.find(".//Trade_Routes").text = tradeRoutes
+        for playableFaction in campaign.playableFactions:
+            campaignElement = et.SubElement(self.root, "Campaign")
 
-        for index, row in campaign.startingForces.iterrows():
-            i = 0
-            while i < row[4]:
-                i = i + 1
-                entry = str(row[2]) + " , " + str(row[0]) +" , " + str(row[3])
-                for planet in campaign.planets: 
-                    if planet.name.upper() == row[0]:
-                        self.subElementText(
-                            campaignElement, "Starting_Forces", entry, tail="\n\t\t"
-                        )
+            campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
+            self.subElementText(campaignElement, "Campaign_Set", campaign.setName)
+            self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
+            self.subElementText(campaignElement, "Is_Listed", "False")
 
-        self.writer(self.__templateTree, outputName=outputName)
+            self.subElementText(campaignElement, "Supports_Custom_Settings", "False")
+            self.subElementText(campaignElement, "Show_Completed_Tab", "True")
+
+            self.subElementText(campaignElement, "Text_ID", campaign.textID)
+            self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
+            self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
+
+            self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
+            self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
+            self.subElementText(campaignElement, "Camera_Distance", "1000.0")
+
+            self.subElementText(campaignElement, "Locations", planets)
+            self.subElementText(campaignElement, "Trade_Routes", tradeRoutes)
+
+            self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
+
+            for faction in campaign.playableFactions:
+                if faction.name is not playableFaction.name:
+                    # Right now the players don't import properly
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None")
+                else: 
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
+
+            for faction in campaign.playableFactions:
+                self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
+
+            self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
+            self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
+
+            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nTeradoc, Conquests\Story_Plots_Generic_Teradoc.xml,\nPirates, Conquests\Story_Plots_Generic_Pirates.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nHutts, Conquests\Story_Plots_Generic_Hutts.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml")
+
+            for faction in campaign.playableFactions:
+                self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
+                self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
+                self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
+
+            for index, row in filtered_starting_forces.iterrows():
+                i = 0
+                while i < row.Amount:
+                    i = i + 1
+                    entry = str(row.Owner) + ", " + str(row.Planet) +", " + str(row.ObjectType)
+                    for planet in campaign.planets:
+                        if planet.name.upper() == row.Planet.upper():
+                            self.subElementText(
+                                campaignElement, "Starting_Forces", entry
+                            )
+        tree = et.ElementTree(self.root)
+        self.writer(tree, outputName=campaign.setName + ".XML")
 
     def tradeRouteWriter(self, tradeRoutes) -> None:
         """Writes a list of trade routes to file"""
@@ -112,5 +141,5 @@ class XMLWriter:
 
     def writer(self, XMLRoot, outputName: str) -> None:
         """Writes XML file"""
-        XMLRoot.write(outputName, xml_declaration="1.0", pretty_print=True)
+        XMLRoot.write(outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8")
 
