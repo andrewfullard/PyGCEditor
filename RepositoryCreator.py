@@ -235,6 +235,25 @@ class RepositoryCreator:
 
         startingForcesLibrary = pd.read_csv(libraryURL)
 
+        current_planet = None
+        current_era = 0
+
+        for index, row in startingForcesLibrary.iterrows():
+            if row["Planet"] != current_planet:
+                current_planet = row["Planet"]
+            
+            if row["Era"] != current_era:
+                current_era = row["Era"]
+                if not pd.isna(row["ReuseEra"]):
+                    era_to_reuse = row["ReuseEra"]
+                    reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (startingForcesLibrary.Planet == current_planet)
+                    data_to_add = startingForcesLibrary[reuse_filter].copy()
+                    data_to_add = data_to_add.assign(Era=current_era)
+                    startingForcesLibrary = pd.concat([startingForcesLibrary, data_to_add])
+                    continue
+
+        startingForcesLibrary.reset_index()
+
         startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
 
         return startingForcesLibrary
