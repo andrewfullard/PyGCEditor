@@ -255,6 +255,7 @@ class RepositoryCreator:
         startingForcesLibrary.reset_index()
 
         startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
+        startingForcesLibrary.dropna(inplace=True)
 
         return startingForcesLibrary
 
