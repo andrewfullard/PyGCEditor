@@ -6,7 +6,6 @@ from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
-from gameObjects.unit import Unit
 from gameObjects.startingForce import StartingForce
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
@@ -49,11 +48,37 @@ class RepositoryCreator:
                 else:
                     newplanet.x, newplanet.y = coordinates
 
-                #TODO better way than this hack to convert to int
-                newplanet.starbaseLevel = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Max_Space_Base")))
-                newplanet.spaceStructureSlots = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Space")))
-                newplanet.groundStructureSlots = int(float(self.__xml.getObjectProperty(name, planetRoot, ".//Special_Structures_Land")))
-                self.repository.addPlanet(newplanet)
+                # TODO better way than this hack to convert to int
+                newplanet.starbaseLevel = int(
+                    float(
+                        self.__xml.getObjectProperty(
+                            name, planetRoot, ".//Max_Space_Base"
+                        )
+                    )
+                )
+                newplanet.spaceStructureSlots = int(
+                    float(
+                        self.__xml.getObjectProperty(
+                            name, planetRoot, ".//Special_Structures_Space"
+                        )
+                    )
+                )
+                newplanet.groundStructureSlots = int(
+                    float(
+                        self.__xml.getObjectProperty(
+                            name, planetRoot, ".//Special_Structures_Land"
+                        )
+                    )
+                )
+                if coordinates == None:
+                    print(
+                        "Planet "
+                        + name
+                        + " not added to repository, missing coordinates"
+                    )
+                    continue
+                else:
+                    self.repository.addPlanet(newplanet)
 
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
         """Takes a list of Trade Route GameObject XML roots and adds
@@ -79,31 +104,6 @@ class RepositoryCreator:
                 newFaction.color = color
                 newFaction.aiplayer = basic_ai
                 self.repository.addFaction(newFaction)
-
-    def addUnitsFromXML(self, unitRoots) -> None:
-        """Takes a list of unit GameObject XML roots and adds
-        them to the repository"""
-
-        for unitRoot in unitRoots:
-            if (
-                self.__xml.hasTag(unitRoot, ".//SpaceUnit")
-                or self.__xml.hasTag(unitRoot, ".//Squadron")
-                or self.__xml.hasTag(unitRoot, ".//StarBase")
-                or self.__xml.hasTag(unitRoot, ".//GroundVehicle")
-                or self.__xml.hasTag(unitRoot, ".//GroundInfantry")
-                or self.__xml.hasTag(unitRoot, ".//GroundCompany")
-                or self.__xml.hasTag(unitRoot, ".//SpecialStructure")
-                or self.__xml.hasTag(unitRoot, ".//GenericHeroUnit")
-                or self.__xml.hasTag(unitRoot, ".//HeroUnit")
-                or self.__xml.hasTag(unitRoot, ".//UniqueUnit")
-                or self.__xml.hasTag(unitRoot, ".//HeroCompany")
-            ):
-                unitInfo = self.__xml.getNamesFromXML(unitRoot)
-
-                for name in unitInfo:
-                    print("Adding unit", name)
-                    newUnit = Unit(name)
-                    self.repository.addUnit(newUnit)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         """Takes a list of Campaign GameObject XML roots and their names, and adds
@@ -192,15 +192,21 @@ class RepositoryCreator:
                     parent = self.getPlanetParentWithCoordinates(planet)
                     planet.x = parent.x
                     planet.y = parent.y
-                    print(planet.name + " now uses " + parent.name + " coordinates!" + parent.x.__str__() + ", " + parent.y.__str__())
+                    print(
+                        planet.name
+                        + " now uses "
+                        + parent.name
+                        + " coordinates!"
+                        + parent.x.__str__()
+                        + ", "
+                        + parent.y.__str__()
+                    )
 
                 else:
                     print(planet.name + " has no parent!")
 
-
-
     def getPlanetParentWithCoordinates(self, planet) -> Planet:
-        p =  self.repository.getPlanetByName(planet.variantOf)
+        p = self.repository.getPlanetByName(planet.variantOf)
         if p is not None:
             if (p.x is None) & (p.y is None):
                 if p.variantOf == "":
@@ -212,10 +218,9 @@ class RepositoryCreator:
         else:
             return None
 
-    
     def getStartingForces(self, entry: str) -> StartingForce:
-        '''Produces a starting forces object from an XML entry'''
-        entry = entry.replace(',', ' ')
+        """Produces a starting forces object from an XML entry"""
+        entry = entry.replace(",", " ")
         entry = entry.split()
         if len(entry) == 3:
             factionName = entry[0]
@@ -252,16 +257,15 @@ class RepositoryCreator:
         planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
         tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
         factionRoots = self.__xml.findMetaFileRefs(factionFile)
-        
+
         campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
-        
+
         if os.path.exists(gameObjectFile):
             planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
             self.addPlanetsFromXML(planetRoots)
             unitRoots = set(self.__xml.findMetaFileRefs(gameObjectFile)) - set(
                 planetRoots
             )
-            self.addUnitsFromXML(unitRoots)
 
         if os.path.exists(tradeRouteFile):
             tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)

@@ -18,7 +18,6 @@ from ui.galacticplot import GalacticPlot
 from RepositoryCreator import RepositoryCreator
 from xmlTools.xmlstructure import XMLStructure
 from DisplayHelpers import DisplayHelpers
-from gameObjects.unit import Unit
 
 
 class MainWindowPresenter:
@@ -139,10 +138,11 @@ class MainWindowPresenter:
         self.newTradeRouteCommand = None
         self.campaignPropertiesCommand = None
 
-    
     def importStartingForces(self) -> None:
         """Imports all starting forces from spreadsheets"""
-        self.getSelectedCampaign().startingForces = self.__repository.startingForcesLibrary
+        self.getSelectedCampaign().startingForces = (
+            self.__repository.startingForcesLibrary
+        )
 
     def onDataFolderChanged(self, folder: str) -> None:
         """Updates the repository and refreshes the main window when a new data folder is selected"""
@@ -168,7 +168,9 @@ class MainWindowPresenter:
                 self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
-        self.__planetOwners = self.__helper.getPlanetOwners(self.__selectedCampaignIndex, self.__checkedPlanets)
+        self.__planetOwners = self.__helper.getPlanetOwners(
+            self.__selectedCampaignIndex, self.__checkedPlanets
+        )
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, indexes: list) -> None:
@@ -189,7 +191,9 @@ class MainWindowPresenter:
             selectedPlanets.append(self.__getNames(self.__planets).index(p.name))
 
         self.__mainWindow.updatePlanetSelection(selectedPlanets)
-        self.__planetOwners = self.__helper.getPlanetOwners(self.__selectedCampaignIndex, self.__checkedPlanets)
+        self.__planetOwners = self.__helper.getPlanetOwners(
+            self.__selectedCampaignIndex, self.__checkedPlanets
+        )
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
@@ -205,7 +209,9 @@ class MainWindowPresenter:
         else:
             if self.__availableTradeRoutes[index] in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.remove(self.__availableTradeRoutes[index])
-                self.getSelectedCampaign().tradeRoutes.remove(self.__availableTradeRoutes[index])
+                self.getSelectedCampaign().tradeRoutes.remove(
+                    self.__availableTradeRoutes[index]
+                )
 
         self.__updateGalacticPlot()
 
@@ -244,7 +250,6 @@ class MainWindowPresenter:
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
             self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
 
-
         self.__updateAvailableTradeRoutes(self.getSelectedCampaign().planets)
 
         if self.getSelectedCampaign().tradeRoutes is not None:
@@ -268,7 +273,9 @@ class MainWindowPresenter:
 
         # self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
 
-        self.__planetOwners = self.__helper.getPlanetOwners(index, self.__checkedPlanets)
+        self.__planetOwners = self.__helper.getPlanetOwners(
+            index, self.__checkedPlanets
+        )
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
@@ -342,9 +349,7 @@ class MainWindowPresenter:
         """Select all planets handler: plots all planets"""
         if checked:
             self.__checkedPlanets.update(self.__planets)
-            self.getSelectedCampaign().planets.update(
-                self.__availableTradeRoutes
-            )
+            self.getSelectedCampaign().planets.update(self.__availableTradeRoutes)
         else:
             self.__checkedPlanets.clear()
             self.getSelectedCampaign().planets.clear()
@@ -357,9 +362,7 @@ class MainWindowPresenter:
         """Select all trade routes handler: plots all trade routes"""
         if checked:
             self.__checkedTradeRoutes.update(self.__availableTradeRoutes)
-            self.getSelectedCampaign().tradeRoutes.update(
-                self.__availableTradeRoutes
-            )
+            self.getSelectedCampaign().tradeRoutes.update(self.__availableTradeRoutes)
         else:
             self.__checkedTradeRoutes.clear()
             self.getSelectedCampaign().tradeRoutes.clear()
@@ -490,7 +493,7 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes,
             self.__planets,
             self.__planetOwners,
-            autoPlanetConnectionDistance = autoConnectionDistance,
+            autoPlanetConnectionDistance=autoConnectionDistance,
         )
 
     @property
