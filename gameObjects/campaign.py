@@ -3,6 +3,7 @@ from typing import List
 import pandas as pd
 
 from gameObjects.planet import Planet
+from gameObjects.faction import Faction
 from gameObjects.traderoute import TradeRoute
 from gameObjects.startingForce import StartingForce
 
@@ -26,6 +27,7 @@ class Campaign:
         self.__era = 1
 
         self.__planets: Set[Planet] = set()
+        self.__playableFactions: Set[Faction] = set()
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.startingForces = pd.DataFrame()
 
@@ -127,6 +129,15 @@ class Campaign:
     def planets(self, value: Set[Planet]) -> None:
         if value:
             self.__planets = value
+
+    @property
+    def playableFactions(self) -> Set[Faction]:
+        return self.__playableFactions
+
+    @playableFactions.setter
+    def playableFactions(self, value: Set[Faction]) -> None:
+        if value:
+            self.__playableFactions = value
 
     @property
     def tradeRoutes(self) -> Set[TradeRoute]:

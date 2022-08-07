@@ -82,6 +82,10 @@ class QtMainWindow(MainWindow):
             self.__onTradeRouteTableWidgetItemClicked
         )
 
+        self.__factionListWidget = self.__tableWidgetFactory.construct(
+            ["Playable Factions"]
+        )
+
         self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
         self.__selectAllPlanetsButton.clicked.connect(
             lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True)
@@ -174,12 +178,16 @@ class QtMainWindow(MainWindow):
         self.__leftTabsWidget: QWidget = QTabWidget()
         self.__planetsTradeRoutes: QWidget = QWidget()
         self.__startingForces: QWidget = QWidget()
+        self.__factions: QWidget = QWidget()
 
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
 
+        self.__leftTabsWidget.addTab(self.__factions, "Factions")
+        
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
         self.__startingForces.setLayout(QVBoxLayout())
+        self.__factions.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
 
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
@@ -199,6 +207,8 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
         self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
 
+        self.__factions.layout().addWidget(self.__factionListWidget)
+
         # self.__startingForces.layout().addWidget(self.__totalPlanetForceLabel)
         # self.__startingForces.layout().addWidget(self.__totalFactionForceLabel)
 
@@ -213,6 +223,13 @@ class QtMainWindow(MainWindow):
         self.__addEntriesToTableWidget(self.__planetListWidget, planets)
         self.__planetListWidget.itemClicked.connect(
             self.__onPlanetTableWidgetItemClicked
+        )
+
+    def addFactions(self, factions: List[str]) -> None:
+        """Add Faction objects to the faction table widget"""
+        self.__addEntriesToTableWidget(self.__factionListWidget, factions)
+        self.__factionListWidget.itemClicked.connect(
+            self.__onFactionTableWidgetItemClicked
         )
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
@@ -246,6 +263,8 @@ class QtMainWindow(MainWindow):
         self.__planetListWidget.setRowCount(0)
         self.__tradeRouteListWidget.clearContents()
         self.__tradeRouteListWidget.setRowCount(0)
+        self.__factionListWidget.clearContents()
+        self.__factionListWidget.setRowCount(0)
         self.__campaignComboBox.clear()
 
         self.__planetComboBox.clear()
@@ -354,6 +373,14 @@ class QtMainWindow(MainWindow):
 
         self.__presenter.onPlanetChecked(item.row(), checked)
 
+    def __onFactionTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
+        """If a faction table widget item is clicked, check it and call the presenter to add it to the campaign"""
+        checked: bool = False
+        if item.checkState() == QtCore.Qt.Checked:
+            checked = True
+
+        self.__presenter.onFactionChecked(item.row(), checked)
+        
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()
 
