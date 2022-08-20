@@ -307,6 +307,13 @@ class QtMainWindow(MainWindow):
         for t in tradeRoutes:
             self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
 
+    def updateFactionSelection(self, factions: List[int]) -> None:
+        """Clears table, then checks off planets in the table from a list of indexes"""
+        self.__uncheckAllTable(self.__factionListWidget)
+
+        for f in factions:
+            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.Checked)
+
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
         self.__uncheckAllTable(self.__planetListWidget)

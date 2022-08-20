@@ -139,8 +139,11 @@ class RepositoryCreator:
 
             if self.repository.factions is not None:
                 for entry in ai_player_entries:
-                    faction_name = entry.split(',')[0]
-                    newCampaign.playableFactions.add(self.repository.getFactionByName(faction_name.strip()))
+                    split = entry.split(',')
+                    faction_name = split[0].strip()
+                    ai = split[1].strip()
+                    if ai != "None":
+                        newCampaign.playableFactions.add(self.repository.getFactionByName(faction_name))
 
             newCampaign.rebelStoryName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Rebel_Story_Name"
@@ -150,6 +153,10 @@ class RepositoryCreator:
             )
             newCampaign.underworldStoryName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Underworld_Story_Name"
+            )
+
+            newCampaign.storyName = self.__xml.getValueFromXMLRoot(
+                campaignRoot, ".//Story_Name"
             )
 
             campaignPlanetNames = self.__xml.getListFromXMLRoot(

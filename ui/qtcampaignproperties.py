@@ -23,6 +23,7 @@ class QtCampaignProperties:
         self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
+        self.__storyName: QLineEdit = QLineEdit(self.__dialog)
      
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -40,6 +41,7 @@ class QtCampaignProperties:
         self.__formLayout.addRow("Rebel Story Name", self.__rebelStoryName)
         self.__formLayout.addRow("Empire Story Name", self.__empireStoryName)
         self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
+        self.__formLayout.addRow("Story Name", self.__storyName)
 
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
@@ -75,6 +77,7 @@ class QtCampaignProperties:
         self.__rebelStoryName.setText(self.__campaign.rebelStoryName)
         self.__empireStoryName.setText(self.__campaign.empireStoryName)
         self.__underworldStoryName.setText(self.__campaign.underworldStoryName)
+        self.__storyName.setText(self.__campaign.storyName)
         
         self.__dialog.exec()
         return self.__result
@@ -92,6 +95,7 @@ class QtCampaignProperties:
         self.__campaign.rebelStoryName = self.__rebelStoryName.text()
         self.__campaign.empireStoryName = self.__empireStoryName.text()
         self.__campaign.underworldStoryName = self.__underworldStoryName.text()
+        self.__campaign.storyName = self.__storyName.text()
 
         return self.__campaign 
 
