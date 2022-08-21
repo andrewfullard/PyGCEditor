@@ -153,7 +153,7 @@ class MainWindowPresenter:
         self.__repository.emptyRepository()
         print("Loading from folder " + folder)
         self.__repository = self.__repositoryCreator.constructRepository(
-            folder, self.__Config.startingForcesLibraryURL
+            folder, self.__config.startingForcesLibraryURL
         )
         XMLStructure.dataFolder = folder
 
@@ -232,18 +232,19 @@ class MainWindowPresenter:
 
     def onCampaignSelected(self, index: int) -> None:
         """If a campaign is selected by the user, clear then refresh the galaxy plot"""
-
-        selectedCampaign = self.getSelectedCampaign()
-
         if index < 0:
             return
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
+        self.__checkedPlayableFactions.clear()
 
         self.__selectedCampaignIndex = index
 
+        selectedCampaign = self.getSelectedCampaign()
+
         selectedPlanets = []
         selectedTradeRoutes = []
+        selectedFactions = []
 
         self.__helper = DisplayHelpers(self.__repository, self.campaigns)
 
@@ -285,6 +286,11 @@ class MainWindowPresenter:
 
         if selectedCampaign.playableFactions is not None:
             self.__checkedPlayableFactions.update(selectedCampaign.playableFactions)
+
+            for f in self.__checkedPlayableFactions:
+                selectedFactions.append(self.__factions.index(f))
+
+            self.__mainWindow.updateFactionSelection(selectedFactions)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()

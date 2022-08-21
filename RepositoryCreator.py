@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from tqdm import tqdm
 
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
@@ -39,7 +40,7 @@ class RepositoryCreator:
         for planetRoot in planetRoots:
             planetNames = self.__xml.getNamesFromXML(planetRoot)
 
-            for name in planetNames:
+            for name in tqdm(planetNames):
                 newplanet = Planet(name)
                 newplanet.variantOf = self.__xml.getVariantOfValue(name, planetRoot)
                 coordinates = self.__xml.getLocation(name, planetRoot)
@@ -86,7 +87,7 @@ class RepositoryCreator:
         for tradeRouteRoot in tradeRouteRoots:
             tradeRouteNames = self.__xml.getNamesFromXML(tradeRouteRoot)
 
-            for name in tradeRouteNames:
+            for name in tqdm(tradeRouteNames):
                 newroute = TradeRoute(name)
                 newroute.start, newroute.end = self.__xml.getStartEnd(
                     name, self.repository.planets, tradeRouteRoot
@@ -108,6 +109,9 @@ class RepositoryCreator:
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
         """Takes a list of Campaign GameObject XML roots and their names, and adds
         them to the repository, after finding their planets and trade routes"""
+
+        existing_campaign_locations = ""
+
         for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
             newCampaignPlanets = set()
             newCampaignTradeRoutes = set()
@@ -117,6 +121,20 @@ class RepositoryCreator:
             newCampaign.setName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Campaign_Set"
             )
+
+            print("Loading campaign", campaign, "from set", newCampaign.setName)
+
+            campaignPlanetNames = self.__xml.getListFromXMLRoot(
+                campaignRoot, ".//Locations"
+            )
+
+            new_campaign_locations = campaignPlanetNames
+
+            if new_campaign_locations == existing_campaign_locations:
+                continue
+            else:
+                existing_campaign_locations = new_campaign_locations
+
             newCampaign.sortOrder = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Sort_Order"
             )
@@ -159,9 +177,6 @@ class RepositoryCreator:
                 campaignRoot, ".//Story_Name"
             )
 
-            campaignPlanetNames = self.__xml.getListFromXMLRoot(
-                campaignRoot, ".//Locations"
-            )
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(
                 campaignRoot, ".//Trade_Routes"
             )
@@ -189,10 +204,12 @@ class RepositoryCreator:
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
 
+            print("Found ", len(newCampaignPlanets), "planets and ", len(newCampaignTradeRoutes), "trade routes")
+
             self.repository.addCampaign(newCampaign)
 
     def runPlanetVariantOfCheck(self) -> None:
-        for planet in self.repository.planets:
+        for planet in tqdm(self.repository.planets):
             if (planet.x is None) or (planet.y is None):
                 print(planet.name + " needs parent coordinates")
                 if planet.variantOf != "":
@@ -288,28 +305,31 @@ class RepositoryCreator:
         campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
 
         if os.path.exists(gameObjectFile):
+            print("\nLoading Planets")
             planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
             self.addPlanetsFromXML(planetRoots)
-            unitRoots = set(self.__xml.findMetaFileRefs(gameObjectFile)) - set(
-                planetRoots
-            )
 
         if os.path.exists(tradeRouteFile):
+            print("\nLoading Trade Routes")
             tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
             self.addTradeRoutesFromXML(tradeRouteRoots)
 
         if os.path.exists(factionFile):
+            print("\nLoading Factions")
             factionRoots = self.__xml.findMetaFileRefs(factionFile)
             self.addFactionsFromXML(factionRoots)
 
         if os.path.exists(campaignFile):
+            print("\nLoading Campigns")
             campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
             campaignNames, campaignRoots = self.getNamesRootsFromXML(
                 campaignRootList, "Campaign"
             )
             self.addCampaignsFromXML(campaignNames, campaignRoots)
 
+        print("\nChecking for planet variants")
         self.runPlanetVariantOfCheck()
+        print("\nLoading starting forces")
         self.repository.startingForcesLibrary = self.getStartingForcesLibrary(
             self.__startingForcesLibraryURL
         )
