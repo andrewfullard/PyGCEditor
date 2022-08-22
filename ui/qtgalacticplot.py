@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
-from PyQt5.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QVBoxLayout, QWidget
+from PyQt6.QtCore import pyqtSignal
 from matplotlib.backends.backend_qt5agg import FigureCanvas, \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Axes, Figure

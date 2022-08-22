@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from PyQt5.QtWidgets import QGridLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout
-from PyQt5.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QGridLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout
+from PyQt6.QtCore import pyqtSignal
 
 class FormWidget(ABC):
 
