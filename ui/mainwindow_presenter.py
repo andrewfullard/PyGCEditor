@@ -74,6 +74,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def updateFactionSelection(self, factions: List[Faction]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame(),
     ) -> None:
@@ -149,7 +153,7 @@ class MainWindowPresenter:
         self.__repository.emptyRepository()
         print("Loading from folder " + folder)
         self.__repository = self.__repositoryCreator.constructRepository(
-            folder, self.__Config.startingForcesLibraryURL
+            folder, self.__config.startingForcesLibraryURL
         )
         XMLStructure.dataFolder = folder
 
@@ -228,21 +232,24 @@ class MainWindowPresenter:
 
     def onCampaignSelected(self, index: int) -> None:
         """If a campaign is selected by the user, clear then refresh the galaxy plot"""
-
         if index < 0:
             return
         self.__checkedPlanets.clear()
         self.__checkedTradeRoutes.clear()
+        self.__checkedPlayableFactions.clear()
 
         self.__selectedCampaignIndex = index
 
+        selectedCampaign = self.getSelectedCampaign()
+
         selectedPlanets = []
         selectedTradeRoutes = []
+        selectedFactions = []
 
         self.__helper = DisplayHelpers(self.__repository, self.campaigns)
 
-        if self.getSelectedCampaign().planets is not None:
-            self.__checkedPlanets.update(self.getSelectedCampaign().planets)
+        if selectedCampaign.planets is not None:
+            self.__checkedPlanets.update(selectedCampaign.planets)
 
             for p in self.__checkedPlanets:
                 selectedPlanets.append(self.__planets.index(p))
@@ -250,10 +257,10 @@ class MainWindowPresenter:
             self.__mainWindow.updatePlanetSelection(selectedPlanets)
             self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
 
-        self.__updateAvailableTradeRoutes(self.getSelectedCampaign().planets)
+        self.__updateAvailableTradeRoutes(selectedCampaign.planets)
 
-        if self.getSelectedCampaign().tradeRoutes is not None:
-            self.__checkedTradeRoutes.update(self.getSelectedCampaign().tradeRoutes)
+        if selectedCampaign.tradeRoutes is not None:
+            self.__checkedTradeRoutes.update(selectedCampaign.tradeRoutes)
             missingRoutes = set()
 
             for t in self.__checkedTradeRoutes:
@@ -276,6 +283,14 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             index, self.__checkedPlanets
         )
+
+        if selectedCampaign.playableFactions is not None:
+            self.__checkedPlayableFactions.update(selectedCampaign.playableFactions)
+
+            for f in self.__checkedPlayableFactions:
+                selectedFactions.append(self.__factions.index(f))
+
+            self.__mainWindow.updateFactionSelection(selectedFactions)
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
@@ -432,11 +447,12 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
 
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
+        self.__updateSelectedFactions(self.__selectedCampaignIndex)
 
         self.__updateGalacticPlot()
 
     def __updateSelectedPlanets(self, index: int) -> None:
-        """Update the selected trade routes for the currently selected campaign"""
+        """Update the selected planets for the currently selected campaign"""
         selectedPlanets = []
 
         self.__checkedPlanets.update(self.campaigns[index].planets)
@@ -483,6 +499,19 @@ class MainWindowPresenter:
             self.__getNames(self.__availableTradeRoutes)
         )
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
+
+
+    def __updateSelectedFactions(self, index: int) -> None:
+        """Update the selected factions for the currently selected campaign"""
+        selectedFactions = []
+
+        self.__checkedPlayableFactions.update(self.campaigns[index].playableFactions)
+
+        for f in self.__checkedPlayableFactions:
+            selectedFactions.append(self.__factions.index(f))
+
+        self.__mainWindow.updateFactionSelection(selectedFactions)
+
 
     def __updateGalacticPlot(self):
         autoConnectionDistance = self.config.autoPlanetConnectionDistance

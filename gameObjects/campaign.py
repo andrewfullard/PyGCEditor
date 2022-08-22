@@ -23,6 +23,7 @@ class Campaign:
         self.__rebelStoryName: str = ""
         self.__empireStoryName: str = ""
         self.__underworldStoryName: str = ""
+        self.__storyName: str = ""
         self.__eraStart: str = "0"
         self.__era = 1
 
@@ -111,6 +112,15 @@ class Campaign:
     def underworldStoryName(self, value: str) -> None:
         if value:
             self.__underworldStoryName = value
+
+    @property
+    def storyName(self) -> str:
+        return self.__storyName
+
+    @storyName.setter
+    def storyName(self, value: str) -> None:
+        if value:
+            self.__storyName = value
 
     @property
     def eraStart(self) -> str:
