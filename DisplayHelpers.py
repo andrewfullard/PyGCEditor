@@ -34,7 +34,7 @@ class DisplayHelpers:
 
         try:
             sf = self.campaigns[index].startingForces
-            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())].groupby(sf.Planet).head(1)
+            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())]
         except KeyError:
             return self.__getNeutralFaction()
 
