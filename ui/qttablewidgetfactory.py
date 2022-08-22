@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QHeaderView, QTableWidget
+from PyQt6.QtWidgets import QHeaderView, QTableWidget
 
 class QtTableWidgetFactory():
     '''Factory for table widgets'''
@@ -12,10 +12,10 @@ class QtTableWidgetFactory():
         tableWidget.setHorizontalHeaderLabels(label)
         
         if stretch:
-            tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+            tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         else:
-            tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+            tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+            tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
         tableWidget.verticalHeader().setVisible(False)
         tableWidget.setSortingEnabled(True)

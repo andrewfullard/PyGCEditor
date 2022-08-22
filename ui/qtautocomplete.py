@@ -1,7 +1,7 @@
 from typing import List
 
-from PyQt5.QtWidgets import QCompleter
-from PyQt5.QtCore import QStringListModel
+from PyQt6.QtWidgets import QCompleter
+from PyQt6.QtCore import QStringListModel
 
 class AutoCompleter:
     '''Set up an autocomplete addon for text entry using an input list'''

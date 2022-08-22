@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QAbstractTableModel, Qt
+from PyQt6.QtCore import QAbstractTableModel, Qt
 
 
 class PandasModel(QAbstractTableModel):
@@ -21,9 +21,9 @@ class PandasModel(QAbstractTableModel):
         else:
             return self._data.shape[1]
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if index.isValid():
-            if role == Qt.DisplayRole or role == Qt.EditRole:
+            if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 if self._filter:
                     # Attempt to filter the view in-place
                     value = self._data.loc[self._mask].iat[index.row(), index.column()]
@@ -32,7 +32,7 @@ class PandasModel(QAbstractTableModel):
                 return str(value)
 
     def setData(self, index, value, role):
-        if role == Qt.EditRole:
+        if role == Qt.ItemDataRole.EditRole:
             if self._filter:
                 start_index = self._data.loc[self._mask].index[0]
                 self._data.iloc[index.row() + start_index, index.column()] = value
@@ -43,17 +43,17 @@ class PandasModel(QAbstractTableModel):
         return False
 
     def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self._data.columns[col]
 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
 
     def sort(self, column, order):
         colname = self._data.columns.tolist()[column]
         self.layoutAboutToBeChanged.emit()
         self._data.sort_values(
-            colname, ascending=order == Qt.AscendingOrder, inplace=True
+            colname, ascending=order == Qt.SortOrder.AscendingOrder, inplace=True
         )
         self._data.reset_index(inplace=True, drop=True)
         self.layoutChanged.emit()

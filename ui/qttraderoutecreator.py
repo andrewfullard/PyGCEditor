@@ -1,5 +1,5 @@
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
 
 from gameObjects.traderoute import TradeRoute
 from gameObjects.gameObjectRepository import GameObjectRepository

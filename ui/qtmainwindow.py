@@ -1,19 +1,16 @@
 from typing import List
 import pandas as pd
 
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import (
-    QAction,
+from PyQt6 import QtCore
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import (
     QPushButton,
-    QCheckBox,
     QComboBox,
     QFileDialog,
-    QHeaderView,
     QLabel,
     QMainWindow,
     QMenu,
     QMenuBar,
-    QDialog,
     QSplitter,
     QTableWidget,
     QTableView,
@@ -28,10 +25,8 @@ from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
 from ui.qttablewidgetfactory import QtTableWidgetFactory
-from xmlTools.xmlstructure import XMLStructure
 
 from gameObjects.planet import Planet
-from gameObjects.traderoute import TradeRoute
 
 
 class QtMainWindow(MainWindow):
@@ -70,7 +65,7 @@ class QtMainWindow(MainWindow):
         self.__planetListWidget.itemClicked.connect(
             self.__onPlanetTableWidgetItemClicked
         )
-        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.__planetListWidget.customContextMenuRequested.connect(
             self.__showPlanetContextMenu
         )
@@ -298,21 +293,21 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__planetListWidget)
 
         for p in planets:
-            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.Checked)
+            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
     def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
         """Clears table, then checks off trade routes in the table from a list of indexes"""
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
         for t in tradeRoutes:
-            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.Checked)
+            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
     def updateFactionSelection(self, factions: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
         self.__uncheckAllTable(self.__factionListWidget)
 
         for f in factions:
-            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.Checked)
+            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
@@ -368,14 +363,14 @@ class QtMainWindow(MainWindow):
             rowCount = widget.rowCount()
             widget.setRowCount(rowCount + 1)
             item: QTableWidgetItem = QTableWidgetItem(entry)
-            item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
+            item.setFlags(QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             widget.setItem(rowCount, 0, item)
 
     def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a planet table widget item is clicked, check it and call the presenter to display it"""
         checked: bool = False
-        if item.checkState() == QtCore.Qt.Checked:
+        if item.checkState() == QtCore.Qt.CheckState.Checked:
             checked = True
 
         self.__presenter.onPlanetChecked(item.row(), checked)
@@ -383,7 +378,7 @@ class QtMainWindow(MainWindow):
     def __onFactionTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a faction table widget item is clicked, check it and call the presenter to add it to the campaign"""
         checked: bool = False
-        if item.checkState() == QtCore.Qt.Checked:
+        if item.checkState() == QtCore.Qt.CheckState.Checked:
             checked = True
 
         self.__presenter.onFactionChecked(item.row(), checked)
@@ -490,7 +485,7 @@ class QtMainWindow(MainWindow):
         """Unchecks all rows in a table widget"""
         rowCount = table.rowCount()
         for row in range(rowCount):
-            table.item(row, 0).setCheckState(QtCore.Qt.Unchecked)
+            table.item(row, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
 
     def __campaignPropertiesButtonClicked(self) -> None:
         """Helper function to launch the campaign properties dialog"""

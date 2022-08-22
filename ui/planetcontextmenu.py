@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMenu
+from PyQt6.QtWidgets import QMenu
 
 from ui.dialogs import Dialog, DialogResult
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter

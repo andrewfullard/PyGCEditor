@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
 from commands.ShowCampaignPropertiesDialogCommand import ShowCampaignCreatorDialogCommand
@@ -40,4 +40,4 @@ presenter.autoConnectionSettingsCommand = AutoConnectionSettingsCommand(presente
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()
 
-app.exec_()
+app.exec()
