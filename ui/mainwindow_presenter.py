@@ -91,14 +91,6 @@ class MainWindow(ABC):
     def updatePlanetCountDisplay(self, planets: List[Planet]) -> None:
         raise NotImplementedError()
 
-    @abstractmethod
-    def clearPlanets(self) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def clearTradeRoutes(self) -> None:
-        raise NotImplementedError()
-
 
 class MainWindowPresenter:
     """Window display class"""
@@ -179,6 +171,7 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
+        self.__mainWindow.updatePlanetCountDisplay(self.__checkedPlanets)
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, index: int) -> None:
