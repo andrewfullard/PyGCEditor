@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
-from itertools import groupby
 from typing import List, Set, Dict
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlwriter import XMLWriter
 import pandas as pd
-
-import numpy as np
-from numpy import ndarray as NumPyArray
 
 from config import Config
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -85,10 +81,6 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updatePlanetCountDisplay(self, planets: List[Planet]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateTotalFactionForces(self, entry: str) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -277,8 +269,6 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes -= missingRoutes
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
-
-        # self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
 
         self.__planetOwners = self.__helper.getPlanetOwners(
             index, self.__checkedPlanets

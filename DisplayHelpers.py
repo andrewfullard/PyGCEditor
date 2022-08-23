@@ -1,12 +1,9 @@
-from itertools import groupby
-from typing import TYPE_CHECKING, List, Set
+from typing import List
 
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
-from gameObjects.startingForce import StartingForce
-from gameObjects.traderoute import TradeRoute
 
 from util import getObject
 

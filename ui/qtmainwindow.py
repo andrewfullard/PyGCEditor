@@ -25,6 +25,8 @@ from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
 from ui.qttablewidgetfactory import QtTableWidgetFactory
+from ui.qtplanetstraderoutes import QtPlanetsTradeRoutes
+from ui.util import checkAllTable, uncheckAllTable, checkListTable
 
 from gameObjects.planet import Planet
 
@@ -33,24 +35,11 @@ class QtMainWindow(MainWindow):
     """Qt based window"""
 
     def __init__(self):
-        self.__allPlanetsChecked: bool = False
-        self.__allTradeRoutesChecked: bool = False
-
         # Main window setup
         self.__window: QMainWindow = QMainWindow()
         self.__widget: QWidget = QSplitter(self.__window)
         self.__window.setCentralWidget(self.__widget)
         self.__window.setWindowTitle("Galactic Conquest Editor")
-
-        # Left pane, GC layout tab
-        self.__campaignComboBox: QComboBox = QComboBox()
-        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
-        self.__campaignPropertiesButton: QPushButton = QPushButton(
-            "Campaign Properties"
-        )
-        self.__campaignPropertiesButton.clicked.connect(
-            self.__campaignPropertiesButtonClicked
-        )
 
         self.__importStartingForcesButton: QPushButton = QPushButton(
             "Import Default Forces"
@@ -61,56 +50,9 @@ class QtMainWindow(MainWindow):
 
         self.__tableWidgetFactory = QtTableWidgetFactory()
 
-        self.__planetListWidget = self.__tableWidgetFactory.construct(["Planets"])
-        self.__planetListWidget.itemClicked.connect(
-            self.__onPlanetTableWidgetItemClicked
-        )
-        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
-        self.__planetListWidget.customContextMenuRequested.connect(
-            self.__showPlanetContextMenu
-        )
-
-        self.__tradeRouteListWidget = self.__tableWidgetFactory.construct(
-            ["Trade Routes"]
-        )
-        self.__tradeRouteListWidget.itemClicked.connect(
-            self.__onTradeRouteTableWidgetItemClicked
-        )
-
         self.__factionListWidget = self.__tableWidgetFactory.construct(
             ["Playable Factions"]
         )
-
-        self.__selectAllPlanetsButton: QPushButton = QPushButton("Select All Planets")
-        self.__selectAllPlanetsButton.clicked.connect(
-            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True)
-        )
-
-        self.__deselectAllPlanetsButton: QPushButton = QPushButton(
-            "Deselect All Planets"
-        )
-        self.__deselectAllPlanetsButton.clicked.connect(
-            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, False)
-        )
-
-        self.__selectAllTradeRoutesButton: QPushButton = QPushButton(
-            "Select All Trade Routes"
-        )
-        self.__selectAllTradeRoutesButton.clicked.connect(
-            lambda: self.__selectAllTradeRoutesButtonClicked(
-                self.__tradeRouteListWidget, True
-            )
-        )
-
-        self.__deselectAllTradeRoutesButton: QPushButton = QPushButton(
-            "Deselect All Trade Routes"
-        )
-        self.__deselectAllTradeRoutesButton.clicked.connect(
-            lambda: self.__selectAllTradeRoutesButtonClicked(
-                self.__tradeRouteListWidget, False
-            )
-        )
-        self.__planetCountLabel: QLabel = QLabel()
 
         # Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
@@ -171,31 +113,39 @@ class QtMainWindow(MainWindow):
 
         # Set up left pane tabs
         self.__leftTabsWidget: QWidget = QTabWidget()
-        self.__planetsTradeRoutes: QWidget = QWidget()
+        self.__GCLayoutWidget = QtPlanetsTradeRoutes()
         self.__startingForces: QWidget = QWidget()
         self.__factions: QWidget = QWidget()
+        
+        # Left pane, GC layout tab
+        self.__GCLayoutWidget.campaignComboBox.activated.connect(self.__onCampaignSelected)
+        self.__GCLayoutWidget.campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
+        self.__GCLayoutWidget.planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
+        self.__GCLayoutWidget.planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
+        self.__GCLayoutWidget.selectAllTradeRoutesButton.clicked.connect(
+            lambda: self.__selectAllTradeRoutesButtonClicked(self.__GCLayoutWidget.tradeRouteListWidget, True)
+        )
+        self.__GCLayoutWidget.deselectAllTradeRoutesButton.clicked.connect(
+            lambda: self.__selectAllTradeRoutesButtonClicked(self.__GCLayoutWidget.tradeRouteListWidget, False)
+        )
+        self.__GCLayoutWidget.tradeRouteListWidget.itemClicked.connect(
+            self.__onTradeRouteTableWidgetItemClicked
+        )
+        self.__GCLayoutWidget.selectAllPlanetsButton.clicked.connect(
+            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True)
+        )
+        self.__GCLayoutWidget.deselectAllPlanetsButton.clicked.connect(
+            lambda: self.__deselectAllPlanetsButtonClicked(self.__planetListWidget, False)
+        )
 
-        self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
+        self.__leftTabsWidget.addTab(self.__GCLayoutWidget.widget, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
 
         self.__leftTabsWidget.addTab(self.__factions, "Factions")
-        
-        self.__planetsTradeRoutes.setLayout(QVBoxLayout())
+    
         self.__startingForces.setLayout(QVBoxLayout())
         self.__factions.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
-
-        self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
-        self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
-        self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
-        self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
-        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
-        self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
-        self.__planetsTradeRoutes.layout().addWidget(self.__tradeRouteListWidget)
-        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllTradeRoutesButton)
-        self.__planetsTradeRoutes.layout().addWidget(
-            self.__deselectAllTradeRoutesButton
-        )
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
@@ -213,10 +163,22 @@ class QtMainWindow(MainWindow):
         """Set the presenter class for the window"""
         self.__presenter = presenter
 
+    def getWindow(self) -> QMainWindow:
+        """Returns the window"""
+        return self.__window
+
+    def emptyWidgets(self) -> None:
+        """Clears all list and combobox widgets"""
+        self.__GCLayoutWidget.empty()
+        self.__factionListWidget.clearContents()
+        self.__factionListWidget.setRowCount(0)
+        self.__planetComboBox.clear()
+        self.__forcesListTable.setModel(None)
+
     def addPlanets(self, planets: List[str]) -> None:
         """Add Planet objects to the planet table widget"""
-        self.__addEntriesToTableWidget(self.__planetListWidget, planets)
-        self.__planetListWidget.itemClicked.connect(
+        self.__addEntriesToTableWidget(self.__GCLayoutWidget.planetListWidget, planets)
+        self.__GCLayoutWidget.planetListWidget.itemClicked.connect(
             self.__onPlanetTableWidgetItemClicked
         )
 
@@ -229,53 +191,34 @@ class QtMainWindow(MainWindow):
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         """Add TradeRoute objects to the trade route table widget"""
-        self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
+        self.__addEntriesToTableWidget(self.__GCLayoutWidget.tradeRouteListWidget, tradeRoutes)
 
     def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
         """Update TradeRoute trade route table widget"""
-        self.__tradeRouteListWidget.clearContents()
-        self.__tradeRouteListWidget.setRowCount(0)
-        self.__addEntriesToTableWidget(self.__tradeRouteListWidget, tradeRoutes)
+        self.__GCLayoutWidget.tradeRouteListWidget.clearContents()
+        self.__GCLayoutWidget.tradeRouteListWidget.setRowCount(0)
+        self.__addEntriesToTableWidget(self.__GCLayoutWidget.tradeRouteListWidget, tradeRoutes)
 
     def addCampaigns(self, campaigns: List[str]) -> None:
         """Add Campaign objects to the campaign combobox widget"""
-        self.__campaignComboBox.addItems(campaigns)
-        self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
+        self.__GCLayoutWidget.campaignComboBox.addItems(campaigns)
+        self.__GCLayoutWidget.campaignComboBox.activated.connect(self.__onCampaignSelected)
 
-    def makeGalacticPlot(self) -> GalacticPlot:
-        """Plot planets and trade routes"""
-        plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
-        self.__widget.addWidget(plot.getWidget())
-        return plot
+    def updatePlanetSelection(self, planets: List[int]) -> None:
+        """Clears table, then checks off planets in the table from a list of indexes"""
+        checkListTable(self.__GCLayoutWidget.planetListWidget, planets)
 
-    def getWindow(self) -> QMainWindow:
-        """Returns the window"""
-        return self.__window
+    def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
+        """Clears table, then checks off trade routes in the table from a list of indexes"""
+        checkListTable(self.__GCLayoutWidget.tradeRouteListWidget, tradeRoutes)
 
-    def emptyWidgets(self) -> None:
-        """Clears all list and combobox widgets"""
-        self.__planetListWidget.clearContents()
-        self.__planetListWidget.setRowCount(0)
-        self.__tradeRouteListWidget.clearContents()
-        self.__tradeRouteListWidget.setRowCount(0)
-        self.__factionListWidget.clearContents()
-        self.__factionListWidget.setRowCount(0)
-        self.__campaignComboBox.clear()
-
-        self.__planetComboBox.clear()
-        self.__forcesListTable.setModel(None)
-
-    def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
-        """Update the campaign combobox"""
-        self.__campaignComboBox.clear()
-        self.__campaignComboBox.addItems(campaigns)
-        newCampaignIndex = self.__campaignComboBox.findText(newCampaign)
-        self.__campaignComboBox.setCurrentIndex(newCampaignIndex)
-        self.__onCampaignSelected(newCampaignIndex)
+    def updateFactionSelection(self, factions: List[int]) -> None:
+        """Clears table, then checks off planets in the table from a list of indexes"""
+        checkListTable(self.__factionListWidget, factions)
 
     def updateCampaignComboBoxSelection(self, index: int) -> None:
         """Update selected campaign"""
-        self.__campaignComboBox.setCurrentIndex(index)
+        self.__GCLayoutWidget.campaignComboBox.setCurrentIndex(index)
 
     def updatePlanetComboBox(self, planets: List[str]) -> None:
         """Update the planets combobox"""
@@ -288,39 +231,25 @@ class QtMainWindow(MainWindow):
 
         self.__planetComboBox.activated.connect(self.__onPlanetSelected)
 
-    def updatePlanetSelection(self, planets: List[int]) -> None:
-        """Clears table, then checks off planets in the table from a list of indexes"""
-        self.__uncheckAllTable(self.__planetListWidget)
-
-        for p in planets:
-            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.CheckState.Checked)
-
-    def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
-        """Clears table, then checks off trade routes in the table from a list of indexes"""
-        self.__uncheckAllTable(self.__tradeRouteListWidget)
-
-        for t in tradeRoutes:
-            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.CheckState.Checked)
-
-    def updateFactionSelection(self, factions: List[int]) -> None:
-        """Clears table, then checks off planets in the table from a list of indexes"""
-        self.__uncheckAllTable(self.__factionListWidget)
-
-        for f in factions:
-            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+    def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
+        """Update the campaign combobox"""
+        self.__GCLayoutWidget.campaignComboBox.clear()
+        self.__GCLayoutWidget.campaignComboBox.addItems(campaigns)
+        newCampaignIndex = self.__GCLayoutWidget.campaignComboBox.findText(newCampaign)
+        self.__GCLayoutWidget.campaignComboBox.setCurrentIndex(newCampaignIndex)
+        self.__onCampaignSelected(newCampaignIndex)
 
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
-        self.__uncheckAllTable(self.__planetListWidget)
+        self.__uncheckAllTable(self.__GCLayoutWidget.planetListWidget)
 
     def clearTradeRoutes(self) -> None:
         """Helper function to clear traderoute selections from the presenter"""
-        self.__uncheckAllTable(self.__tradeRouteListWidget)
+        self.__uncheckAllTable(self.__GCLayoutWidget.tradeRouteListWidget)
 
     def updatePlanetCountDisplay(self, planets: List[int]) -> None:
         """Updates count of planets on main window."""
-
-        self.__planetCountLabel.setText("Planet Count: " + str(len(planets)))
+        self.__GCLayoutWidget.planetCountLabel.setText("Planet Count: " + str(len(planets)))
 
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame, filter: str
@@ -351,9 +280,11 @@ class QtMainWindow(MainWindow):
             + str(planet.groundStructureSlots)
         )
 
-    def updateTotalFactionForces(self, entry: str) -> None:
-        """Updates the total faction forces label"""
-        self.__totalFactionForceLabel.setText(entry)
+    def makeGalacticPlot(self) -> GalacticPlot:
+        """Plot planets and trade routes"""
+        plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
+        self.__widget.addWidget(plot.getWidget())
+        return plot
 
     def __addEntriesToTableWidget(
         self, widget: QTableWidget, entries: List[str]
@@ -383,7 +314,7 @@ class QtMainWindow(MainWindow):
 
         self.__presenter.onFactionChecked(item.row(), checked)
         
-    def __showAutoConnectionSettings(self):
+    def __showAutoConnectionSettings(self) -> None:
         self.__presenter.autoConnectionSettingsCommand.execute()
 
     def __showPlanetContextMenu(self, position) -> None:
@@ -439,13 +370,10 @@ class QtMainWindow(MainWindow):
     ) -> None:
         """Cycles through a table and checks all the planet entries, then presents them"""
         if checked:
-            self.__checkAllTable(table)
-
+            checkAllTable(table)
             self.__presenter.allPlanetsChecked(True)
-
         else:
-            self.__uncheckAllTable(table)
-
+            uncheckAllTable(table)
             self.__presenter.allPlanetsChecked(False)
 
     def __selectAllTradeRoutesButtonClicked(
@@ -453,13 +381,10 @@ class QtMainWindow(MainWindow):
     ) -> None:
         """Cycles through a table and checks all the trade route entries, then presents them"""
         if checked:
-            self.__checkAllTable(table)
-
+            checkAllTable(table)
             self.__presenter.allTradeRoutesChecked(True)
-
         else:
-            self.__uncheckAllTable(table)
-
+            uncheckAllTable(table)
             self.__presenter.allTradeRoutesChecked(False)
 
     def __onCampaignSelected(self, index: int) -> None:
@@ -474,18 +399,6 @@ class QtMainWindow(MainWindow):
         """Presents a selected planet's starting forces"""
         entry = self.__planetComboBox.currentText()
         self.__presenter.onPlanetSelected(entry)
-
-    def __checkAllTable(self, table: QTableWidget) -> None:
-        """Checks all rows in a table widget"""
-        rowCount = table.rowCount()
-        for row in range(rowCount):
-            table.item(row, 0).setCheckState(QtCore.Qt.Checked)
-
-    def __uncheckAllTable(self, table: QTableWidget) -> None:
-        """Unchecks all rows in a table widget"""
-        rowCount = table.rowCount()
-        for row in range(rowCount):
-            table.item(row, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
 
     def __campaignPropertiesButtonClicked(self) -> None:
         """Helper function to launch the campaign properties dialog"""
