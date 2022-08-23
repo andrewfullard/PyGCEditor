@@ -29,6 +29,7 @@ class Campaign:
 
         self.__planets: Set[Planet] = set()
         self.__playableFactions: Set[Faction] = set()
+        self.__factions: Set[Faction] = set()
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.startingForces = pd.DataFrame()
 
@@ -148,6 +149,15 @@ class Campaign:
     def playableFactions(self, value: Set[Faction]) -> None:
         if value:
             self.__playableFactions = value
+
+    @property
+    def factions(self) -> Set[Faction]:
+        return self.__factions
+
+    @factions.setter
+    def factions(self, value: Set[Faction]) -> None:
+        if value:
+            self.__factions = value
 
     @property
     def tradeRoutes(self) -> Set[TradeRoute]:

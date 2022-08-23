@@ -24,9 +24,9 @@ from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
-from ui.qttablewidgetfactory import QtTableWidgetFactory
 from ui.qtplanetstraderoutes import QtPlanetsTradeRoutes
-from ui.util import checkAllTable, uncheckAllTable, checkListTable
+from ui.qtfactionstable import QtFactionsTable
+from ui.util import checkListTable
 
 from gameObjects.planet import Planet
 
@@ -46,12 +46,6 @@ class QtMainWindow(MainWindow):
         )
         self.__importStartingForcesButton.clicked.connect(
             self.__importStartingForcesButtonClicked
-        )
-
-        self.__tableWidgetFactory = QtTableWidgetFactory()
-
-        self.__factionListWidget = self.__tableWidgetFactory.construct(
-            ["Playable Factions"]
         )
 
         # Left pane, Forces tab
@@ -117,9 +111,9 @@ class QtMainWindow(MainWindow):
 
         # Set up left pane tabs
         self.__leftTabsWidget: QWidget = QTabWidget()
-        self.__GCLayoutWidget = QtPlanetsTradeRoutes()
+        self.__GCLayoutWidget: QWidget = QtPlanetsTradeRoutes()
         self.__startingForces: QWidget = QWidget()
-        self.__factions: QWidget = QWidget()
+        self.__factionsWidget: QWidget = QtFactionsTable()
         
         # Left pane, GC layout tab
         self.__GCLayoutWidget.campaignComboBoxSignal.connect(self.__onCampaignSelected)
@@ -131,18 +125,15 @@ class QtMainWindow(MainWindow):
         self.__leftTabsWidget.addTab(self.__GCLayoutWidget.widget, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
 
-        self.__leftTabsWidget.addTab(self.__factions, "Factions")
+        self.__leftTabsWidget.addTab(self.__factionsWidget.widget, "Factions")
     
         self.__startingForces.setLayout(QVBoxLayout())
-        self.__factions.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
         self.__startingForces.layout().addWidget(self.__planetInfoLabel)
         self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
-
-        self.__factions.layout().addWidget(self.__factionListWidget)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -157,8 +148,7 @@ class QtMainWindow(MainWindow):
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""
         self.__GCLayoutWidget.empty()
-        self.__factionListWidget.clearContents()
-        self.__factionListWidget.setRowCount(0)
+        self.__factionsWidget.empty()
         self.__planetComboBox.clear()
         self.__forcesListTable.setModel(None)
 
@@ -169,12 +159,15 @@ class QtMainWindow(MainWindow):
             self.__onPlanetTableWidgetItemClicked
         )
 
-    def addFactions(self, factions: List[str]) -> None:
+    def addFactions(self, factions: List[str], playable: List[bool], AIControl: List[str], storyName: List[str]) -> None:
         """Add Faction objects to the faction table widget"""
-        self.__addEntriesToTableWidget(self.__factionListWidget, factions)
-        self.__factionListWidget.itemClicked.connect(
-            self.__onFactionTableWidgetItemClicked
-        )
+        self.__factionsWidget.fillColumn(factions, 0)
+        self.__factionsWidget.fillColumn(playable, 1, True)
+        self.__factionsWidget.fillColumn(AIControl, 2)
+        self.__factionsWidget.fillColumn(storyName, 3)
+        #self.__factionsWidget.factionListWidget.itemClicked.connect(
+        #    self.__onFactionTableWidgetItemClicked
+        #)
 
     def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
         """Add TradeRoute objects to the trade route table widget"""
@@ -201,7 +194,7 @@ class QtMainWindow(MainWindow):
 
     def updateFactionSelection(self, factions: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
-        checkListTable(self.__factionListWidget, factions)
+        checkListTable(self.__factionsWidget.factionListWidget, factions)
 
     def updateCampaignComboBoxSelection(self, index: int) -> None:
         """Update selected campaign"""

@@ -30,7 +30,7 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def addFactions(self, factions: List[str]) -> None:
+    def addFactions(self, factions: List[str], playable: List[bool], AIControl: List[str], storyName: List[str]) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -454,11 +454,13 @@ class MainWindowPresenter:
         if selectedCampaign:
             self.__updateAvailableTradeRoutes(selectedCampaign.planets)
 
+        factionAI = [x.aiplayer for x in self.__factions]
+
         self.__mainWindow.emptyWidgets()
 
         self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
-        self.__mainWindow.addFactions(self.__getNames(self.__factions))
+        self.__mainWindow.addFactions(self.__getNames(self.__factions), [False], factionAI, [""])
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
         self.__mainWindow.updateCampaignComboBoxSelection(self.__selectedCampaignIndex)

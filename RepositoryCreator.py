@@ -160,6 +160,7 @@ class RepositoryCreator:
                     split = entry.split(',')
                     faction_name = split[0].strip()
                     ai = split[1].strip()
+                    newCampaign.factions.add(self.repository.getFactionByName(faction_name))
                     if ai != "None":
                         newCampaign.playableFactions.add(self.repository.getFactionByName(faction_name))
 

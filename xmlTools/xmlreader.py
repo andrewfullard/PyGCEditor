@@ -171,6 +171,8 @@ class XMLReader:
             if element.get("Name") is not None:
                 colorElement = element.find("Color")
                 basic_ai = element.find("Basic_AI")
+                if basic_ai is not None:
+                    basic_ai = basic_ai.text
                 color = [float(x.strip()) / 255 for x in colorElement.text.split(",")]
                 factionList.append([element.get("Name"), basic_ai, color])
 
