@@ -8,17 +8,26 @@ from ui.dialogs import Dialog, DialogResult
 
 class QtTradeRouteCreator(Dialog):
     '''Class for a "new trade route" dialog box'''
-    def __init__(self, repository: GameObjectRepository):
+    def __init__(self, repository: GameObjectRepository, start, end):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
         self.__buttonLayout: QHBoxLayout = QHBoxLayout()
+
+        self.__start = start
+        self.__end = end
 
         self.__autoComplete = None
 
         self.__inputName: QLineEdit = QLineEdit(self.__dialog)
         self.__inputStart: QLineEdit = QLineEdit(self.__dialog)
         self.__inputEnd: QLineEdit = QLineEdit(self.__dialog)
+
+        if start:
+            self.__inputStart.setText(start)
+        
+        if end:
+            self.__inputEnd.setText(end)
 
         self.__inputStart.textChanged.connect(self.__autoName)
         self.__inputEnd.textChanged.connect(self.__autoName)

@@ -226,6 +226,36 @@ class QtMainWindow(MainWindow):
         self.__GCLayoutWidget.campaignComboBox.setCurrentIndex(newCampaignIndex)
         self.__onCampaignSelected(newCampaignIndex)
 
+    def updatePlanetSelection(self, planets: List[int]) -> None:
+        """Clears table, then checks off planets in the table from a list of indexes"""
+        self.__uncheckAllTable(self.__planetListWidget)
+
+        for p in planets:
+            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+
+    def selectSingleTradeRoute(self, index: int) -> bool:
+        """Checks off trade route in the table for an index"""
+        if self.__tradeRouteListWidget.item(index, 0).checkState() == QtCore.Qt.CheckState.Checked:
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
+            return False
+        else:
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            return True
+
+    def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
+        """Clears table, then checks off trade routes in the table from a list of indexes"""
+        self.__uncheckAllTable(self.__tradeRouteListWidget)
+
+        for t in tradeRoutes:
+            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+
+    def updateFactionSelection(self, factions: List[int]) -> None:
+        """Clears table, then checks off planets in the table from a list of indexes"""
+        self.__uncheckAllTable(self.__factionListWidget)
+
+        for f in factions:
+            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
         self.__uncheckAllTable(self.__GCLayoutWidget.planetListWidget)

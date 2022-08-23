@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
 from PyQt6.QtCore import pyqtSignal
-from matplotlib.backends.backend_qt5agg import FigureCanvas, \
+from matplotlib.backends.backend_qtagg import FigureCanvas, \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Axes, Figure
 
@@ -8,7 +8,8 @@ from matplotlib.figure import Axes, Figure
 class QtGalacticPlot(QWidget):
     '''Class for plotting the galaxy'''
     #signal to send to main window presenter when a planet is selected in the plot
-    planetSelectedSignal = pyqtSignal(list)
+    planetSelectedSignal = pyqtSignal(int)
+    planetShiftSelectedSignal = pyqtSignal(int)
 
     def __init__(self, parent: QWidget = None):
         super(QtGalacticPlot, self).__init__()
@@ -104,8 +105,11 @@ class QtGalacticPlot(QWidget):
 
     def __planetSelect(self, event) -> None:
         '''Event handler for selecting a planet on the map'''
-        planet_index = event.ind
-        self.planetSelectedSignal.emit(list(planet_index))
+        planet_index = event.ind[0]
+        if event.mouseevent.button == 3:
+            self.planetShiftSelectedSignal.emit(planet_index)
+        else:
+            self.planetSelectedSignal.emit(planet_index)
 
     def __planetHover(self, event) -> None:
         '''Handler for hovering on a planet in the plot'''

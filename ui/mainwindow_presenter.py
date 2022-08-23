@@ -38,6 +38,10 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def addCampaigns(self, campaigns: List[str]) -> None:
         raise NotImplementedError()
 
@@ -67,6 +71,10 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updateTradeRouteSelection(self, tradeRoutes: List[TradeRoute]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def selectSingleTradeRoute(self, index: int) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -126,10 +134,14 @@ class MainWindowPresenter:
         self.__showAutoConnections = True
 
         self.__plot.planetSelectedSignal.connect(self.planetSelectedOnPlot)
+        self.__plot.planetShiftSelectedSignal.connect(self.planetShiftSelectedOnPlot)
 
         self.__helper = DisplayHelpers(self.__repository, self.campaigns)
 
         self.__updateWidgets()
+
+        self.__onPlotSelectedStartPlanet = None
+        self.__onPlotSelectedEndPlanet = None
 
         self.newTradeRouteCommand = None
         self.campaignPropertiesCommand = None
@@ -169,17 +181,16 @@ class MainWindowPresenter:
         )
         self.__updateGalacticPlot()
 
-    def planetSelectedOnPlot(self, indexes: list) -> None:
+    def planetSelectedOnPlot(self, index: int) -> None:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
-        for index in indexes:
-            if self.__planets[index] not in self.__checkedPlanets:
-                self.__checkedPlanets.add(self.__planets[index])
-                self.getSelectedCampaign().planets.add(self.__planets[index])
-                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
-            elif self.__planets[index] in self.__checkedPlanets:
-                self.__checkedPlanets.remove(self.__planets[index])
-                self.getSelectedCampaign().planets.remove(self.__planets[index])
-                self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+        if self.__planets[index] not in self.__checkedPlanets:
+            self.__checkedPlanets.add(self.__planets[index])
+            self.getSelectedCampaign().planets.add(self.__planets[index])
+            self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+        elif self.__planets[index] in self.__checkedPlanets:
+            self.__checkedPlanets.remove(self.__planets[index])
+            self.getSelectedCampaign().planets.remove(self.__planets[index])
+            self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         selectedPlanets = []
 
@@ -193,6 +204,32 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
+
+    def planetShiftSelectedOnPlot(self, index: int) -> None:
+        """If two planets in a row are right clicked by a user, this find and adds the trade route, or helps create a new one"""
+        if not self.__onPlotSelectedStartPlanet:
+            self.__onPlotSelectedStartPlanet = self.__planets[index]
+            return
+        
+        if self.__onPlotSelectedStartPlanet and not self.__onPlotSelectedEndPlanet:
+            self.__onPlotSelectedEndPlanet = self.__planets[index]
+
+        if self.__onPlotSelectedStartPlanet and self.__onPlotSelectedEndPlanet:
+            try:
+                traderoute = self.__repository.getTradeRouteByPlanets(self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet)
+                index = self.__availableTradeRoutes.index(traderoute)
+                if self.__mainWindow.selectSingleTradeRoute(index):
+                    self.onTradeRouteChecked(index, True)
+                else:
+                    self.onTradeRouteChecked(index, False)
+            except RuntimeError:
+                self.newTradeRouteCommand.execute(start = self.__onPlotSelectedStartPlanet.name, end = self.__onPlotSelectedEndPlanet.name)
+            
+            self.__onPlotSelectedStartPlanet = None
+            self.__onPlotSelectedEndPlanet = None
+ 
+            self.__updateGalacticPlot()
+            
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         """If a trade route is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
