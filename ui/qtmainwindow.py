@@ -296,6 +296,15 @@ class QtMainWindow(MainWindow):
         for p in planets:
             self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
+    def selectSingleTradeRoute(self, index: int) -> bool:
+        """Checks off trade route in the table for an index"""
+        if self.__tradeRouteListWidget.item(index, 0).checkState() == QtCore.Qt.CheckState.Checked:
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
+            return False
+        else:
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            return True
+
     def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
         """Clears table, then checks off trade routes in the table from a list of indexes"""
         self.__uncheckAllTable(self.__tradeRouteListWidget)

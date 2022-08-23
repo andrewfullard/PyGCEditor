@@ -75,6 +75,10 @@ class GameObjectRepository:
             if (tradeRoute.start == start) and (tradeRoute.end == end):
                 return tradeRoute
 
+        for tradeRoute in self.tradeRoutes:
+            if (tradeRoute.start == end) and (tradeRoute.end == start):
+                return tradeRoute
+
         raise RuntimeError("Searching for non existing Trade Route")
 
     def getPlanetNames(self) -> List[str]:

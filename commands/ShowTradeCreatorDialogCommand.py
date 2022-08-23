@@ -11,9 +11,9 @@ class ShowTradeRouteCreatorDialogCommand(Command):
         self.__dialogFactory = dialogFactory
         self.__presenter = mainWindowPresenter
 
-    def execute(self) -> None:
+    def execute(self, start = None, end = None) -> None:
         '''Runs the dialog and passes results to the presenter and repository'''
-        dialog = self.__dialogFactory.makeTradeRouteCreationDialog()
+        dialog = self.__dialogFactory.makeTradeRouteCreationDialog(start, end)
         result: DialogResult = dialog.show()
 
         if result is DialogResult.Ok:
