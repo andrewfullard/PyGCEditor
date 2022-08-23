@@ -122,25 +122,11 @@ class QtMainWindow(MainWindow):
         self.__factions: QWidget = QWidget()
         
         # Left pane, GC layout tab
-        self.__GCLayoutWidget.campaignComboBox.activated.connect(self.__onCampaignSelected)
-        self.__GCLayoutWidget.campaignPropertiesButton.clicked.connect(self.__campaignPropertiesButtonClicked)
-        self.__GCLayoutWidget.planetListWidget.customContextMenuRequested.connect(self.__showPlanetContextMenu)
-        self.__GCLayoutWidget.planetListWidget.itemClicked.connect(self.__onPlanetTableWidgetItemClicked)
-        self.__GCLayoutWidget.selectAllTradeRoutesButton.clicked.connect(
-            lambda: self.__selectAllTradeRoutesButtonClicked(self.__GCLayoutWidget.tradeRouteListWidget, True)
-        )
-        self.__GCLayoutWidget.deselectAllTradeRoutesButton.clicked.connect(
-            lambda: self.__selectAllTradeRoutesButtonClicked(self.__GCLayoutWidget.tradeRouteListWidget, False)
-        )
-        self.__GCLayoutWidget.tradeRouteListWidget.itemClicked.connect(
-            self.__onTradeRouteTableWidgetItemClicked
-        )
-        self.__GCLayoutWidget.selectAllPlanetsButton.clicked.connect(
-            lambda: self.__selectAllPlanetsButtonClicked(self.__planetListWidget, True)
-        )
-        self.__GCLayoutWidget.deselectAllPlanetsButton.clicked.connect(
-            lambda: self.__deselectAllPlanetsButtonClicked(self.__planetListWidget, False)
-        )
+        self.__GCLayoutWidget.campaignComboBoxSignal.connect(self.__onCampaignSelected)
+        self.__GCLayoutWidget.campaignPropertiesButtonSignal.connect(self.__campaignPropertiesButtonClicked)
+        self.__GCLayoutWidget.planetListWidgetContextSignal.connect(self.__showPlanetContextMenu)
+        self.__GCLayoutWidget.planetListWidgetSignal.connect(self.__onPlanetTableWidgetItemClicked)
+        self.__GCLayoutWidget.tradeRouteListWidgetSignal.connect(self.__onTradeRouteTableWidgetItemClicked)
 
         self.__leftTabsWidget.addTab(self.__GCLayoutWidget.widget, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
@@ -320,8 +306,8 @@ class QtMainWindow(MainWindow):
 
     def __showPlanetContextMenu(self, position) -> None:
         self.__presenter.planetContextMenu.show(
-            self.__planetListWidget.itemAt(position),
-            self.__planetListWidget.mapToGlobal(position),
+            self.__GCLayoutWidget.planetListWidget.itemAt(position),
+            self.__GCLayoutWidget.planetListWidget.mapToGlobal(position),
         )
 
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
@@ -370,28 +356,6 @@ class QtMainWindow(MainWindow):
     def __quit(self) -> None:
         """Exits application by closing the window"""
         self.__window.close()
-
-    def __selectAllPlanetsButtonClicked(
-        self, table: QTableWidget, checked: bool
-    ) -> None:
-        """Cycles through a table and checks all the planet entries, then presents them"""
-        if checked:
-            checkAllTable(table)
-            self.__presenter.allPlanetsChecked(True)
-        else:
-            uncheckAllTable(table)
-            self.__presenter.allPlanetsChecked(False)
-
-    def __selectAllTradeRoutesButtonClicked(
-        self, table: QTableWidget, checked: bool
-    ) -> None:
-        """Cycles through a table and checks all the trade route entries, then presents them"""
-        if checked:
-            checkAllTable(table)
-            self.__presenter.allTradeRoutesChecked(True)
-        else:
-            uncheckAllTable(table)
-            self.__presenter.allTradeRoutesChecked(False)
 
     def __onCampaignSelected(self, index: int) -> None:
         """Presents a selected campaign"""
