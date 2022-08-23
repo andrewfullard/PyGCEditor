@@ -395,7 +395,7 @@ class QtMainWindow(MainWindow):
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a trade route table widget item is clicked, check it and call the presenter to display it"""
         checked: bool = False
-        if item.checkState() == QtCore.Qt.Checked:
+        if item.checkState() == QtCore.Qt.CheckState.Checked:
             checked = True
 
         self.__presenter.onTradeRouteChecked(item.row(), checked)
