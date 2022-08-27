@@ -225,7 +225,11 @@ class MainWindowPresenter:
         if self.__onPlotSelectedStartPlanet and self.__onPlotSelectedEndPlanet:
             try:
                 traderoute = self.__repository.getTradeRouteByPlanets(self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet)
-                index = self.__availableTradeRoutes.index(traderoute)
+                try:
+                    index = self.__availableTradeRoutes.index(traderoute)
+                except ValueError:
+                    print("Error, trade route not available but it should be! Try turning a planet off and on")
+
                 if self.__mainWindow.selectSingleTradeRoute(index):
                     self.onTradeRouteChecked(index, True)
                 else:
