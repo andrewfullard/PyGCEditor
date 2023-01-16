@@ -455,7 +455,7 @@ class QtMainWindow(MainWindow):
 
     def __importForcesSaveFileAll(self) -> None:
         self.__presenter.importStartingForcesAll()
-        self.__presenter.saveAllCampaigns()
+        self.__presenter.saveAllCampaigns(default_forces_only=True)
 
     def __quit(self) -> None:
         """Exits application by closing the window"""

@@ -35,6 +35,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
             self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
             self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
+            self.subElementText(campaignElement, "Use_Default_Forces", campaign.useDefaultForces)
 
             self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
             self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
@@ -125,6 +126,7 @@ class XMLWriter:
         requires a GameObject with the name property"""
         entry = "\n"
         if len(inputList) == 0:
+            print("Empty list")
             return entry
         inputList = sorted(inputList, key=lambda entry: entry.name)
         for item in inputList:

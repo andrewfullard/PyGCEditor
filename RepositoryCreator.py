@@ -147,6 +147,9 @@ class RepositoryCreator:
             newCampaign.eraStart = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Era_Start"
             )
+            newCampaign.useDefaultForces = self.__xml.getValueFromXMLRoot(
+                campaignRoot, ".//Use_Default_Forces"
+            )
             newCampaign.startingActivePlayer = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Starting_Active_Player"
             )
@@ -262,7 +265,7 @@ class RepositoryCreator:
         current_planet = None
         current_era = 0
 
-        for index, row in startingForcesLibrary.iterrows():
+        for index, row in tqdm(startingForcesLibrary.iterrows()):
             if row["Planet"] != current_planet:
                 current_planet = row["Planet"]
             

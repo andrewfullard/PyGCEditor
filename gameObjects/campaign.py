@@ -27,6 +27,7 @@ class Campaign:
         self.__storyName: str = ""
         self.__eraStart: str = "0"
         self.__era = 1
+        self.__useDefaultForces = False
 
         self.__planets: Set[Planet] = set()
         self.__playableFactions: Set[Faction] = set()
@@ -140,6 +141,15 @@ class Campaign:
     def eraStart(self, value: str) -> None:
         if value:
             self.__eraStart = value
+
+    @property
+    def useDefaultForces(self) -> str:
+        return self.__useDefaultForces
+
+    @useDefaultForces.setter
+    def useDefaultForces(self, value: str) -> None:
+        if value:
+            self.__useDefaultForces = value
 
     @property
     def planets(self) -> Set[Planet]:

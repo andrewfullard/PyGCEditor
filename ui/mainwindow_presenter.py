@@ -451,9 +451,20 @@ class MainWindowPresenter:
                 self.__updatedPlanetCoords,
             )
 
-    def saveAllCampaigns(self) -> None:
+    def saveAllCampaigns(self, default_forces_only=False) -> None:
+        """Saves all campaigns to files
+
+        Parameters
+        ----------
+        default_forces_only : bool, optional
+            If True, only save campaigns that specific that they use
+            default starting forces, by default False
+        """        
         for campaign in self.campaigns:
-            self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
+            if default_forces_only and campaign.useDefaultForces:
+                self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
+            elif not default_forces_only:
+                self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
