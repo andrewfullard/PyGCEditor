@@ -124,6 +124,8 @@ class XMLWriter:
         """creates a list string to insert into a file
         requires a GameObject with the name property"""
         entry = "\n"
+        if len(inputList) == 0:
+            return entry
         inputList = sorted(inputList, key=lambda entry: entry.name)
         for item in inputList:
             entry += "\t\t\t" + item.name + ",\n"

@@ -155,6 +155,13 @@ class QtMainWindow(MainWindow):
         self.__importForcesSaveAction: QAction = QAction("Import Default Forces and Save", self.__window)
         self.__importForcesSaveAction.triggered.connect(self.__importForcesSaveFile)
 
+        self.__importStartingForcesAllSaveAction: QAction = QAction(
+            "Import Default Forces and Save (All GCs)", self.__window
+        )
+        self.__importStartingForcesAllSaveAction.triggered.connect(
+            self.__importForcesSaveFileAll
+        )
+
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
 
@@ -162,6 +169,7 @@ class QtMainWindow(MainWindow):
 
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__importForcesSaveAction)
+        self.__fileMenu.addAction(self.__importStartingForcesAllSaveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
         self.__fileMenu.addAction(self.__quitAction)
 
@@ -419,7 +427,7 @@ class QtMainWindow(MainWindow):
     def __openFolder(self) -> None:
         """Set data folder dialog"""
         folderName = QFileDialog.getExistingDirectory(
-            self.__widget, "Select Data folder:", "", QFileDialog.ShowDirsOnly
+            self.__widget, "Select Data folder:", "",QFileDialog.Option.ShowDirsOnly
         )
         if folderName:
             self.__presenter.onDataFolderChanged(folderName)
@@ -444,6 +452,10 @@ class QtMainWindow(MainWindow):
         """Import default forces and save"""
         self.__presenter.importStartingForces()
         self.__saveFile()
+
+    def __importForcesSaveFileAll(self) -> None:
+        self.__presenter.importStartingForcesAll()
+        self.__presenter.saveAllCampaigns()
 
     def __quit(self) -> None:
         """Exits application by closing the window"""
@@ -484,6 +496,10 @@ class QtMainWindow(MainWindow):
     def __importStartingForcesButtonClicked(self) -> None:
         """Imports all starting forces from spreadsheets"""
         self.__presenter.importStartingForces()
+
+    def __importStartingForcesAllButtonClicked(self) -> None:
+        """Imports all starting forces from spreadsheets"""
+        self.__presenter.importStartingForcesAll()
 
     def __onPlanetSelected(self, index: int) -> None:
         """Presents a selected planet's starting forces"""

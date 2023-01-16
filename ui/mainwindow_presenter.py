@@ -160,6 +160,14 @@ class MainWindowPresenter:
             self.__repository.startingForcesLibrary
         )
 
+    def importStartingForcesAll(self) -> None:
+        """Imports all starting forces from spreadsheets into ALL GCs"""
+        for i, campaign in enumerate(self.campaigns):
+            campaign.startingForces = (
+                self.__repository.startingForcesLibrary
+            )
+            self.campaigns[i] = campaign
+
     def onDataFolderChanged(self, folder: str) -> None:
         """Updates the repository and refreshes the main window when a new data folder is selected"""
         self.__repository.emptyRepository()
@@ -442,6 +450,10 @@ class MainWindowPresenter:
                 planetRoots,
                 self.__updatedPlanetCoords,
             )
+
+    def saveAllCampaigns(self) -> None:
+        for campaign in self.campaigns:
+            self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name

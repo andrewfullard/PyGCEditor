@@ -15,6 +15,7 @@ class Campaign:
 
     def __init__(self, name: str = ""):
         self.__name: str = name
+        self.__fileName: str = name
         self.__setName: str = "Empty"
         self.__sortOrder: str = "0"
         self.__textID: str = "MISSING"
@@ -40,6 +41,15 @@ class Campaign:
     def name(self, value: str) -> None:
         if value:
             self.__name = value
+
+    @property
+    def fileName(self) -> str:
+        return self.__fileName
+
+    @name.setter
+    def fileName(self, value: str) -> None:
+        if value:
+            self.__fileName = value
 
     @property
     def setName(self) -> str:
