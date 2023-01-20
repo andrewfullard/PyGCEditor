@@ -27,7 +27,7 @@ class XMLWriter:
             campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
             self.subElementText(campaignElement, "Campaign_Set", campaign.setName)
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
-            self.subElementText(campaignElement, "Is_Listed", "False")
+            self.subElementText(campaignElement, "Is_Listed", campaign.isListed)
 
             self.subElementText(campaignElement, "Supports_Custom_Settings", "False")
             self.subElementText(campaignElement, "Show_Completed_Tab", "True")
