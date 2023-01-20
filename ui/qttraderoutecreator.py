@@ -29,6 +29,9 @@ class QtTradeRouteCreator(Dialog):
         if end:
             self.__inputEnd.setText(end)
 
+        if start and end:
+            self.__inputName.setText(start + "_" + end)
+
         self.__inputStart.textChanged.connect(self.__autoName)
         self.__inputEnd.textChanged.connect(self.__autoName)
       
