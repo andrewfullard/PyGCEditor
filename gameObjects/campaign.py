@@ -167,7 +167,7 @@ class Campaign:
     def isListed(self) -> str:
         return self.__isListed
 
-    @storyName.setter
+    @isListed.setter
     def isListed(self, value: str) -> None:
         if value:
             self.__isListed = value
