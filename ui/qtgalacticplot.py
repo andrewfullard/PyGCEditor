@@ -15,6 +15,7 @@ class QtGalacticPlot(QWidget):
         super(QtGalacticPlot, self).__init__()
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
+        self.__is_first_run = True
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
 
@@ -33,7 +34,20 @@ class QtGalacticPlot(QWidget):
 
     def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
+        if self.__is_first_run:
+            x = [p.x for p in allPlanets]
+            y = [p.y for p in allPlanets]
+            self.__axes.set_xlim(min(x), max(x))
+            self.__axes.set_ylim(min(y), max(y))
+            
+        self.__is_first_run = False
+
+        xlim = self.__axes.get_xlim()
+        ylim = self.__axes.get_ylim()
+        self.__axes.autoscale(False)
         self.__axes.clear()
+        self.__axes.set_xlim(xlim)
+        self.__axes.set_ylim(ylim)
 
         #Has to be set again here for the planet hover labels to work
         self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"))
