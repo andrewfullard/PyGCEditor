@@ -174,11 +174,11 @@ class RepositoryCreator:
             )
 
             newCampaign.storyName = self.__xml.getValueFromXMLRoot(
-                campaignRoot, ".//Is_Listed"
+                campaignRoot, ".//Story_Name"
             )
 
             newCampaign.isListed = self.__xml.getValueFromXMLRoot(
-                campaignRoot, ".//Story_Name"
+                campaignRoot, ".//Is_Listed"
             )
 
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(
