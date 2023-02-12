@@ -100,10 +100,11 @@ class RepositoryCreator:
         for factionRoot in factionRoots:
             factionInfo = self.__xml.getFactionInfo(factionRoot)
 
-            for name, basic_ai, color in factionInfo:
+            for name, basic_ai, color, playable in factionInfo:
                 newFaction = Faction(name)
                 newFaction.color = color
                 newFaction.aiplayer = basic_ai
+                newFaction.playable = playable
                 self.repository.addFaction(newFaction)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:

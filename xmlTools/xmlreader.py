@@ -52,7 +52,7 @@ class XMLReader:
     def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
         """Returns the text from a given tag name in the given root"""
         if XMLRoot.find(XMLTag) is not None:
-            return XMLRoot.find(XMLTag).text
+            return XMLRoot.find(XMLTag).text.strip()
         else:
             print("Tag ", XMLTag, " not found")
             return ""
@@ -153,6 +153,9 @@ class XMLReader:
 
     """ EAW specific XML parsing """
 
+    def stringToBool(self, string):
+        return string.lower() in ("yes", "true")
+
     def getNamesFromXML(self, XMLRoot) -> list():
         """General XML root parser to return list of element Names (e.g. all planet names)"""
         nameList = []
@@ -169,10 +172,12 @@ class XMLReader:
 
         for element in XMLRoot:
             if element.get("Name") is not None:
-                colorElement = element.find("Color")
-                basic_ai = element.find("Basic_AI")
-                color = [float(x.strip()) / 255 for x in colorElement.text.split(",")]
-                factionList.append([element.get("Name"), basic_ai, color])
+                colorElement = self.getValueFromXMLRoot(element, "Color")
+                basic_ai = self.getValueFromXMLRoot(element, "Basic_AI")
+                color = [float(x.strip()) / 255 for x in colorElement.split(",")]
+                playableStr = self.getValueFromXMLRoot(element, "Is_Playable")
+                playable = self.stringToBool(playableStr)
+                factionList.append([element.get("Name"), basic_ai, color, playable])
 
         return factionList
 

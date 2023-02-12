@@ -47,11 +47,13 @@ class XMLWriter:
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
             for faction in factions:
-                if faction.name is not playableFaction.name and faction.name != "Neutral" and faction.name != "Hostile":
-                    # Right now the players don't import properly
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None")
-                else: 
+                if faction == playableFaction: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
+                elif faction.playable:
+                    # Right now the players don't import properly
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", NoneAI")
+                else:
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
             for faction in factions:
                 self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
@@ -62,7 +64,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nTeradoc, Conquests\Story_Plots_Generic_Teradoc.xml,\nPirates, Conquests\Story_Plots_Generic_Pirates.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nHutts, Conquests\Story_Plots_Generic_Hutts.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml")
 
             for faction in factions:
-                if faction.name is not "Neutral" and faction.name is not "Hostile":
+                if faction.playable:
                     self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
                     self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
