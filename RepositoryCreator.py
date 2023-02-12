@@ -165,9 +165,11 @@ class RepositoryCreator:
             newCampaign.eraStart = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Era_Start"
             )
-            newCampaign.useDefaultForces = self.__xml.getValueFromXMLRoot(
+            useDefaultForcesText = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Use_Default_Forces"
             )
+
+            newCampaign.useDefaultForces = self.__xml.stringToBool(useDefaultForcesText)
 
             newCampaign.rebelStoryName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Rebel_Story_Name"
