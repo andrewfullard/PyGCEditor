@@ -9,7 +9,7 @@ class XMLWriter:
         self.__root_name = "Campaigns"
         self.root = None
 
-    def campaignWriter(self, campaign, outputName: str) -> None:
+    def campaignWriter(self, campaign, factions, outputName: str) -> None:
         """Writes a campaign to file"""
 
         planets = self.createListEntry(campaign.planets)
@@ -27,7 +27,7 @@ class XMLWriter:
             campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
             self.subElementText(campaignElement, "Campaign_Set", campaign.setName)
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
-            self.subElementText(campaignElement, "Is_Listed", "False")
+            self.subElementText(campaignElement, "Is_Listed", campaign.isListed)
 
             self.subElementText(campaignElement, "Supports_Custom_Settings", "False")
             self.subElementText(campaignElement, "Show_Completed_Tab", "True")
@@ -46,14 +46,14 @@ class XMLWriter:
 
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
-            for faction in campaign.playableFactions:
-                if faction.name is not playableFaction.name:
+            for faction in factions:
+                if faction.name is not playableFaction.name and faction.name is not "Neutral" and faction.name is not "Hostile":
                     # Right now the players don't import properly
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None")
                 else: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
 
-            for faction in campaign.playableFactions:
+            for faction in factions:
                 self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
 
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
@@ -61,10 +61,11 @@ class XMLWriter:
 
             self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nTeradoc, Conquests\Story_Plots_Generic_Teradoc.xml,\nPirates, Conquests\Story_Plots_Generic_Pirates.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nHutts, Conquests\Story_Plots_Generic_Hutts.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml")
 
-            for faction in campaign.playableFactions:
-                self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
-                self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
-                self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
+            for faction in factions:
+                if faction.name is not "Neutral" and faction.name is not "Hostile":
+                    self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
+                    self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
+                    self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
 
             for index, row in filtered_starting_forces.iterrows():
                 i = 0

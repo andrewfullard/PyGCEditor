@@ -436,7 +436,8 @@ class MainWindowPresenter:
     def saveFile(self, fileName: str) -> None:
         """Saves XML files"""
         campaign = self.getSelectedCampaign()
-        self.__xmlWriter.campaignWriter(campaign, fileName)
+        factions = self.__repository.factions
+        self.__xmlWriter.campaignWriter(campaign, factions, fileName)
 
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)

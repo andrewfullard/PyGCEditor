@@ -27,6 +27,7 @@ class Campaign:
         self.__storyName: str = ""
         self.__eraStart: str = "0"
         self.__era = 1
+        self.__isListed: str = "True"
         self.__useDefaultForces = False
 
         self.__planets: Set[Planet] = set()
@@ -181,3 +182,13 @@ class Campaign:
     @property
     def era(self) -> int:
         return self.__era
+
+    @property
+    def isListed(self) -> str:
+        return self.__isListed
+
+    @isListed.setter
+    def isListed(self, value: str) -> None:
+        if value:
+            self.__isListed = value
+            
