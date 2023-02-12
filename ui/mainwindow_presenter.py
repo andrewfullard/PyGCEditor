@@ -457,12 +457,12 @@ class MainWindowPresenter:
         Parameters
         ----------
         default_forces_only : bool, optional
-            If True, only save campaigns that specific that they use
+            If True, only save campaigns that specify that they use
             default starting forces, by default False
         """        
         factions = self.__repository.factions
         for campaign in self.campaigns:
-            if default_forces_only or campaign.useDefaultForces:
+            if default_forces_only and campaign.useDefaultForces:
                 self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
             elif not default_forces_only:
                 self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)

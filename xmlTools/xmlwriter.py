@@ -12,6 +12,8 @@ class XMLWriter:
     def campaignWriter(self, campaign, factions, outputName: str) -> None:
         """Writes a campaign to file"""
 
+        print("Exporting campaign set: ", campaign.setName)
+
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
@@ -131,6 +133,10 @@ class XMLWriter:
         if len(inputList) == 0:
             print("Empty list")
             return entry
+        for entry in inputList:
+            if entry is None:
+                print("Error! Missing entry in list")
+                return ""
         inputList = sorted(inputList, key=lambda entry: entry.name)
         for item in inputList:
             entry += "\t\t\t" + item.name + ",\n"
@@ -148,5 +154,6 @@ class XMLWriter:
 
     def writer(self, XMLRoot, outputName: str) -> None:
         """Writes XML file"""
+        print("Writing campaign file", outputName)
         XMLRoot.write(outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8")
 
