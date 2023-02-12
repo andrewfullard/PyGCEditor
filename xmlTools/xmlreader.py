@@ -51,8 +51,9 @@ class XMLReader:
 
     def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
         """Returns the text from a given tag name in the given root"""
-        if XMLRoot.find(XMLTag) is not None:
-            return XMLRoot.find(XMLTag).text.strip()
+        if XMLRoot.find(XMLTag)is not None:
+            if XMLRoot.find(XMLTag).text is not None:
+                return XMLRoot.find(XMLTag).text.strip()
         else:
             print("Tag ", XMLTag, " not found")
             return ""
