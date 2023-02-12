@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
-from itertools import groupby
 from typing import List, Set, Dict
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlwriter import XMLWriter
 import pandas as pd
-
-import numpy as np
-from numpy import ndarray as NumPyArray
 
 from config import Config
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -352,6 +348,9 @@ class MainWindowPresenter:
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__repository.addCampaign(campaign)
+        self.__repository.addCampaignSet(campaign.setName)
+
         self.__updateWidgets()
 
         self.__mainWindow.updateCampaignComboBox(
@@ -360,6 +359,7 @@ class MainWindowPresenter:
 
     def onCampaignUpdate(self, campaign: Campaign) -> None:
         """If a campaign is updated, update it and add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__repository.removeCampaign(campaign)
         self.__repository.addCampaign(campaign)
 
         self.__updateWidgets()

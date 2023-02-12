@@ -20,7 +20,6 @@ class ShowCampaignCreatorDialogCommand(Command):
         if result is DialogResult.Ok:
             campaign: Campaign = dialog.getCampaignProperties()
             if currentCampaign is None or campaign.name != currentCampaign.name:
-                self.__repository.addCampaign(campaign)
                 self.__presenter.onNewCampaign(campaign)
             else:
                 self.__presenter.onCampaignUpdate(campaign)
