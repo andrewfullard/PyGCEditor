@@ -53,6 +53,14 @@ class GameObjectRepository:
         except:
             return False
 
+    def getCampaignBySetName(self, setName: str) -> None:
+        """Returns a planet object given its name"""
+        for campaign in self.campaigns:
+            if campaign.setName == setName:
+                return campaign
+
+        raise RuntimeError("Searching for non existant campaign set " + setName)
+
     def getPlanetByName(self, name: str) -> None:
         """Returns a planet object given its name"""
         for planet in self.planets:

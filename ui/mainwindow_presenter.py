@@ -349,12 +349,11 @@ class MainWindowPresenter:
     def onNewCampaign(self, campaign: Campaign) -> None:
         """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
         self.__repository.addCampaign(campaign)
-        self.__repository.addCampaignSet(campaign.setName)
 
         self.__updateWidgets()
 
         self.__mainWindow.updateCampaignComboBox(
-            self.__getNames(self.campaigns), campaign.name
+            [x.setName for x in self.campaigns], campaign.setName
         )
 
     def onCampaignUpdate(self, campaign: Campaign) -> None:
@@ -364,7 +363,7 @@ class MainWindowPresenter:
 
         self.__updateWidgets()
         self.__mainWindow.updateCampaignComboBox(
-            self.__getNames(self.campaigns), campaign.name
+            [x.setName for x in self.campaigns], campaign.setName
         )
 
     def onAutoConnectionSettingChanged(
@@ -461,11 +460,12 @@ class MainWindowPresenter:
             If True, only save campaigns that specific that they use
             default starting forces, by default False
         """        
+        factions = self.__repository.factions
         for campaign in self.campaigns:
-            if default_forces_only and campaign.useDefaultForces:
-                self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
+            if default_forces_only or campaign.useDefaultForces:
+                self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
             elif not default_forces_only:
-                self.__xmlWriter.campaignWriter(campaign, campaign.fileName)
+                self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
@@ -501,7 +501,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.emptyWidgets()
 
-        self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
+        self.__mainWindow.addCampaigns([x.setName for x in self.campaigns])
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addFactions(self.__getNames(self.__factions))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))

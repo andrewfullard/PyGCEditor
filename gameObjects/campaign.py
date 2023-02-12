@@ -20,7 +20,6 @@ class Campaign:
         self.__sortOrder: str = "0"
         self.__textID: str = "MISSING"
         self.__descriptionText: str = "MISSING"
-        self.__startingActivePlayer: str = "Rebel"
         self.__rebelStoryName: str = ""
         self.__empireStoryName: str = ""
         self.__underworldStoryName: str = ""
@@ -88,15 +87,6 @@ class Campaign:
     def descriptionText(self, value: str) -> None:
         if value:
             self.__descriptionText = value
-
-    @property
-    def startingActivePlayer(self) -> str:
-        return self.__startingActivePlayer
-
-    @startingActivePlayer.setter
-    def startingActivePlayer(self, value: str) -> None:
-        if value:
-            self.__startingActivePlayer = value
 
     @property
     def rebelStoryName(self) -> str:

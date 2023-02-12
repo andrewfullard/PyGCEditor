@@ -35,7 +35,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
             self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
             self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
-            self.subElementText(campaignElement, "Use_Default_Forces", campaign.useDefaultForces)
+            self.subElementText(campaignElement, "Use_Default_Forces", str(campaign.useDefaultForces))
 
             self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
             self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
@@ -47,7 +47,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
             for faction in factions:
-                if faction.name is not playableFaction.name and faction.name is not "Neutral" and faction.name is not "Hostile":
+                if faction.name is not playableFaction.name and faction.name != "Neutral" and faction.name != "Hostile":
                     # Right now the players don't import properly
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None")
                 else: 
