@@ -51,10 +51,8 @@ class XMLWriter:
             for faction in factions:
                 if faction == playableFaction: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
-                elif faction.playable:
-                    # Right now the players don't import properly
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", NoneAI")
                 else:
+                    # Right now the players don't import properly
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
             for faction in factions:
