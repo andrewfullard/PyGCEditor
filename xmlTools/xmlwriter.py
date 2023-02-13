@@ -134,7 +134,7 @@ class XMLWriter:
             print("Empty list")
             return entry
         for item in inputList:
-            if entry is None:
+            if item is None:
                 print("Error! Missing entry in list")
                 return ""
         inputList = sorted(inputList, key=lambda entry: entry.name)
