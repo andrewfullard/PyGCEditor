@@ -133,7 +133,7 @@ class XMLWriter:
         if len(inputList) == 0:
             print("Empty list")
             return entry
-        for entry in inputList:
+        for item in inputList:
             if entry is None:
                 print("Error! Missing entry in list")
                 return ""
