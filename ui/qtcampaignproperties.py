@@ -1,5 +1,5 @@
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit, QCheckBox
 
 from gameObjects.campaign import Campaign
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -19,12 +19,12 @@ class QtCampaignProperties:
         self.__inputTextID: QLineEdit = QLineEdit(self.__dialog)
         self.__inputDescriptionText: QLineEdit = QLineEdit(self.__dialog)
         self.__eraStart: QLineEdit = QLineEdit(self.__dialog)
-        self.__startingActivePlayer: QLineEdit = QLineEdit(self.__dialog)
         self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__storyName: QLineEdit = QLineEdit(self.__dialog)
         self.__isListed: QLineEdit = QLineEdit(self.__dialog)
+        self.__useDefaultForces: QCheckBox = QCheckBox(self.__dialog)
      
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -38,12 +38,12 @@ class QtCampaignProperties:
         self.__formLayout.addRow("Sort Order", self.__inputSortOrder)
         self.__formLayout.addRow("Description Text", self.__inputDescriptionText)
         self.__formLayout.addRow("Starting Era", self.__eraStart)
-        self.__formLayout.addRow("Starting Active Player", self.__startingActivePlayer)
         self.__formLayout.addRow("Rebel Story Name", self.__rebelStoryName)
         self.__formLayout.addRow("Empire Story Name", self.__empireStoryName)
         self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
         self.__formLayout.addRow("Story Name", self.__storyName)
         self.__formLayout.addRow("Show Campaign", self.__isListed)
+        self.__formLayout.addRow("Use default starting forces?", self.__useDefaultForces)
 
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
@@ -75,13 +75,13 @@ class QtCampaignProperties:
         self.__inputTextID.setText(self.__campaign.textID)
         self.__inputDescriptionText.setText(self.__campaign.descriptionText)
         self.__eraStart.setText(self.__campaign.eraStart)
-        self.__startingActivePlayer.setText(self.__campaign.startingActivePlayer)
         self.__rebelStoryName.setText(self.__campaign.rebelStoryName)
         self.__empireStoryName.setText(self.__campaign.empireStoryName)
         self.__underworldStoryName.setText(self.__campaign.underworldStoryName)
         self.__storyName.setText(self.__campaign.storyName)
         self.__isListed.setText(self.__campaign.isListed)
-        
+        self.__useDefaultForces.setChecked(self.__campaign.useDefaultForces)
+
         self.__dialog.exec()
         return self.__result
 
@@ -94,12 +94,12 @@ class QtCampaignProperties:
         self.__campaign.textID = self.__inputTextID.text()
         self.__campaign.descriptionText = self.__inputDescriptionText.text()
         self.__campaign.eraStart = self.__eraStart.text()
-        self.__campaign.startingActivePlayer = self.__startingActivePlayer.text()
         self.__campaign.rebelStoryName = self.__rebelStoryName.text()
         self.__campaign.empireStoryName = self.__empireStoryName.text()
         self.__campaign.underworldStoryName = self.__underworldStoryName.text()
         self.__campaign.storyName = self.__storyName.text()
         self.__campaign.isListed = self.__isListed.text()
+        self.__campaign.useDefaultForces = self.__useDefaultForces.isChecked()
 
         return self.__campaign 
 

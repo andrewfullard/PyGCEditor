@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
-from itertools import groupby
 from typing import List, Set, Dict
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlwriter import XMLWriter
 import pandas as pd
-
-import numpy as np
-from numpy import ndarray as NumPyArray
 
 from config import Config
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -159,6 +155,14 @@ class MainWindowPresenter:
         self.getSelectedCampaign().startingForces = (
             self.__repository.startingForcesLibrary
         )
+
+    def importStartingForcesAll(self) -> None:
+        """Imports all starting forces from spreadsheets into ALL GCs"""
+        for i, campaign in enumerate(self.campaigns):
+            campaign.startingForces = (
+                self.__repository.startingForcesLibrary
+            )
+            self.campaigns[i] = campaign
 
     def onDataFolderChanged(self, folder: str) -> None:
         """Updates the repository and refreshes the main window when a new data folder is selected"""
@@ -344,19 +348,22 @@ class MainWindowPresenter:
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__repository.addCampaign(campaign)
+
         self.__updateWidgets()
 
         self.__mainWindow.updateCampaignComboBox(
-            self.__getNames(self.campaigns), campaign.name
+            [x.setName for x in self.campaigns], campaign.setName
         )
 
     def onCampaignUpdate(self, campaign: Campaign) -> None:
         """If a campaign is updated, update it and add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__repository.removeCampaign(campaign)
         self.__repository.addCampaign(campaign)
 
         self.__updateWidgets()
         self.__mainWindow.updateCampaignComboBox(
-            self.__getNames(self.campaigns), campaign.name
+            [x.setName for x in self.campaigns], campaign.setName
         )
 
     def onAutoConnectionSettingChanged(
@@ -444,6 +451,22 @@ class MainWindowPresenter:
                 self.__updatedPlanetCoords,
             )
 
+    def saveAllCampaigns(self, default_forces_only=False) -> None:
+        """Saves all campaigns to files
+
+        Parameters
+        ----------
+        default_forces_only : bool, optional
+            If True, only save campaigns that specify that they use
+            default starting forces, by default False
+        """        
+        factions = self.__repository.factions
+        for campaign in self.campaigns:
+            if default_forces_only and campaign.useDefaultForces:
+                self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
+            elif not default_forces_only:
+                self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
+
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
 
@@ -478,7 +501,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.emptyWidgets()
 
-        self.__mainWindow.addCampaigns(self.__getNames(self.campaigns))
+        self.__mainWindow.addCampaigns([x.setName for x in self.campaigns])
         self.__mainWindow.addPlanets(self.__getNames(self.__planets))
         self.__mainWindow.addFactions(self.__getNames(self.__factions))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))

@@ -100,10 +100,11 @@ class RepositoryCreator:
         for factionRoot in factionRoots:
             factionInfo = self.__xml.getFactionInfo(factionRoot)
 
-            for name, basic_ai, color in factionInfo:
+            for name, basic_ai, color, playable in factionInfo:
                 newFaction = Faction(name)
                 newFaction.color = color
                 newFaction.aiplayer = basic_ai
+                newFaction.playable = playable
                 self.repository.addFaction(newFaction)
 
     def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
@@ -111,18 +112,35 @@ class RepositoryCreator:
         them to the repository, after finding their planets and trade routes"""
 
         existing_campaign_locations = ""
+        current_campaign_set = ""
 
         for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
-            newCampaignPlanets = set()
-            newCampaignTradeRoutes = set()
-            newCampaignStartingForces = list()
-
-            newCampaign = Campaign(campaign)
-            newCampaign.setName = self.__xml.getValueFromXMLRoot(
+            setName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Campaign_Set"
             )
 
-            print("Loading campaign", campaign, "from set", newCampaign.setName)
+            startingActivePlayer = self.__xml.getValueFromXMLRoot(
+                campaignRoot, ".//Starting_Active_Player"
+            ).strip()
+
+            print("Loading campaign", campaign, "from set", setName)
+
+            if setName != current_campaign_set:
+                current_campaign_set = setName
+                newCampaign = Campaign(campaign)
+            else:
+                # MP campaigns don't have a starting active player
+                if startingActivePlayer:
+                    self.repository.getCampaignBySetName(setName).playableFactions.add(self.repository.getFactionByName(startingActivePlayer))
+                continue
+
+            newCampaign.setName = setName
+            if startingActivePlayer:
+                newCampaign.playableFactions.add(self.repository.getFactionByName(startingActivePlayer))
+
+            newCampaignPlanets = set()
+            newCampaignTradeRoutes = set()
+            newCampaignStartingForces = list()
 
             campaignPlanetNames = self.__xml.getListFromXMLRoot(
                 campaignRoot, ".//Locations"
@@ -147,21 +165,11 @@ class RepositoryCreator:
             newCampaign.eraStart = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Era_Start"
             )
-            newCampaign.startingActivePlayer = self.__xml.getValueFromXMLRoot(
-                campaignRoot, ".//Starting_Active_Player"
+            useDefaultForcesText = self.__xml.getValueFromXMLRoot(
+                campaignRoot, ".//Use_Default_Forces"
             )
 
-            ai_player_entries = self.__xml.getMultiTag(
-                campaignRoot, ".//AI_Player_Control"
-            )
-
-            if self.repository.factions is not None:
-                for entry in ai_player_entries:
-                    split = entry.split(',')
-                    faction_name = split[0].strip()
-                    ai = split[1].strip()
-                    if ai != "None":
-                        newCampaign.playableFactions.add(self.repository.getFactionByName(faction_name))
+            newCampaign.useDefaultForces = self.__xml.stringToBool(useDefaultForcesText)
 
             newCampaign.rebelStoryName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Rebel_Story_Name"
@@ -266,7 +274,7 @@ class RepositoryCreator:
         current_planet = None
         current_era = 0
 
-        for index, row in startingForcesLibrary.iterrows():
+        for index, row in tqdm(startingForcesLibrary.iterrows()):
             if row["Planet"] != current_planet:
                 current_planet = row["Planet"]
             

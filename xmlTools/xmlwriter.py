@@ -12,6 +12,8 @@ class XMLWriter:
     def campaignWriter(self, campaign, factions, outputName: str) -> None:
         """Writes a campaign to file"""
 
+        print("Exporting campaign set: ", campaign.setName)
+
         planets = self.createListEntry(campaign.planets)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
@@ -35,6 +37,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
             self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
             self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
+            self.subElementText(campaignElement, "Use_Default_Forces", str(campaign.useDefaultForces))
 
             self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
             self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
@@ -46,11 +49,13 @@ class XMLWriter:
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
             for faction in factions:
-                if faction.name is not playableFaction.name and faction.name is not "Neutral" and faction.name is not "Hostile":
-                    # Right now the players don't import properly
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", None")
-                else: 
+                if faction == playableFaction: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
+                elif faction.playable:
+                    # Right now the players don't import properly
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", NoneAI")
+                else:
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
             for faction in factions:
                 self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
@@ -61,7 +66,7 @@ class XMLWriter:
             self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nTeradoc, Conquests\Story_Plots_Generic_Teradoc.xml,\nPirates, Conquests\Story_Plots_Generic_Pirates.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nHutts, Conquests\Story_Plots_Generic_Hutts.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml")
 
             for faction in factions:
-                if faction.name is not "Neutral" and faction.name is not "Hostile":
+                if faction.playable:
                     self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
                     self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
@@ -125,6 +130,13 @@ class XMLWriter:
         """creates a list string to insert into a file
         requires a GameObject with the name property"""
         entry = "\n"
+        if len(inputList) == 0:
+            print("Empty list")
+            return entry
+        for item in inputList:
+            if item is None:
+                print("Error! Missing entry in list")
+                return ""
         inputList = sorted(inputList, key=lambda entry: entry.name)
         for item in inputList:
             entry += "\t\t\t" + item.name + ",\n"
@@ -142,5 +154,6 @@ class XMLWriter:
 
     def writer(self, XMLRoot, outputName: str) -> None:
         """Writes XML file"""
+        print("Writing campaign file", outputName)
         XMLRoot.write(outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8")
 

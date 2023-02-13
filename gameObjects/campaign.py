@@ -15,11 +15,11 @@ class Campaign:
 
     def __init__(self, name: str = ""):
         self.__name: str = name
+        self.__fileName: str = name
         self.__setName: str = "Empty"
         self.__sortOrder: str = "0"
         self.__textID: str = "MISSING"
         self.__descriptionText: str = "MISSING"
-        self.__startingActivePlayer: str = "Rebel"
         self.__rebelStoryName: str = ""
         self.__empireStoryName: str = ""
         self.__underworldStoryName: str = ""
@@ -27,6 +27,7 @@ class Campaign:
         self.__eraStart: str = "0"
         self.__era = 1
         self.__isListed: str = "True"
+        self.__useDefaultForces: bool = False
 
         self.__planets: Set[Planet] = set()
         self.__playableFactions: Set[Faction] = set()
@@ -41,6 +42,15 @@ class Campaign:
     def name(self, value: str) -> None:
         if value:
             self.__name = value
+
+    @property
+    def fileName(self) -> str:
+        return self.__fileName
+
+    @name.setter
+    def fileName(self, value: str) -> None:
+        if value:
+            self.__fileName = value
 
     @property
     def setName(self) -> str:
@@ -77,15 +87,6 @@ class Campaign:
     def descriptionText(self, value: str) -> None:
         if value:
             self.__descriptionText = value
-
-    @property
-    def startingActivePlayer(self) -> str:
-        return self.__startingActivePlayer
-
-    @startingActivePlayer.setter
-    def startingActivePlayer(self, value: str) -> None:
-        if value:
-            self.__startingActivePlayer = value
 
     @property
     def rebelStoryName(self) -> str:
@@ -131,6 +132,15 @@ class Campaign:
     def eraStart(self, value: str) -> None:
         if value:
             self.__eraStart = value
+
+    @property
+    def useDefaultForces(self) -> bool:
+        return self.__useDefaultForces
+
+    @useDefaultForces.setter
+    def useDefaultForces(self, value: bool) -> None:
+        if value:
+            self.__useDefaultForces = value
 
     @property
     def planets(self) -> Set[Planet]:
