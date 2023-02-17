@@ -88,14 +88,18 @@ class QtTradeRouteCreator(Dialog):
         self.__inputEnd.setCompleter(planetCompleter)
 
     def __autoName(self) -> None:
-        '''Automatically names trade routes as start_end'''
-        self.__inputName.setText(self.__inputStart.text() + "_" + self.__inputEnd.text())
+        '''Automatically names trade routes as start_end after sorting the trade route's planet names alphabetically'''
+        sortedPlanetNames = sorted([self.__inputStart.text(), self.__inputEnd.text()])
+        self.__inputName.setText(sortedPlanetNames[0] + "_" + sortedPlanetNames[1])
 
     def __okayClicked(self) -> None:
+        '''Sort trade route planet names alphabetically'''
+        sortedPlanetNames = sorted([self.__inputStart.text(), self.__inputEnd.text()])
+
         '''Okay button handler. Performs minor error checking and adds trade route to repository'''
         self.__name = self.__inputName.text()
-        self.__start = self.__inputStart.text()
-        self.__end = self.__inputEnd.text()
+        self.__start = sortedPlanetNames[0]
+        self.__end = sortedPlanetNames[1]
 
         if not self.__tradeRouteDataIsValid():
             print("Error! Not enough trade route parameters set!")
