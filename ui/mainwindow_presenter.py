@@ -214,6 +214,7 @@ class MainWindowPresenter:
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
+        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
 
@@ -262,6 +263,7 @@ class MainWindowPresenter:
                     self.__availableTradeRoutes[index]
                 )
 
+        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
         self.__updateGalacticPlot()
 
     def onFactionChecked(self, index: int, checked: bool) -> None:
@@ -322,6 +324,7 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes -= missingRoutes
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
+            self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
 
         # self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
 
