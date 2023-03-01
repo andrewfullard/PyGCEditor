@@ -112,6 +112,8 @@ class QtMainWindow(MainWindow):
         )
         self.__planetCountLabel: QLabel = QLabel()
 
+        self.__planetMaxConnectionsCountLabel: QLabel = QLabel()
+
         # Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
 
@@ -200,6 +202,7 @@ class QtMainWindow(MainWindow):
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
+        self.__planetsTradeRoutes.layout().addWidget(self.__planetMaxConnectionsCountLabel)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
         self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
@@ -337,8 +340,38 @@ class QtMainWindow(MainWindow):
 
     def updatePlanetCountDisplay(self, planets: List[int]) -> None:
         """Updates count of planets on main window."""
-
         self.__planetCountLabel.setText("Planet Count: " + str(len(planets)))
+
+    def updatePlanetMaxConnectionsCountDisplay(self, tradeRoutes: List[int]) -> None:
+        """Updates count of the max number of connections any planet has on main window."""
+        if len(tradeRoutes) == 0:
+            self.__planetMaxConnectionsCountLabel.setText("Max Connections: 0")
+            return
+        
+        planets = {}
+        for tradeRoute in tradeRoutes:
+            if tradeRoute.start.name not in planets.keys():
+                planets[tradeRoute.start.name] = 1
+            else:
+                planets[tradeRoute.start.name] = planets[tradeRoute.start.name] + 1
+            if tradeRoute.end.name not in planets.keys():
+                planets[tradeRoute.end.name] = 1
+            else:
+                planets[tradeRoute.end.name] = planets[tradeRoute.end.name] + 1
+
+        maxNum = 0
+        maxPlanet = ""
+        for planet in planets:
+            if planets[planet] > maxNum:
+                maxNum = planets[planet]
+                maxPlanet = planet
+
+        maxConnections = "None, 0"
+
+        if maxNum != 0:
+            maxConnections = maxPlanet + ", " + str(maxNum)
+
+        self.__planetMaxConnectionsCountLabel.setText("Max Connections: " + maxConnections)
 
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame, filter: str
