@@ -17,7 +17,7 @@ class PlanetContextMenu():
 
     def show(self, item, position) -> None:
 
-        choice = self.__menu.exec_(position)
+        choice = self.__menu.exec(position)
 
         ''' Shows the "change coordinates" dialog '''
         if choice is self.__changePositionAction:
