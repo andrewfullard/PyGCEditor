@@ -27,7 +27,7 @@ class QtGalacticPlot(QWidget):
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111, aspect = "equal")
 
-        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"))
+        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
         self.__planetNames = []
         self.__planetsScatter = None
@@ -50,7 +50,7 @@ class QtGalacticPlot(QWidget):
         self.__axes.set_ylim(ylim)
 
         #Has to be set again here for the planet hover labels to work
-        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"))
+        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
 
         self.__planetNames = []
