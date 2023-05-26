@@ -299,6 +299,7 @@ class QtMainWindow(MainWindow):
             self.__planetComboBox.addItems(planets)
 
         self.__planetComboBox.activated.connect(self.__onPlanetSelected)
+        self.updatePlanetCountDisplay(planets)
 
     def updatePlanetSelection(self, planets: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
