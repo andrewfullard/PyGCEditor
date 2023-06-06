@@ -111,7 +111,6 @@ class RepositoryCreator:
         """Takes a list of Campaign GameObject XML roots and their names, and adds
         them to the repository, after finding their planets and trade routes"""
 
-        existing_campaign_locations = ""
         current_campaign_set = ""
 
         for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
@@ -147,11 +146,6 @@ class RepositoryCreator:
             )
 
             new_campaign_locations = campaignPlanetNames
-
-            if new_campaign_locations == existing_campaign_locations:
-                continue
-            else:
-                existing_campaign_locations = new_campaign_locations
 
             newCampaign.sortOrder = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Sort_Order"
