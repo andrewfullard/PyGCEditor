@@ -191,6 +191,7 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
+        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(self.getSelectedCampaign().planets, self.__planetOwners))
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, index: int) -> None:
@@ -213,6 +214,7 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
+        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(self.getSelectedCampaign().planets, self.__planetOwners))
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
         self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
