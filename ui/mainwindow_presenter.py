@@ -92,7 +92,7 @@ class MainWindow(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def updateTotalFactionForces(self, entry: str) -> None:
+    def updateTotalFactionIncome(self, entry: str) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -326,11 +326,11 @@ class MainWindowPresenter:
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
             self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
 
-        # self.__mainWindow.updateTotalFactionForces(self.__helper.calculateForcesSum(index))
-
         self.__planetOwners = self.__helper.getPlanetOwners(
             index, self.__checkedPlanets
         )
+
+        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(selectedCampaign.planets, self.__planetOwners))
 
         if selectedCampaign.playableFactions is not None:
             self.__checkedPlayableFactions.update(selectedCampaign.playableFactions)

@@ -71,6 +71,13 @@ class RepositoryCreator:
                         )
                     )
                 )
+
+                income_value = self.__xml.getObjectProperty(
+                            name, planetRoot, ".//Planet_Credit_Value"
+                        )
+                if income_value:
+                    newplanet.income = int(float(income_value))
+
                 if coordinates == None:
                     print(
                         "Planet "

@@ -12,6 +12,7 @@ class Planet:
         self.__starbaseLevel: int = 0
         self.__spaceStructureSlots: int = 0
         self.__groundStructureSlots: int = 0
+        self.__income: int = 0
     
     def distanceTo(self, target):
         return sqrt((self.x - target.x)**2 + (self.y - target.y)**2)
@@ -74,3 +75,11 @@ class Planet:
     @groundStructureSlots.setter
     def groundStructureSlots(self, value: int) -> None:
         self.__groundStructureSlots = value
+
+    @property
+    def income(self) -> int:
+        return self.__income
+
+    @income.setter
+    def income(self, value: int) -> None:
+        self.__income = value

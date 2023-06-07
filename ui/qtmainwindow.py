@@ -129,8 +129,8 @@ class QtMainWindow(MainWindow):
         self.__planetInfoLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel: QLabel = QLabel()
         self.__totalPlanetForceLabel.setText("Total force at planet: ")
-        self.__totalFactionForceLabel: QLabel = QLabel()
-        self.__totalFactionForceLabel.setText(
+        self.__totalFactionIncomeLabel: QLabel = QLabel()
+        self.__totalFactionIncomeLabel.setText(
             "Select a campaign to see total starting forces per faction"
         )
 
@@ -218,6 +218,7 @@ class QtMainWindow(MainWindow):
         self.__startingForces.layout().addWidget(self.__importStartingForcesButton)
 
         self.__factions.layout().addWidget(self.__factionListWidget)
+        self.__factions.layout().addWidget(self.__totalFactionIncomeLabel)
 
         self.__presenter: MainWindowPresenter = None
 
@@ -401,11 +402,19 @@ class QtMainWindow(MainWindow):
             + str(planet.spaceStructureSlots)
             + "\nGround structure slots: "
             + str(planet.groundStructureSlots)
+            + "\nIncome: "
+            + str(planet.income)
         )
 
-    def updateTotalFactionForces(self, entry: str) -> None:
-        """Updates the total faction forces label"""
-        self.__totalFactionForceLabel.setText(entry)
+    def updateTotalFactionIncome(self, entry: list) -> None:
+        """Updates the total faction income label"""
+        text = "Total income per faction\n"
+        if not entry:
+            return
+        for key, value in entry.items():
+            text += str(key)+": "+str(value)+"\n"
+            
+        self.__totalFactionIncomeLabel.setText(text)
 
     def __addEntriesToTableWidget(
         self, widget: QTableWidget, entries: List[str]

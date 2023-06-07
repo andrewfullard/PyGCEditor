@@ -1,5 +1,6 @@
 from itertools import groupby
 from typing import TYPE_CHECKING, List, Set
+import pandas as pd
 
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
@@ -52,3 +53,19 @@ class DisplayHelpers:
                 return faction
 
         print("Error! Neutral faction not found!")
+
+    def calculateFactionIncome(self, planets: list, planet_owners: list) -> int:
+        """Gets a list of owners of planets in the GC selected by index"""
+        incomes = []
+        factions = []
+        total = {"income": {}}
+        for p in planets:
+            incomes.append(p.income)
+        for f in planet_owners:
+            factions.append(f.name)
+        if len(planet_owners) > 0:
+            df = pd.DataFrame({"income": incomes, "Faction": factions})
+            total = df.groupby("Faction").sum()
+
+
+        return total.to_dict()["income"]
