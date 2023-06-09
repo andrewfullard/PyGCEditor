@@ -62,7 +62,10 @@ class DisplayHelpers:
         for p in planets:
             incomes.append(p.income)
         for f in planet_owners:
-            factions.append(f.name)
+            if f:
+                factions.append(f.name)
+            else:
+                factions.append("None")
         if len(planet_owners) > 0:
             df = pd.DataFrame({"income": incomes, "Faction": factions})
             total = df.groupby("Faction").sum()
