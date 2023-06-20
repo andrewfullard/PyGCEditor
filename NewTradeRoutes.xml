@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <TradeRoutes>
-  <TradeRoute Name="Makem_Te_Ton_Falk">
-    <Point_A>Makem_Te</Point_A>
-    <Point_B>Ton_Falk</Point_B>
+  <TradeRoute Name="Exocron_Nkllon">
+    <Point_A>Exocron</Point_A>
+    <Point_B>Nkllon</Point_B>
     <HS_Speed_Factor>1.0</HS_Speed_Factor>
     <Political_Control_Gain>0</Political_Control_Gain>
     <Credit_Gain_Factor>0</Credit_Gain_Factor>
