@@ -71,6 +71,9 @@ class XMLWriter:
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
                     self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
 
+            num2words = {'1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine', '10': 'Ten', '11': 'Eleven'}
+
+            dummy = False
             for index, row in filtered_starting_forces.iterrows():
                 i = 0
                 while i < row.Amount:
@@ -81,6 +84,15 @@ class XMLWriter:
                             self.subElementText(
                                 campaignElement, "Starting_Forces", entry
                             )
+                            if campaign.useDefaultForces == True:
+                                if dummy == False:
+                                    entry = str(row.Owner) + ", " + str(row.Planet) +", " + "Era_" + num2words[campaign.eraStart] + "_Dummy"
+                                    dummy = True
+                                    self.subElementText(
+                                        campaignElement, "Starting_Forces", entry
+                                    )
+
+                    
         tree = et.ElementTree(self.root)
         self.writer(tree, outputName=campaign.setName + ".XML")
 
