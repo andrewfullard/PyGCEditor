@@ -53,10 +53,12 @@ class XMLWriter:
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
                 else:
                     # Right now the players don't import properly
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
+                    if faction.name.upper() != "NEUTRAL":
+                        self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
             for faction in factions:
-                self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
+                if faction.name.upper() != "NEUTRAL":
+                    self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
 
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
             self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
