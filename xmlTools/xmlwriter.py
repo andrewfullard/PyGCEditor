@@ -23,7 +23,7 @@ class XMLWriter:
 
         filtered_starting_forces = campaign.startingForces[era_limiter]
 
-        for playableFaction in campaign.playableFactions:
+        for playableFaction in sorted(campaign.playableFactions):
             campaignElement = et.SubElement(self.root, "Campaign")
 
             campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
