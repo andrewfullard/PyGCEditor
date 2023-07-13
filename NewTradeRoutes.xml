@@ -1,8 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <TradeRoutes>
-  <TradeRoute Name="Makem_Te_Ton_Falk">
-    <Point_A>Makem_Te</Point_A>
-    <Point_B>Ton_Falk</Point_B>
+  <TradeRoute Name="Genon_Wroona">
+    <Point_A>Genon</Point_A>
+    <Point_B>Wroona</Point_B>
+    <HS_Speed_Factor>1.0</HS_Speed_Factor>
+    <Political_Control_Gain>0</Political_Control_Gain>
+    <Credit_Gain_Factor>0</Credit_Gain_Factor>
+    <Visible_Line_Name>DEFAULT</Visible_Line_Name>
+  </TradeRoute>
+  <TradeRoute Name="Denon_Genon">
+    <Point_A>Denon</Point_A>
+    <Point_B>Genon</Point_B>
     <HS_Speed_Factor>1.0</HS_Speed_Factor>
     <Political_Control_Gain>0</Political_Control_Gain>
     <Credit_Gain_Factor>0</Credit_Gain_Factor>
