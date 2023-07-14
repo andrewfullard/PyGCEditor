@@ -30,6 +30,7 @@ class QtGalacticPlot(QWidget):
         self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
         self.__planetNames = []
+        self.__planetOwners = []
         self.__planetsScatter = None
 
     def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
@@ -54,9 +55,19 @@ class QtGalacticPlot(QWidget):
         self.__annotate.set_visible(False)
 
         self.__planetNames = []
+        self.__planetOwners = []
 
         x = []
         y = []
+
+        for ap in allPlanets:
+            found_pa = False
+            for pa, po in zip(planets, planetOwners):
+                if ap.name == pa.name:
+                    self.__planetOwners.append(po.name)
+                    found_pa = True
+            if found_pa == False:
+                self.__planetOwners.append("")
 
         for p in allPlanets:
             x.append(p.x)
@@ -148,5 +159,5 @@ class QtGalacticPlot(QWidget):
         '''Updates annotation parameters'''
         pos = self.__planetsScatter.get_offsets()[ind["ind"][0]]
         self.__annotate.xy = pos
-        text = "{}".format("\n".join([self.__planetNames[n] for n in ind["ind"]]))
+        text = "".join("\n{} [{}]".format(self.__planetNames[n], self.__planetOwners[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
