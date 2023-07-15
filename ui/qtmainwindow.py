@@ -1,6 +1,8 @@
 from typing import List
 import pandas as pd
 
+import re
+
 from PyQt6 import QtCore
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import (
@@ -18,6 +20,7 @@ from PyQt6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QWidget,
+    QLineEdit,
 )
 
 from ui.galacticplot import GalacticPlot
@@ -114,6 +117,12 @@ class QtMainWindow(MainWindow):
 
         self.__planetMaxConnectionsCountLabel: QLabel = QLabel()
 
+        self.__planetSearch: QLineEdit = QLineEdit()
+
+        self.__planetSearch.setPlaceholderText('Filter Planets')
+
+        self.__planetSearch.textChanged.connect(self.filterPlanets)
+
         # Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
 
@@ -203,6 +212,7 @@ class QtMainWindow(MainWindow):
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetMaxConnectionsCountLabel)
+        self.__planetsTradeRoutes.layout().addWidget(self.__planetSearch)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
         self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
@@ -335,6 +345,20 @@ class QtMainWindow(MainWindow):
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
         self.__uncheckAllTable(self.__planetListWidget)
+
+    def filterPlanets(self) -> None:
+        """Helper function to filter list of planets based on searched string"""
+        if self.__planetSearch.text() == "":
+            for row in range(0, self.__planetListWidget.rowCount()):
+                self.__planetListWidget.setRowHidden(row, False)
+        else:
+            for row in range(0, self.__planetListWidget.rowCount()):
+                for column in range(self.__planetListWidget.columnCount()):
+                    if re.match(self.__planetSearch.text()+"(.+)", self.__planetListWidget.item(row, column).text()):
+                        self.__planetListWidget.setRowHidden(row, False)
+                        break
+                    else:
+                        self.__planetListWidget.setRowHidden(row, True)
 
     def clearTradeRoutes(self) -> None:
         """Helper function to clear traderoute selections from the presenter"""
