@@ -159,5 +159,5 @@ class QtGalacticPlot(QWidget):
         '''Updates annotation parameters'''
         pos = self.__planetsScatter.get_offsets()[ind["ind"][0]]
         self.__annotate.xy = pos
-        text = "".join("\n{} [{}]".format(self.__planetNames[n], self.__planetOwners[n]) for n in ind["ind"])
+        text = "\n".join("{} [{}]".format(self.__planetNames[n], self.__planetOwners[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
