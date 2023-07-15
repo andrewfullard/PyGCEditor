@@ -48,7 +48,7 @@ class XMLWriter:
 
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
-            for faction in factions:
+            for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction == playableFaction: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
                 else:
@@ -56,7 +56,7 @@ class XMLWriter:
                     if faction.name.upper() != "NEUTRAL":
                         self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
-            for faction in factions:
+            for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.name.upper() != "NEUTRAL":
                     self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
 
@@ -67,7 +67,7 @@ class XMLWriter:
  
             #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Container.xml")
 
-            for faction in factions:
+            for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.playable:
                     self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
