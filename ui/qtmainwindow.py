@@ -583,7 +583,7 @@ class QtMainWindow(MainWindow):
         """Checks all rows in a table widget"""
         rowCount = table.rowCount()
         for row in range(rowCount):
-            table.item(row, 0).setCheckState(QtCore.Qt.Checked)
+            table.item(row, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
     def __uncheckAllTable(self, table: QTableWidget) -> None:
         """Unchecks all rows in a table widget"""

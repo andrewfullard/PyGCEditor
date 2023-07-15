@@ -417,7 +417,7 @@ class MainWindowPresenter:
         """Select all planets handler: plots all planets"""
         if checked:
             self.__checkedPlanets.update(self.__planets)
-            self.getSelectedCampaign().planets.update(self.__availableTradeRoutes)
+            self.getSelectedCampaign().planets.update(self.__planets)
         else:
             self.__checkedPlanets.clear()
             self.getSelectedCampaign().planets.clear()
