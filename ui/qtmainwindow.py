@@ -360,7 +360,7 @@ class QtMainWindow(MainWindow):
         else:
             for row in range(0, self.__planetListWidget.rowCount()):
                 for column in range(self.__planetListWidget.columnCount()):
-                    if re.match(self.__planetSearch.text()+"(.+)", self.__planetListWidget.item(row, column).text(), re.IGNORECASE):
+                    if re.match(self.__planetSearch.text()+"(.+)?", self.__planetListWidget.item(row, column).text(), re.IGNORECASE):
                         self.__planetListWidget.setRowHidden(row, False)
                         break
                     else:
