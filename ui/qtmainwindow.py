@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QWidget,
+    QHBoxLayout,
 )
 
 from ui.galacticplot import GalacticPlot
@@ -191,7 +192,6 @@ class QtMainWindow(MainWindow):
 
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
-
         self.__leftTabsWidget.addTab(self.__factions, "Factions")
         
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
@@ -199,18 +199,24 @@ class QtMainWindow(MainWindow):
         self.__factions.setLayout(QVBoxLayout())
         self.__widget.addWidget(self.__leftTabsWidget)
 
+        self.__planetSelectButtons: QWidget = QWidget()
+        self.__trSelectButtons: QWidget = QWidget()
+        self.__planetSelectButtons.setLayout(QHBoxLayout())
+        self.__trSelectButtons.setLayout(QHBoxLayout())
+
+        self.__planetSelectButtons.layout().addWidget(self.__selectAllPlanetsButton)
+        self.__planetSelectButtons.layout().addWidget(self.__deselectAllPlanetsButton)
+        self.__trSelectButtons.layout().addWidget(self.__selectAllTradeRoutesButton)
+        self.__trSelectButtons.layout().addWidget(self.__deselectAllTradeRoutesButton)
+
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetMaxConnectionsCountLabel)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
-        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllPlanetsButton)
-        self.__planetsTradeRoutes.layout().addWidget(self.__deselectAllPlanetsButton)
+        self.__planetsTradeRoutes.layout().addWidget(self.__planetSelectButtons)
         self.__planetsTradeRoutes.layout().addWidget(self.__tradeRouteListWidget)
-        self.__planetsTradeRoutes.layout().addWidget(self.__selectAllTradeRoutesButton)
-        self.__planetsTradeRoutes.layout().addWidget(
-            self.__deselectAllTradeRoutesButton
-        )
+        self.__planetsTradeRoutes.layout().addWidget(self.__trSelectButtons)
 
         self.__startingForces.layout().addWidget(self.__planetComboBox)
         self.__startingForces.layout().addWidget(self.__forcesListTable)
