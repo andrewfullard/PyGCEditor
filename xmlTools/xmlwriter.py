@@ -1,6 +1,8 @@
 import lxml.etree as et
 from xmlTools.xmlreader import XMLReader
 
+from util import getObject, commaSepListParser, commaReplaceInList
+
 # incomplete example of writing XML files to disk
 class XMLWriter:
     """Provides XML writing functions"""
@@ -126,7 +128,7 @@ class XMLWriter:
                 try:
                     newData = newPlanetData[name]
                     for child in element.iter("Galactic_Position"):
-                        outputList = XMLReader().commaSepListParser(child.text)
+                        outputList = commaSepListParser(child.text)
                         pos_text = (
                             str(newData[0])
                             + ", "
