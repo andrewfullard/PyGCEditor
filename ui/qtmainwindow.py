@@ -413,7 +413,6 @@ class QtMainWindow(MainWindow):
         if startingForces is not None:
             model = PandasModel(startingForces, filter)
 
-            self.__forcesListTable.setModel(model)
         else:
             model = PandasModel(
                 pd.DataFrame(
@@ -422,8 +421,8 @@ class QtMainWindow(MainWindow):
                 False,
             )
 
-            self.__forcesListTable.setModel(model)
-            self.__forcesListTable.resizeColumnsToContents()
+        self.__forcesListTable.setModel(model)
+        self.__forcesListTable.resizeColumnsToContents()
 
         self.__planetInfoLabel.setText(
             "Max starbase level: "
