@@ -11,6 +11,7 @@ class Planet:
         self.__y: float = 0.0
         self.__starbaseLevel: int = 0
         self.__spaceStructureSlots: int = 0
+        self.__shipyardLevel: int = 0
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
     
@@ -67,6 +68,14 @@ class Planet:
     @spaceStructureSlots.setter
     def spaceStructureSlots(self, value: int) -> None:
         self.__spaceStructureSlots = value
+
+    @property
+    def shipyardLevel(self) -> int:
+        return self.__shipyardLevel
+
+    @shipyardLevel.setter
+    def shipyardLevel(self, value: int) -> None:
+        self.__shipyardLevel = value
     
     @property
     def groundStructureSlots(self) -> int:

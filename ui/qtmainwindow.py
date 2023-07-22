@@ -427,6 +427,8 @@ class QtMainWindow(MainWindow):
         self.__planetInfoLabel.setText(
             "Max starbase level: "
             + str(planet.starbaseLevel)
+            + "\nShipyard Level: "
+            + str(planet.shipyardLevel)
             + "\nSpace structure slots: "
             + str(planet.spaceStructureSlots)
             + "\nGround structure slots: "
