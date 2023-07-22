@@ -56,7 +56,6 @@ class QtGalacticPlot(QWidget):
 
         self.__horizontal_line = self.__axes.axhline(color='m', lw=0.8, ls='--')
         self.__vertical_line = self.__axes.axvline(color='m', lw=0.8, ls='--')
-        #self.__tradeRouteTrace = self.__axes.plot([1000,-500], [1000,0], color='y', lw=0.8, ls='--')
         self.__horizontal_line.set_visible(False)
         self.__vertical_line.set_visible(False)
 
@@ -148,6 +147,7 @@ class QtGalacticPlot(QWidget):
 
         if event.inaxes == self.__axes:
 
+            '''Add tracing lines when drawing Trade Routes'''
             if self.__horizontal_line.get_visible():
                 start = self.__tradeRouteTraceStart
                 startpos = self.__planetsScatter.get_offsets()[start]
@@ -162,6 +162,7 @@ class QtGalacticPlot(QWidget):
                 self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
                 self.__galacticPlotCanvas.draw_idle()
 
+            '''Display annotation tooltip if the cursor is over a planet'''
             if self.__planetsScatter:
                 contains, ind = self.__planetsScatter.contains(event)
             else:
