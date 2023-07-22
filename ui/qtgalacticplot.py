@@ -33,7 +33,7 @@ class QtGalacticPlot(QWidget):
         self.__planetOwners = []
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
+    def plotGalaxy(self, campaignSetName, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         if self.__is_first_run:
             x = [p.x for p in allPlanets]
@@ -42,6 +42,8 @@ class QtGalacticPlot(QWidget):
             self.__axes.set_ylim(min(y), max(y))
             
         self.__is_first_run = False
+
+        self.__galacticPlotCanvas.get_default_filename = lambda: campaignSetName + '.png'
 
         xlim = self.__axes.get_xlim()
         ylim = self.__axes.get_ylim()
