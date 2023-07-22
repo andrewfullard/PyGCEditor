@@ -54,6 +54,12 @@ class QtGalacticPlot(QWidget):
         self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
 
+        self.__horizontal_line = self.__axes.axhline(color='m', lw=0.8, ls='--')
+        self.__vertical_line = self.__axes.axvline(color='m', lw=0.8, ls='--')
+        #self.__tradeRouteTrace = self.__axes.plot([1000,-500], [1000,0], color='y', lw=0.8, ls='--')
+        self.__horizontal_line.set_visible(False)
+        self.__vertical_line.set_visible(False)
+
         self.__planetNames = []
         self.__planetOwners = []
 
@@ -141,6 +147,21 @@ class QtGalacticPlot(QWidget):
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
+
+            if self.__horizontal_line.get_visible():
+                start = self.__tradeRouteTraceStart
+                startpos = self.__planetsScatter.get_offsets()[start]
+                startx, starty = startpos[0], startpos[1]
+                x, y = event.xdata, event.ydata
+                self.__horizontal_line.set_ydata([y])
+                self.__vertical_line.set_xdata([x])
+                self.__axes.lines.remove(self.__tradeRouteTrace[0])
+                self.__tradeRouteTrace = self.__axes.plot([startx,x], [starty,y], color='y', lw=0.8, ls='--')
+                self.__galacticPlotCanvas.draw_idle()
+            else:
+                self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
+                self.__galacticPlotCanvas.draw_idle()
+
             if self.__planetsScatter:
                 contains, ind = self.__planetsScatter.contains(event)
             else:
@@ -161,3 +182,10 @@ class QtGalacticPlot(QWidget):
         self.__annotate.xy = pos
         text = "\n".join("{} [{}]".format(self.__planetNames[n], self.__planetOwners[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
+
+    def TraceTradeRoute(self, ind, visible) -> None:
+        '''Handler for tracing a traderoute between planets on plot'''
+        '''Trace movement is handled in __planetHover'''
+        self.__horizontal_line.set_visible(visible)
+        self.__vertical_line.set_visible(visible)
+        self.__tradeRouteTraceStart = ind

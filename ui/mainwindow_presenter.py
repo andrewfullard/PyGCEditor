@@ -224,25 +224,28 @@ class MainWindowPresenter:
         """If two planets in a row are right clicked by a user, this find and adds the trade route, or helps create a new one"""
         if not self.__onPlotSelectedStartPlanet:
             self.__onPlotSelectedStartPlanet = self.__planets[index]
+            self.__plot.TraceTradeRoute(index, True)
             return
         
         if self.__onPlotSelectedStartPlanet and not self.__onPlotSelectedEndPlanet:
             self.__onPlotSelectedEndPlanet = self.__planets[index]
+            self.__plot.TraceTradeRoute(index, False)
 
         if self.__onPlotSelectedStartPlanet and self.__onPlotSelectedEndPlanet:
-            try:
-                traderoute = self.__repository.getTradeRouteByPlanets(self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet)
+            if not self.__onPlotSelectedStartPlanet == self.__onPlotSelectedEndPlanet:
                 try:
-                    index = self.__availableTradeRoutes.index(traderoute)
-                except ValueError:
-                    print("Error, trade route not available but it should be! Try turning a planet off and on")
+                    traderoute = self.__repository.getTradeRouteByPlanets(self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet)
+                    try:
+                        index = self.__availableTradeRoutes.index(traderoute)
+                    except ValueError:
+                        print("Error, trade route not available but it should be! Try turning a planet off and on")
 
-                if self.__mainWindow.selectSingleTradeRoute(index):
-                    self.onTradeRouteChecked(index, True)
-                else:
-                    self.onTradeRouteChecked(index, False)
-            except RuntimeError:
-                self.newTradeRouteCommand.execute(start = self.__onPlotSelectedStartPlanet.name, end = self.__onPlotSelectedEndPlanet.name)
+                    if self.__mainWindow.selectSingleTradeRoute(index):
+                        self.onTradeRouteChecked(index, True)
+                    else:
+                        self.onTradeRouteChecked(index, False)
+                except RuntimeError:
+                    self.newTradeRouteCommand.execute(start = self.__onPlotSelectedStartPlanet.name, end = self.__onPlotSelectedEndPlanet.name)
             
             self.__onPlotSelectedStartPlanet = None
             self.__onPlotSelectedEndPlanet = None
