@@ -37,7 +37,7 @@ class QtGalacticPlot(QWidget):
         self.__groundStructureSlots =[]
         self.__planetsScatter = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], starbaseLevel = [], shipyardLevel = [], groundStructureSlots = [], income = [], autoPlanetConnectionDistance: int = 0) -> None:
+    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
         if self.__is_first_run:
             x = [p.x for p in allPlanets]
