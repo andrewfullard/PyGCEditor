@@ -102,8 +102,8 @@ class XMLWriter:
         """Writes a list of trade routes to file"""
         tradeRoutesRoot = et.Element("TradeRoutes")
         tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
-
-        for t in tradeRoutes:
+        
+        for t in sorted(tradeRoutes, key=lambda t: t.name):
             route = et.SubElement(tradeRoutesRoot, "TradeRoute", Name=t.name)
 
             point_a = self.subElementText(route, "Point_A", t.start.name)
