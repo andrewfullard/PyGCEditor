@@ -148,7 +148,6 @@ class QtGalacticPlot(QWidget):
                 startpos = self.__planetsScatter.get_offsets()[self.__tradeRouteTraceStart]
                 self.__axes.lines.remove(self.__tradeRouteTrace[0])
                 self.__tradeRouteTrace = self.__axes.plot([startpos[0],event.xdata], [startpos[1],event.ydata], color='y', lw=0.8, ls='--')
-                self.__galacticPlotCanvas.draw_idle()
             else :
                 self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
 
@@ -161,11 +160,11 @@ class QtGalacticPlot(QWidget):
             if contains:
                 self.__update_annotation(ind)
                 self.__annotate.set_visible(True)
-                self.__galacticPlotCanvas.draw_idle()
             else:
                 if visible:
                     self.__annotate.set_visible(False)
-                    self.__galacticPlotCanvas.draw_idle()
+            
+            self.__galacticPlotCanvas.draw_idle()
 
     def __update_annotation(self, ind) -> None:
         '''Updates annotation parameters'''
