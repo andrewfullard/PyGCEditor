@@ -36,6 +36,7 @@ class QtGalacticPlot(QWidget):
         self.__income = []
         self.__groundStructureSlots =[]
         self.__planetsScatter = None
+        self.__tradeRouteTraceStart = None
 
     def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
@@ -150,6 +151,16 @@ class QtGalacticPlot(QWidget):
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
+
+            '''Add tracing lines when drawing Trade Routes'''
+            if not self.__tradeRouteTraceStart == None:
+                startpos = self.__planetsScatter.get_offsets()[self.__tradeRouteTraceStart]
+                self.__axes.lines.remove(self.__tradeRouteTrace[0])
+                self.__tradeRouteTrace = self.__axes.plot([startpos[0],event.xdata], [startpos[1],event.ydata], color='y', lw=0.8, ls='--')
+            else :
+                self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
+
+            '''Display annotation tooltip if the cursor is over a planet'''
             if self.__planetsScatter:
                 contains, ind = self.__planetsScatter.contains(event)
             else:
@@ -158,11 +169,11 @@ class QtGalacticPlot(QWidget):
             if contains:
                 self.__update_annotation(ind)
                 self.__annotate.set_visible(True)
-                self.__galacticPlotCanvas.draw_idle()
             else:
                 if visible:
                     self.__annotate.set_visible(False)
-                    self.__galacticPlotCanvas.draw_idle()
+            
+            self.__galacticPlotCanvas.draw_idle()
 
     def __update_annotation(self, ind) -> None:
         '''Updates annotation parameters'''
@@ -170,3 +181,8 @@ class QtGalacticPlot(QWidget):
         self.__annotate.xy = pos
         text = "\n".join("Planet: {} \nFaction: {} \nStarbase: {} \nShipyard: {} \nGround Slots: {} \nIncome: {}".format(self.__planetNames[n], self.__planetOwners[n], self.__starbaseLevel[n], self.__shipyardLevel[n], self.__groundStructureSlots[n], self.__income[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
+
+    def TraceTradeRoute(self, ind) -> None:
+        '''Handler for tracing a traderoute between planets on plot'''
+        '''Trace movement is handled in __planetHover'''
+        self.__tradeRouteTraceStart = ind
