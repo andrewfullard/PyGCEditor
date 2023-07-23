@@ -3,7 +3,7 @@ from math import sqrt
 
 
 class Planet:
-    '''Planets have a name and location (x, y), starbase level, and special structure slots'''
+    '''Planets have a name and location (x, y), starbase level, shipyard and special structure slots'''
     def __init__(self, name: str):
         self.__name: str = name
         self.__variantOf: str = ""
@@ -11,6 +11,7 @@ class Planet:
         self.__y: float = 0.0
         self.__starbaseLevel: int = 0
         self.__spaceStructureSlots: int = 0
+        self.__shipyardLevel: str = ""
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
     
@@ -67,6 +68,15 @@ class Planet:
     @spaceStructureSlots.setter
     def spaceStructureSlots(self, value: int) -> None:
         self.__spaceStructureSlots = value
+
+    @property
+    def shipyardLevel(self) -> str:
+        return self.__shipyardLevel
+
+    @shipyardLevel.setter
+    def shipyardLevel(self, value: str) -> None:
+        if value:
+            self.__shipyardLevel = value
     
     @property
     def groundStructureSlots(self) -> int:

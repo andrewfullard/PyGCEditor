@@ -1,6 +1,8 @@
 import lxml.etree as et
 from xmlTools.xmlreader import XMLReader
 
+from util import getObject, commaSepListParser, commaReplaceInList
+
 # incomplete example of writing XML files to disk
 class XMLWriter:
     """Provides XML writing functions"""
@@ -102,8 +104,8 @@ class XMLWriter:
         """Writes a list of trade routes to file"""
         tradeRoutesRoot = et.Element("TradeRoutes")
         tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
-
-        for t in tradeRoutes:
+        
+        for t in sorted(tradeRoutes, key=lambda t: t.name):
             route = et.SubElement(tradeRoutesRoot, "TradeRoute", Name=t.name)
 
             point_a = self.subElementText(route, "Point_A", t.start.name)
@@ -126,7 +128,7 @@ class XMLWriter:
                 try:
                     newData = newPlanetData[name]
                     for child in element.iter("Galactic_Position"):
-                        outputList = XMLReader().commaSepListParser(child.text)
+                        outputList = commaSepListParser(child.text)
                         pos_text = (
                             str(newData[0])
                             + ", "
