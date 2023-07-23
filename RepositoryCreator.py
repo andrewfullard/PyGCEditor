@@ -57,6 +57,20 @@ class RepositoryCreator:
                         )
                     )
                 )
+
+                ability_name = self.__xml.getObjectProperty(name, planetRoot, ".//Planet_Ability_Name")
+                if ability_name == "TEXT_PLANET_LIGHT":
+                    ability_name = ability_name.replace("TEXT_PLANET_LIGHT", "Light Frigate")
+                elif ability_name == "TEXT_PLANET_HEAVY":
+                    ability_name = ability_name.replace("TEXT_PLANET_HEAVY", "Heavy Frigate")
+                elif ability_name == "TEXT_PLANET_CAPITAL":
+                    ability_name = ability_name.replace("TEXT_PLANET_CAPITAL", "Capital")
+                elif ability_name == "TEXT_PLANET_DREAD":
+                    ability_name = ability_name.replace("TEXT_PLANET_DREAD", "Dreadnaught")
+                else: 
+                    ability_name = "No Shipyard Defined"
+                newplanet.shipyardLevel = ability_name
+
                 newplanet.spaceStructureSlots = int(
                     float(
                         self.__xml.getObjectProperty(
