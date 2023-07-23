@@ -32,6 +32,7 @@ class QtGalacticPlot(QWidget):
         self.__planetNames = []
         self.__planetOwners = []
         self.__planetsScatter = None
+        self.__tradeRouteTraceStart = None
 
     def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners = [], autoPlanetConnectionDistance: int = 0) -> None:
         '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
@@ -53,11 +54,6 @@ class QtGalacticPlot(QWidget):
         #Has to be set again here for the planet hover labels to work
         self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
-
-        self.__horizontal_line = self.__axes.axhline(color='m', lw=0.8, ls='--')
-        self.__vertical_line = self.__axes.axvline(color='m', lw=0.8, ls='--')
-        self.__horizontal_line.set_visible(False)
-        self.__vertical_line.set_visible(False)
 
         self.__planetNames = []
         self.__planetOwners = []
@@ -148,19 +144,13 @@ class QtGalacticPlot(QWidget):
         if event.inaxes == self.__axes:
 
             '''Add tracing lines when drawing Trade Routes'''
-            if self.__horizontal_line.get_visible():
-                start = self.__tradeRouteTraceStart
-                startpos = self.__planetsScatter.get_offsets()[start]
-                startx, starty = startpos[0], startpos[1]
-                x, y = event.xdata, event.ydata
-                self.__horizontal_line.set_ydata([y])
-                self.__vertical_line.set_xdata([x])
+            if not self.__tradeRouteTraceStart == None:
+                startpos = self.__planetsScatter.get_offsets()[self.__tradeRouteTraceStart]
                 self.__axes.lines.remove(self.__tradeRouteTrace[0])
-                self.__tradeRouteTrace = self.__axes.plot([startx,x], [starty,y], color='y', lw=0.8, ls='--')
+                self.__tradeRouteTrace = self.__axes.plot([startpos[0],event.xdata], [startpos[1],event.ydata], color='y', lw=0.8, ls='--')
                 self.__galacticPlotCanvas.draw_idle()
-            else:
+            else :
                 self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
-                self.__galacticPlotCanvas.draw_idle()
 
             '''Display annotation tooltip if the cursor is over a planet'''
             if self.__planetsScatter:
@@ -184,9 +174,7 @@ class QtGalacticPlot(QWidget):
         text = "\n".join("{} [{}]".format(self.__planetNames[n], self.__planetOwners[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
 
-    def TraceTradeRoute(self, ind, visible) -> None:
+    def TraceTradeRoute(self, ind) -> None:
         '''Handler for tracing a traderoute between planets on plot'''
         '''Trace movement is handled in __planetHover'''
-        self.__horizontal_line.set_visible(visible)
-        self.__vertical_line.set_visible(visible)
         self.__tradeRouteTraceStart = ind
