@@ -58,6 +58,7 @@ class QtGalacticPlot(QWidget):
         #Has to be set again here for the planet hover labels to work
         self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
         self.__annotate.set_visible(False)
+        self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
 
         self.__planetNames = []
         self.__planetOwners = []
