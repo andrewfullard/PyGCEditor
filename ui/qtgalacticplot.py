@@ -152,14 +152,16 @@ class QtGalacticPlot(QWidget):
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
+            '''Remove previous tradeRouteTrace lines if they exist'''
+            for line in self.__tradeRouteTrace:
+                line.remove()
 
             '''Add tracing lines when drawing Trade Routes'''
             if not self.__tradeRouteTraceStart == None:
                 startpos = self.__planetsScatter.get_offsets()[self.__tradeRouteTraceStart]
-                self.__axes.lines.remove(self.__tradeRouteTrace[0])
-                self.__tradeRouteTrace = self.__axes.plot([startpos[0],event.xdata], [startpos[1],event.ydata], color='y', lw=0.8, ls='--')
-            else :
-                self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
+                self.__tradeRouteTrace = self.__axes.plot([startpos[0], event.xdata], [startpos[1], event.ydata], color='y', lw=0.8, ls='--')
+            else:
+                self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
 
             '''Display annotation tooltip if the cursor is over a planet'''
             if self.__planetsScatter:
