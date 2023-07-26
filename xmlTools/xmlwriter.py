@@ -70,10 +70,9 @@ class XMLWriter:
             #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Container.xml")
 
             for faction in sorted(factions, key=lambda faction: faction.name):
-                if faction.playable:
-                    self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
-                    self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
-                    self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
+                self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
+                self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
+                self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
 
             num2words = {'1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine', '10': 'Ten', '11': 'Eleven'}
 
