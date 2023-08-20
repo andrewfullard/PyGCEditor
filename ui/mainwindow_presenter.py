@@ -591,6 +591,7 @@ class MainWindowPresenter:
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
         self.__plot.plotGalaxy(
+            self.getSelectedCampaign().setName,
             self.__checkedPlanets,
             self.__checkedTradeRoutes,
             self.__planets,
