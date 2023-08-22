@@ -44,7 +44,12 @@ class DisplayHelpers:
         except IndexError:
             return self.__getNeutralFaction()
 
-        return getObject(faction_name, self.repository.factions)
+        faction = getObject(faction_name, self.repository.factions)
+
+        if faction is not None:
+            return faction
+        else:
+            return self.__getNeutralFaction()
 
     def __getNeutralFaction(self) -> Faction:
         """Gets the Neutral faction entry, if possible"""
