@@ -71,6 +71,25 @@ class RepositoryCreator:
                     ability_name = "No Shipyard Defined"
                 newplanet.shipyardLevel = ability_name
 
+                ability_name = self.__xml.getObjectProperty(name, planetRoot, ".//Encyclopedia_Weather_Name")
+                if ability_name == "TEXT_RESOURCE_SUPPORTS_CLONING":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_CLONING", "Cloning")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_CREW_ACADEMY":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_CREW_ACADEMY", "Cloning | Academy")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_MINING":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_MINING", "Cloning | Mining")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_CREW_ACADEMY":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_CREW_ACADEMY", "Academy")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_MINING":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_MINING", "Mining")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_MINING_SUPPORTS_TRADE":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_MINING_SUPPORTS_TRADE", "Mining | Trade Hub")
+                elif ability_name == "TEXT_RESOURCE_SUPPORTS_TRADE":
+                    ability_name = ability_name.replace("TEXT_RESOURCE_SUPPORTS_TRADE", "Trade Hub")
+                else: 
+                    ability_name = "None"
+                newplanet.SupportsStructure = ability_name
+
                 newplanet.spaceStructureSlots = int(
                     float(
                         self.__xml.getObjectProperty(

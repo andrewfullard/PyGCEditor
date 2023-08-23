@@ -33,6 +33,7 @@ class QtGalacticPlot(QWidget):
         self.__planetOwners = []
         self.__starbaseLevel = []
         self.__shipyardLevel = []
+        self.__SupportsStructure = []
         self.__income = []
         self.__groundStructureSlots =[]
         self.__planetsScatter = None
@@ -82,6 +83,7 @@ class QtGalacticPlot(QWidget):
             self.__starbaseLevel.append(p.starbaseLevel)
             self.__shipyardLevel.append(p.shipyardLevel)
             self.__income.append(p.income)
+            self.__SupportsStructure.append(p.SupportsStructure)
             self.__groundStructureSlots.append(p.groundStructureSlots)
 
         self.__planetsScatter = self.__axes.scatter(x, y, c = 'grey', alpha = 0.1, picker = 5, zorder=2)
@@ -182,7 +184,7 @@ class QtGalacticPlot(QWidget):
         '''Updates annotation parameters'''
         pos = self.__planetsScatter.get_offsets()[ind["ind"][0]]
         self.__annotate.xy = pos
-        text = "\n".join("Planet: {} \nFaction: {} \nStarbase: {} \nShipyard: {} \nGround Slots: {} \nIncome: {}".format(self.__planetNames[n], self.__planetOwners[n], self.__starbaseLevel[n], self.__shipyardLevel[n], self.__groundStructureSlots[n], self.__income[n]) for n in ind["ind"])
+        text = "\n".join("Planet: {} \nFaction: {} \nStarbase: {} \nShipyard: {} \nGround Slots: {} \nIncome: {} \nSupports: {}".format(self.__planetNames[n], self.__planetOwners[n], self.__starbaseLevel[n], self.__shipyardLevel[n], self.__groundStructureSlots[n], self.__income[n], self.__SupportsStructure[n]) for n in ind["ind"])
         self.__annotate.set_text(text)
 
     def TraceTradeRoute(self, ind) -> None:
