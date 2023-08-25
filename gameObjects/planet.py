@@ -12,6 +12,7 @@ class Planet:
         self.__starbaseLevel: int = 0
         self.__spaceStructureSlots: int = 0
         self.__shipyardLevel: str = ""
+        self.__SupportsStructure: str = ""
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
     
@@ -77,6 +78,15 @@ class Planet:
     def shipyardLevel(self, value: str) -> None:
         if value:
             self.__shipyardLevel = value
+    
+    @property
+    def SupportsStructure(self) -> str:
+        return self.__SupportsStructure
+
+    @SupportsStructure.setter
+    def SupportsStructure(self, value: str) -> None:
+        if value:
+            self.__SupportsStructure = value
     
     @property
     def groundStructureSlots(self) -> int:

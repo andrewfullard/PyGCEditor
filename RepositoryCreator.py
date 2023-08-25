@@ -58,18 +58,26 @@ class RepositoryCreator:
                     )
                 )
 
-                ability_name = self.__xml.getObjectProperty(name, planetRoot, ".//Planet_Ability_Name")
-                if ability_name == "TEXT_PLANET_LIGHT":
-                    ability_name = ability_name.replace("TEXT_PLANET_LIGHT", "Light Frigate")
-                elif ability_name == "TEXT_PLANET_HEAVY":
-                    ability_name = ability_name.replace("TEXT_PLANET_HEAVY", "Heavy Frigate")
-                elif ability_name == "TEXT_PLANET_CAPITAL":
-                    ability_name = ability_name.replace("TEXT_PLANET_CAPITAL", "Capital")
-                elif ability_name == "TEXT_PLANET_DREAD":
-                    ability_name = ability_name.replace("TEXT_PLANET_DREAD", "Dreadnaught")
-                else: 
-                    ability_name = "No Shipyard Defined"
-                newplanet.shipyardLevel = ability_name
+                shipyard_list = {
+                    "TEXT_PLANET_LIGHT": "Light Frigate",
+                    "TEXT_PLANET_HEAVY": "Heavy Frigate",
+                    "TEXT_PLANET_CAPITAL": "Capital",
+                    "TEXT_PLANET_DREAD": "Dreadnaught"
+                }
+                shipyard = self.__xml.getObjectProperty(name, planetRoot, ".//Planet_Ability_Name")
+                newplanet.shipyardLevel = shipyard_list.get(shipyard, "No Shipyard Defined")
+
+                supports_list = {
+                    "TEXT_RESOURCE_SUPPORTS_CLONING": "Cloning",
+                    "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_CREW_ACADEMY": "Cloning | Academy",
+                    "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_MINING": "Cloning | Mining",
+                    "TEXT_RESOURCE_SUPPORTS_CREW_ACADEMY": "Academy",
+                    "TEXT_RESOURCE_SUPPORTS_MINING": "Mining",
+                    "TEXT_RESOURCE_SUPPORTS_MINING_SUPPORTS_TRADE": "Mining | Trade Hub",
+                    "TEXT_RESOURCE_SUPPORTS_TRADE": "Trade Hub"
+                }
+                structure = self.__xml.getObjectProperty(name, planetRoot, ".//Encyclopedia_Weather_Name")
+                newplanet.SupportsStructure = supports_list.get(structure, "None")
 
                 newplanet.spaceStructureSlots = int(
                     float(
