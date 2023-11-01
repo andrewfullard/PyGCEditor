@@ -230,6 +230,8 @@ class XMLReader:
         """Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end"""
         for element in tradeRouteRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
+                traderoute_name = element.get("Name") 
+                print(f"Loading traderoute: {traderoute_name}") 
                 start_planet = getObject(element.find("Point_A").text, planetList)
                 end_planet = getObject(element.find("Point_B").text, planetList)
 
