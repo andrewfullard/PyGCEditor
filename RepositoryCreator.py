@@ -311,10 +311,12 @@ class RepositoryCreator:
                     startingForcesLibrary = pd.concat([startingForcesLibrary, data_to_add])
                     continue
 
-        startingForcesLibrary.reset_index()
+        startingForcesLibrary.reset_index(drop=True, inplace=True)
 
         startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
         startingForcesLibrary.dropna(inplace=True)
+
+        startingForcesLibrary.sort_values(by=['Planet'], inplace=True)
 
         return startingForcesLibrary
 
