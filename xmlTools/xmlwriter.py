@@ -69,7 +69,7 @@ class XMLWriter:
  
             #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Republic.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Container.xml")
 
-            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox__Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_Container.xml")
+            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_Empire.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_Container.xml")
 
 
             for faction in sorted(factions, key=lambda faction: faction.name):
