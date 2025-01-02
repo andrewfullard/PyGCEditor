@@ -67,17 +67,12 @@ class RepositoryCreator:
                 shipyard = self.__xml.getObjectProperty(name, planetRoot, ".//Planet_Ability_Name")
                 newplanet.shipyardLevel = shipyard_list.get(shipyard, "No Shipyard Defined")
 
-                supports_list = {
-                    "TEXT_RESOURCE_SUPPORTS_CLONING": "Cloning",
-                    "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_CREW_ACADEMY": "Cloning | Academy",
-                    "TEXT_RESOURCE_SUPPORTS_CLONING_SUPPORTS_MINING": "Cloning | Mining",
-                    "TEXT_RESOURCE_SUPPORTS_CREW_ACADEMY": "Academy",
-                    "TEXT_RESOURCE_SUPPORTS_MINING": "Mining",
-                    "TEXT_RESOURCE_SUPPORTS_MINING_SUPPORTS_TRADE": "Mining | Trade Hub",
-                    "TEXT_RESOURCE_SUPPORTS_TRADE": "Trade Hub"
-                }
                 structure = self.__xml.getObjectProperty(name, planetRoot, ".//Encyclopedia_Weather_Name")
-                newplanet.SupportsStructure = supports_list.get(structure, "None")
+                if structure and structure.startswith("TEXT_RESOURCE_SUPPORTS_"):
+                    coded_name = structure.replace("TEXT_RESOURCE_SUPPORTS_", "")
+                    newplanet.SupportsStructure = coded_name
+                else:
+                    newplanet.SupportsStructure = "None"
 
                 newplanet.spaceStructureSlots = int(
                     float(
