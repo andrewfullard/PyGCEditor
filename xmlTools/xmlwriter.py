@@ -51,9 +51,6 @@ class XMLWriter:
             self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
 
             for faction in sorted(factions, key=lambda faction: faction.name):
-                # We only want Imperial_Proteus for their campaign set
-                if faction.name == "Imperial_Proteus" and faction != playableFaction:
-                    continue
                 if faction == playableFaction: 
                     self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
                 else:
@@ -62,9 +59,6 @@ class XMLWriter:
                         self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
 
             for faction in sorted(factions, key=lambda faction: faction.name):
-                # We only want Imperial_Proteus for their campaign set
-                if faction.name == "Imperial_Proteus" and faction != playableFaction:
-                    continue
                 if faction.name.upper() != "NEUTRAL":
                     self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
 
@@ -78,10 +72,7 @@ class XMLWriter:
             #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_Sith.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_Container.xml")
 
 
-            for faction in sorted(factions, key=lambda faction: faction.name):
-                # We only want Imperial_Proteus for their campaign set
-                if faction.name == "Imperial_Proteus" and faction != playableFaction:
-                    continue                
+            for faction in sorted(factions, key=lambda faction: faction.name):              
                 if faction.name.upper() != "NEUTRAL":
                     self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
