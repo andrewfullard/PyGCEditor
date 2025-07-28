@@ -52,7 +52,7 @@ class XMLWriter:
 
             for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction == playableFaction: 
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
+                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", HumanPlayer")
                 else:
                     # Right now the players don't import properly
                     if faction.name.upper() != "NEUTRAL":
@@ -65,11 +65,11 @@ class XMLWriter:
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
             self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
 
-            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nGreater_Maldrood, Conquests\Story_Plots_Generic_Greater_Maldrood.xml,\nZsinj_Empire, Conquests\Story_Plots_Generic_Zsinj_Empire.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nEriadu_Authority, Conquests\Story_Plots_Generic_Eriadu_Authority.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml,\Imperial_Proteus, Conquests\Story_Plots_Generic_Imperial_Proteus.xml")
+            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_FullProgressive_Empire.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nGreater_Maldrood, Conquests\Story_Plots_Generic_Greater_Maldrood.xml,\nZsinj_Empire, Conquests\Story_Plots_Generic_Zsinj_Empire.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nEriadu_Authority, Conquests\Story_Plots_Generic_Eriadu_Authority.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml,\Imperial_Proteus, Conquests\Story_Plots_Generic_Imperial_Proteus.xml")
  
-            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Republic.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Container.xml")
+            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_CloneWars_Republic.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_CloneWars_Container.xml")
 
-            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_Sith.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_Container.xml")
+            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sith.xml,\nEmpire, Conquests\Progressive\Story_Plots_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Container.xml")
 
 
             for faction in sorted(factions, key=lambda faction: faction.name):              
