@@ -68,7 +68,9 @@ class XMLWriter:
                 "Eriadu_Authority": r"EriaduGalacticHints.xml",
                 "Greater_Maldrood": r"MaldroodGalacticHints.xml",
                 "Hapes_Consortium": r"HapesGalacticHints.xml",
-                "Hutt_Cartels": r"HuttGalacticHints.xml"
+                "Hutt_Cartels": r"HuttGalacticHints.xml",
+                "Pentastar": r"PentastarGalacticHints.xml",
+                "Zsinj_Empire": r"ZsinjGalacticHints.xml"
             }
 
             for faction in sorted(factions, key=lambda faction: faction.name):
