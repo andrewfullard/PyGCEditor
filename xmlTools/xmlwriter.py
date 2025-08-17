@@ -57,22 +57,67 @@ class XMLWriter:
                     # Right now the players don't import properly
                     if faction.name.upper() != "NEUTRAL":
                         self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
+            
+            # FotR
+            # Galactic_Hints_Table = {
+            #     "Hutt_Cartels": r"HuttGalacticHints.xml"
+            # }
+
+            # TR
+            Galactic_Hints_Table = {
+                "Eriadu_Authority": r"EriaduGalacticHints.xml",
+                "Greater_Maldrood": r"MaldroodGalacticHints.xml",
+                "Hapes_Consortium": r"HapesGalacticHints.xml",
+                "Hutt_Cartels": r"HuttGalacticHints.xml"
+            }
 
             for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.name.upper() != "NEUTRAL":
-                    self.subElementText(campaignElement, "Markup_Filename", faction.name +", DefaultGalacticHints")
+                    if faction.name in Galactic_Hints_Table:
+                        Galactic_Hint = f"{faction.name}, {Galactic_Hints_Table[faction.name]}"
+                    else:
+                        Galactic_Hint = f"{faction.name}, DefaultGalacticHints"
+                    self.subElementText(campaignElement, "Markup_Filename", Galactic_Hint)
 
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
             self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
 
-            self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Rebel.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Empire.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_FullProgressive_Container.xml,\nEmpireoftheHand, Conquests\Story_Plots_Generic_EmpireoftheHand.xml,\nGreater_Maldrood, Conquests\Story_Plots_Generic_Greater_Maldrood.xml,\nZsinj_Empire, Conquests\Story_Plots_Generic_Zsinj_Empire.xml,\nCorporate_Sector, Conquests\Story_Plots_Generic_Corporate_Sector.xml,\nEriadu_Authority, Conquests\Story_Plots_Generic_Eriadu_Authority.xml,\nHapes_Consortium, Conquests\Story_Plots_Generic_Hapes_Consortium.xml,\nPentastar, Conquests\Story_Plots_Generic_Pentastar.xml,\Imperial_Proteus, Conquests\Story_Plots_Generic_Imperial_Proteus.xml")
- 
-            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_CIS.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Republic.xml,\nHutt_Cartels, Conquests\Story_Plots_Generic_Hutt_Cartels.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_CloneWars_Container.xml")
+            # Rev
+            # story_paths = {
+            #     "Rebel": r"Conquests\Progressive\Story_Plots_Sith.xml",
+            #     "Empire": r"Conquests\Progressive\Story_Plots_Republic.xml",
+            #     "Underworld": r"Conquests\Progressive\Story_Plots_Container.xml"
+            #} 
 
-            #self.subElementText(campaignElement, "Story_Name", "Rebel, Conquests\Progressive\Story_Plots_Sandbox_Sith.xml,\nEmpire, Conquests\Progressive\Story_Plots_Sandbox_Republic.xml,\nUnderworld, Conquests\Progressive\Story_Plots_Sandbox_Container.xml")
+            # FotR
+            # story_paths = {
+            #     "Rebel": r"Conquests\Progressive\Story_Plots_CloneWars_CIS.xml",
+            #     "Empire": r"Conquests\Progressive\Story_Plots_CloneWars_Republic.xml",
+            #     "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
+            #     "Underworld": r"Conquests\Progressive\Story_Plots_CloneWars_Container.xml"
+            # }
 
+            # TR
+            story_paths = {
+                "Rebel": r"Conquests\Progressive\Story_Plots_FullProgressive_Rebel.xml",
+                "Empire": r"Conquests\Progressive\Story_Plots_FullProgressive_Empire.xml",
+                "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
+                "Underworld": r"Conquests\Progressive\Story_Plots_FullProgressive_Container.xml",
+                "EmpireoftheHand": r"Conquests\Story_Plots_Generic_EmpireoftheHand.xml",
+                "Greater_Maldrood": r"Conquests\Story_Plots_Generic_Greater_Maldrood.xml",
+                "Zsinj_Empire": r"Conquests\Story_Plots_Generic_Zsinj_Empire.xml",
+                "Corporate_Sector": r"Conquests\Story_Plots_Generic_Corporate_Sector.xml",
+                "Eriadu_Authority": r"Conquests\Story_Plots_Generic_Eriadu_Authority.xml",
+                "Hapes_Consortium": r"Conquests\Story_Plots_Generic_Hapes_Consortium.xml",
+                "Pentastar": r"Conquests\Story_Plots_Generic_Pentastar.xml",
+                "Imperial_Proteus": r"Conquests\Story_Plots_Generic_Imperial_Proteus.xml"
+            }
 
-            for faction in sorted(factions, key=lambda faction: faction.name):              
+            story_text = ",\n".join(f"{faction}, {path}" for faction, path in story_paths.items())
+
+            self.subElementText(campaignElement, "Story_Name", story_text)
+
+            for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.name.upper() != "NEUTRAL":
                     self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
                     self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
