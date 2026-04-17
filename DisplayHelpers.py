@@ -1,13 +1,9 @@
-from itertools import groupby
-from typing import TYPE_CHECKING, List, Set
 import pandas as pd
 
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
-from gameObjects.startingForce import StartingForce
-from gameObjects.traderoute import TradeRoute
 
 from util import getObject
 
@@ -15,13 +11,12 @@ from util import getObject
 class DisplayHelpers:
     """Helper functions for  retrieving information for display"""
 
-    def __init__(self, repository: GameObjectRepository, campaigns: List[Campaign]):
+    def __init__(self, repository: GameObjectRepository, campaigns: list[Campaign]):
         self.repository = repository
         self.campaigns = campaigns
 
-    def getPlanetOwners(self, index: int, planetList: List[Planet]) -> List[Faction]:
+    def getPlanetOwners(self, index: int, planetList: set[Planet]) -> list[Faction]:
         """Gets a list of owners of planets in the GC selected by index"""
-        owners_names = []
         owners = []
         for planet in planetList:
             owners.append(
@@ -59,7 +54,7 @@ class DisplayHelpers:
 
         print("Error! Neutral faction not found!")
 
-    def calculateFactionIncome(self, planets: list, planet_owners: list) -> int:
+    def calculateFactionIncome(self, planets: set, planet_owners: list) -> dict:
         """Gets a list of owners of planets in the GC selected by index"""
         incomes = []
         factions = []
