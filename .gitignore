@@ -60,3 +60,6 @@ target/
 
 # VS Code Settings
 .vscode/
+
+# Editor created files
+NewTradeRoutes.xml
