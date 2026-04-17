@@ -3,7 +3,7 @@ import os
 from typing import Optional
 from xmlTools.xmlstructure import XMLStructure
 
-from util import getObject, commaSepListParser, commaReplaceInList
+from util import commaSepListParser
 
 
 # incomplete example of writing XML files to disk

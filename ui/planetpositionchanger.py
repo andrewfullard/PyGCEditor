@@ -8,10 +8,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
 )
 
-from gameObjects.planet import Planet
-from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.mainwindow_presenter import MainWindowPresenter
-from ui.qtautocomplete import AutoCompleter
 from ui.dialogs import Dialog, DialogResult
 
 
