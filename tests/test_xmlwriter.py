@@ -3,9 +3,12 @@ import os
 import lxml.etree as et
 import pytest
 
+from gameObjects.campaign import Campaign
+from gameObjects.faction import Faction
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from xmlTools.xmlwriter import XMLWriter
+from xmlTools.xmlstructure import XMLStructure
 
 
 @pytest.fixture
@@ -86,3 +89,46 @@ def test_create_list_entry_sorts_by_name(writer):
     entry = writer.createListEntry([p1, p2])
 
     assert "\n\t\t\tAlderaan,\n\t\t\tKuat,\n" in entry
+
+
+def test_campaign_writer_uses_campaign_story_name_override(writer, tmp_path):
+    campaign = Campaign("GC")
+    campaign.setName = "GC"
+    campaign.storyName = "Rebel, CustomRebel.xml,\nEmpire, CustomEmpire.xml"
+    campaign.playableFactions = {Faction("Rebel")}
+    campaign.startingForces = writer_starting_forces_dataframe()
+
+    output_path = tmp_path / "Campaigns.xml"
+    writer.campaignWriter(campaign, [Faction("Rebel")], str(output_path))
+
+    root = et.parse(str(output_path)).getroot()
+    story_name = root.find(".//Story_Name")
+    assert story_name is not None
+    assert story_name.text == campaign.storyName
+
+
+def test_campaign_writer_uses_default_story_name_when_empty(writer, tmp_path):
+    campaign = Campaign("GC")
+    campaign.setName = "GC"
+    campaign.storyName = ""
+    campaign.playableFactions = {Faction("Rebel")}
+    campaign.startingForces = writer_starting_forces_dataframe()
+
+    old_submods = list(XMLStructure.submods)
+    XMLStructure.submods = ["TR"]
+    try:
+        output_path = tmp_path / "Campaigns.xml"
+        writer.campaignWriter(campaign, [Faction("Rebel")], str(output_path))
+    finally:
+        XMLStructure.submods = old_submods
+
+    root = et.parse(str(output_path)).getroot()
+    story_name = root.find(".//Story_Name")
+    assert story_name is not None
+    assert "Rebel, Conquests\\Progressive\\Story_Plots_FullProgressive_Rebel.xml" in story_name.text
+
+
+def writer_starting_forces_dataframe():
+    import pandas as pd
+
+    return pd.DataFrame(columns=["Planet", "Era", "Owner", "ObjectType", "Amount"])
