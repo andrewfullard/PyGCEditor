@@ -24,7 +24,6 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
 )
 
-from ui.galacticplot import GalacticPlot
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
@@ -37,9 +36,6 @@ class QtMainWindow(MainWindow):
     """Qt based window"""
 
     def __init__(self):
-        self.__allPlanetsChecked: bool = False
-        self.__allTradeRoutesChecked: bool = False
-
         # Main window setup
         self.__window: QMainWindow = QMainWindow()
         self.__widget: QWidget = QSplitter(self.__window)
@@ -246,7 +242,7 @@ class QtMainWindow(MainWindow):
         self.__factions.layout().addWidget(self.__factionListWidget)
         self.__factions.layout().addWidget(self.__totalFactionIncomeLabel)
 
-        self.__presenter: MainWindowPresenter = None
+        self.__presenter: MainWindowPresenter
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
         """Set the presenter class for the window"""
@@ -281,7 +277,7 @@ class QtMainWindow(MainWindow):
         self.__campaignComboBox.addItems(campaigns)
         self.__campaignComboBox.activated.connect(self.__onCampaignSelected)
 
-    def makeGalacticPlot(self) -> GalacticPlot:
+    def makeGalacticPlot(self) -> QtGalacticPlot:
         """Plot planets and trade routes"""
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
         self.__widget.addWidget(plot.getWidget())
@@ -495,19 +491,11 @@ class QtMainWindow(MainWindow):
 
     def __onPlanetTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a planet table widget item is clicked, check it and call the presenter to display it"""
-        checked: bool = False
-        if item.checkState() == QtCore.Qt.CheckState.Checked:
-            checked = True
-
-        self.__presenter.onPlanetChecked(item.row(), checked)
+        self.__presenter.onPlanetChecked(item.row(), self.__isItemChecked(item))
 
     def __onFactionTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a faction table widget item is clicked, check it and call the presenter to add it to the campaign"""
-        checked: bool = False
-        if item.checkState() == QtCore.Qt.CheckState.Checked:
-            checked = True
-
-        self.__presenter.onFactionChecked(item.row(), checked)
+        self.__presenter.onFactionChecked(item.row(), self.__isItemChecked(item))
 
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()
@@ -523,17 +511,11 @@ class QtMainWindow(MainWindow):
 
     def __onTradeRouteTableWidgetItemClicked(self, item: QTableWidgetItem) -> None:
         """If a trade route table widget item is clicked, check it and call the presenter to display it"""
-        checked: bool = False
-        if item.checkState() == QtCore.Qt.CheckState.Checked:
-            checked = True
-
-        self.__presenter.onTradeRouteChecked(item.row(), checked)
+        self.__presenter.onTradeRouteChecked(item.row(), self.__isItemChecked(item))
 
     def __newCampaign(self) -> None:
         """Helper function to launch the new campaign dialog"""
-        if self.__presenter is not None:
-            # Passes the currently selected campaign text info to the dialog
-            self.__presenter.campaignPropertiesCommand.execute()
+        self.__executeCampaignPropertiesCommand()
 
     def __openFolder(self) -> None:
         """Set mod folder dialog"""
@@ -576,29 +558,15 @@ class QtMainWindow(MainWindow):
         self, table: QTableWidget, checked: bool
     ) -> None:
         """Cycles through a table and checks all the planet entries, then presents them"""
-        if checked:
-            self.__checkAllTable(table)
-
-            self.__presenter.allPlanetsChecked(True)
-
-        else:
-            self.__uncheckAllTable(table)
-
-            self.__presenter.allPlanetsChecked(False)
+        self.__setAllRowsChecked(table, checked)
+        self.__presenter.allPlanetsChecked(checked)
 
     def __selectAllTradeRoutesButtonClicked(
         self, table: QTableWidget, checked: bool
     ) -> None:
         """Cycles through a table and checks all the trade route entries, then presents them"""
-        if checked:
-            self.__checkAllTable(table)
-
-            self.__presenter.allTradeRoutesChecked(True)
-
-        else:
-            self.__uncheckAllTable(table)
-
-            self.__presenter.allTradeRoutesChecked(False)
+        self.__setAllRowsChecked(table, checked)
+        self.__presenter.allTradeRoutesChecked(checked)
 
     def __onCampaignSelected(self, index: int) -> None:
         """Presents a selected campaign"""
@@ -631,6 +599,17 @@ class QtMainWindow(MainWindow):
 
     def __campaignPropertiesButtonClicked(self) -> None:
         """Helper function to launch the campaign properties dialog"""
+        self.__executeCampaignPropertiesCommand()
+
+    def __executeCampaignPropertiesCommand(self) -> None:
         if self.__presenter is not None:
-            # Passes the currently selected campaign text info to the dialog
             self.__presenter.campaignPropertiesCommand.execute()
+
+    def __isItemChecked(self, item: QTableWidgetItem) -> bool:
+        return item.checkState() == QtCore.Qt.CheckState.Checked
+
+    def __setAllRowsChecked(self, table: QTableWidget, checked: bool) -> None:
+        if checked:
+            self.__checkAllTable(table)
+        else:
+            self.__uncheckAllTable(table)
