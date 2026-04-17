@@ -17,15 +17,15 @@ config: Config = Config()
 numArgs = len(sys.argv)
 
 if numArgs > 1:
-    path = sys.argv[1]
+    dataFolders = [sys.argv[1]]
 else:
-    path = config.dataPath
+    dataFolders = config.dataFolders
 
 app = QApplication([])
 
 repositoryCreator: RepositoryCreator = RepositoryCreator()
 repository = repositoryCreator.constructRepository(
-    path, config.startingForcesLibraryURL
+    dataFolders, config.startingForcesLibraryURL
 )
 
 dialogFactory = DialogFactory(repository)

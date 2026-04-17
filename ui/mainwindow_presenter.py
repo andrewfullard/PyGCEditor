@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Set, Dict
+import os
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlwriter import XMLWriter
 import pandas as pd
@@ -164,15 +165,16 @@ class MainWindowPresenter:
             )
             self.campaigns[i] = campaign
 
-    def onDataFolderChanged(self, folder: str) -> None:
-        """Updates the repository and refreshes the main window when a new data folder is selected"""
+    def onDataFolderChanged(self, modPath: str) -> None:
+        """Updates the repository and refreshes the main window when a new mod folder is selected"""
         self.__repository.emptyRepository()
-        print("Loading from folder " + folder)
+        print("Loading from folder " + modPath)
+        dataFolders = [os.path.join(modPath, "Data")]
+        for submod in self.__config.submods:
+            dataFolders.append(os.path.join(modPath, submod, "Data"))
         self.__repository = self.__repositoryCreator.constructRepository(
-            folder, self.__config.startingForcesLibraryURL
+            dataFolders, self.__config.startingForcesLibraryURL
         )
-        XMLStructure.dataFolder = folder
-
         self.__updateWidgets()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:

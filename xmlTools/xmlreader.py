@@ -88,27 +88,66 @@ class XMLReader:
 
         return fileList
 
-    def findPlanetsFiles(self, gameObjectFile: str) -> list():
+    def _findFileAcrossFolders(self, fileName: str, dataFolders: list):
+        """Returns the path to a file in the highest-priority data folder that contains it,
+        or None if not found in any folder. dataFolders is ordered lowest-to-highest priority."""
+        for folder in reversed(dataFolders):
+            path = os.path.join(folder, "XML", fileName)
+            if os.path.isfile(path):
+                return path
+        return None
+
+    def _collectMetaFileEntries(self, metaFileName: str, dataFolders: list) -> list:
+        """Collects all unique file entries from a named metafile across all data folders.
+        Lower-priority folders are scanned first so higher-priority entries are de-duplicated last."""
+        seen = set()
+        entries = []
+        for folder in dataFolders:
+            path = os.path.join(folder, "XML", metaFileName)
+            if os.path.isfile(path):
+                root = et.parse(path).getroot()
+                if self.isMetaFile(root):
+                    for entry in self.parseMetaFile(root):
+                        if entry not in seen:
+                            seen.add(entry)
+                            entries.append(entry)
+        return entries
+
+    def findPlanetsFiles(self, gameObjectFile: str, dataFolders: list = None) -> list():
         """Searches GameObjectFiles for all XML files with the Planet tag.
             Returns a list of their XML roots"""
-        metaRoot = et.parse(gameObjectFile).getroot()
-        if self.isMetaFile(metaRoot):
-            fileList = self.parseMetaFile(metaRoot)
+        if dataFolders:
+            metaFileName = os.path.basename(gameObjectFile)
+            fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
             planetsFiles = []
-
             for file in fileList:
-                if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                filePath = self._findFileAcrossFolders(file, dataFolders)
+                if filePath is None:
                     print(file + " not found. Continuing")
                     continue
-
-                fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
+                fileRoot = et.parse(filePath)
                 if self.hasTag(fileRoot, "Planet"):
                     planetsFiles.append(fileRoot.getroot())
-
             return planetsFiles
-
         else:
-            print("Not a meta file! findPlanetsFiles")
+            metaRoot = et.parse(gameObjectFile).getroot()
+            if self.isMetaFile(metaRoot):
+                fileList = self.parseMetaFile(metaRoot)
+                planetsFiles = []
+
+                for file in fileList:
+                    if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                        print(file + " not found. Continuing")
+                        continue
+
+                    fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
+                    if self.hasTag(fileRoot, "Planet"):
+                        planetsFiles.append(fileRoot.getroot())
+
+                return planetsFiles
+
+            else:
+                print("Not a meta file! findPlanetsFiles")
 
     def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list():
         """Searches GameObjectFiles for all XML files with the Planet tag.
@@ -132,27 +171,55 @@ class XMLReader:
         else:
             print("Not a meta file! findPlanetsFiles")
 
-    def findMetaFileRefs(self, metaFile: str) -> list():
+    def findMetaFileRefs(self, metaFile: str, dataFolders: list = None) -> list():
         """Searches a metafile and returns a list of XML roots that are referenced in the metafile"""
-        metaRoot = et.parse(metaFile).getroot()
-        if self.isMetaFile(metaRoot):
-            fileList = self.parseMetaFile(metaRoot)
+        if dataFolders:
+            metaFileName = os.path.basename(metaFile)
+            fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
             metaFileRefs = []
-
             for file in fileList:
-                if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                filePath = self._findFileAcrossFolders(file, dataFolders)
+                if filePath is None:
                     print(file + " not found. Continuing")
                     continue
-
-                fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
+                fileRoot = et.parse(filePath)
                 metaFileRefs.append(fileRoot.getroot())
-
             return metaFileRefs
-
         else:
-            print("Not a meta file! findMetaFileRefs")
+            metaRoot = et.parse(metaFile).getroot()
+            if self.isMetaFile(metaRoot):
+                fileList = self.parseMetaFile(metaRoot)
+                metaFileRefs = []
 
-    """ EAW specific XML parsing """
+                for file in fileList:
+                    if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
+                        print(file + " not found. Continuing")
+                        continue
+
+                    fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
+                    metaFileRefs.append(fileRoot.getroot())
+
+                return metaFileRefs
+
+            else:
+                print("Not a meta file! findMetaFileRefs")
+
+    def findMetaFileRefsWithPaths(self, metaFile: str, dataFolders: list) -> list:
+        """Like findMetaFileRefs but returns [(filePath, root), ...] so callers can
+        track the source file for each root."""
+        metaFileName = os.path.basename(metaFile)
+        fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
+        result = []
+        for file in fileList:
+            filePath = self._findFileAcrossFolders(file, dataFolders)
+            if filePath is None:
+                print(file + " not found. Continuing")
+                continue
+            fileRoot = et.parse(filePath)
+            result.append((filePath, fileRoot.getroot()))
+        return result
+
+
 
     def stringToBool(self, string):
         return string.lower() in ("yes", "true")
