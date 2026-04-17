@@ -37,79 +37,52 @@ class RepositoryCreator:
     def addPlanetsFromXML(self, planetRoots) -> None:
         """Takes a list of Planet GameObject XML roots and adds
         them to the repository with x and y positions"""
+        shipyard_list = {
+            "TEXT_PLANET_LIGHT": "Light Frigate",
+            "TEXT_PLANET_HEAVY": "Heavy Frigate",
+            "TEXT_PLANET_CAPITAL": "Capital",
+            "TEXT_PLANET_DREAD": "Dreadnaught",
+        }
+
         for planetRoot in planetRoots:
-            planetNames = self.__xml.getNamesFromXML(planetRoot)
+            for record in tqdm(self.__xml.getPlanetInfo(planetRoot)):
+                name = record["name"]
+                coordinates = record["coordinates"]
 
-            for name in tqdm(planetNames):
-                newplanet = Planet(name)
-                newplanet.variantOf = self.__xml.getVariantOfValue(name, planetRoot)
-                coordinates = self.__xml.getLocation(name, planetRoot)
-                if coordinates == None:
-                    newplanet.x, newplanet.y = None, None
-                else:
-                    newplanet.x, newplanet.y = coordinates
-
-                # TODO better way than this hack to convert to int
-                newplanet.starbaseLevel = int(
-                    float(
-                        self.__xml.getObjectProperty(
-                            name, planetRoot, ".//Max_Space_Base"
-                        )
-                    )
-                )
-
-                shipyard_list = {
-                    "TEXT_PLANET_LIGHT": "Light Frigate",
-                    "TEXT_PLANET_HEAVY": "Heavy Frigate",
-                    "TEXT_PLANET_CAPITAL": "Capital",
-                    "TEXT_PLANET_DREAD": "Dreadnaught",
-                }
-                shipyard = self.__xml.getObjectProperty(
-                    name, planetRoot, ".//Planet_Ability_Name"
-                )
-                newplanet.shipyardLevel = shipyard_list.get(
-                    shipyard, "No Shipyard Defined"
-                )
-
-                structure = self.__xml.getObjectProperty(
-                    name, planetRoot, ".//Encyclopedia_Weather_Name"
-                )
-                if structure and structure.startswith("TEXT_RESOURCE_SUPPORTS_"):
-                    coded_name = structure.replace("TEXT_RESOURCE_SUPPORTS_", "")
-                    newplanet.SupportsStructure = coded_name
-                else:
-                    newplanet.SupportsStructure = "None"
-
-                newplanet.spaceStructureSlots = int(
-                    float(
-                        self.__xml.getObjectProperty(
-                            name, planetRoot, ".//Special_Structures_Space"
-                        )
-                    )
-                )
-                newplanet.groundStructureSlots = int(
-                    float(
-                        self.__xml.getObjectProperty(
-                            name, planetRoot, ".//Special_Structures_Land"
-                        )
-                    )
-                )
-
-                income_value = self.__xml.getObjectProperty(
-                    name, planetRoot, ".//Planet_Credit_Value"
-                )
-                if income_value:
-                    newplanet.income = int(float(income_value))
-
-                if coordinates == None:
+                if coordinates is None:
                     print(
                         "Planet "
                         + name
                         + " not added to repository, missing coordinates"
                     )
                     continue
+
+                newplanet = Planet(name)
+                newplanet.variantOf = record["variant_of"]
+                newplanet.x, newplanet.y = coordinates
+
+                # TODO better way than this hack to convert to int
+                newplanet.starbaseLevel = int(float(record["starbase_level"]))
+                newplanet.shipyardLevel = shipyard_list.get(
+                    record["shipyard"], "No Shipyard Defined"
+                )
+
+                structure = record["structure"]
+                if structure and structure.startswith("TEXT_RESOURCE_SUPPORTS_"):
+                    newplanet.SupportsStructure = structure.replace(
+                        "TEXT_RESOURCE_SUPPORTS_", ""
+                    )
                 else:
-                    self.repository.addPlanet(newplanet)
+                    newplanet.SupportsStructure = "None"
+
+                newplanet.spaceStructureSlots = int(float(record["space_slots"]))
+                newplanet.groundStructureSlots = int(float(record["ground_slots"]))
+
+                income_value = record["income"]
+                if income_value:
+                    newplanet.income = int(float(income_value))
+
+                self.repository.addPlanet(newplanet)
 
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
         """Takes a list of Trade Route GameObject XML roots and adds

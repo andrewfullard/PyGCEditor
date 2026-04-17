@@ -291,6 +291,51 @@ class XMLReader:
 
         return namePowerList
 
+    def getPlanetInfo(self, XMLRoot) -> list:
+        """Iterates XMLRoot once, extracting all planet fields per element.
+        Returns a list of dicts with keys: name, variant_of, coordinates,
+        starbase_level, shipyard, structure, space_slots, ground_slots, income."""
+        planets = []
+
+        for element in XMLRoot:
+            name = element.get("Name")
+            if name is None:
+                continue
+
+            variant_el = element.find(".//Variant_Of_Existing_Type")
+            variant_of = variant_el.text if variant_el is not None else ""
+
+            pos_el = element.find(".//Galactic_Position")
+            if pos_el is not None and pos_el.text is not None:
+                parts = commaSepListParser(pos_el.text)
+                if len(parts) == 3:
+                    coordinates = (float(parts[0]), float(parts[1]))
+                else:
+                    print("Planet " + name + " has no proper XYZ location set!")
+                    coordinates = None
+            else:
+                coordinates = None
+
+            def _prop(tag):
+                el = element.find(tag)
+                if el is None:
+                    return "0"
+                return el.text if el.text is not None else "0"
+
+            planets.append({
+                "name": name,
+                "variant_of": variant_of,
+                "coordinates": coordinates,
+                "starbase_level": _prop(".//Max_Space_Base"),
+                "shipyard": _prop(".//Planet_Ability_Name"),
+                "structure": _prop(".//Encyclopedia_Weather_Name"),
+                "space_slots": _prop(".//Special_Structures_Space"),
+                "ground_slots": _prop(".//Special_Structures_Land"),
+                "income": _prop(".//Planet_Credit_Value"),
+            })
+
+        return planets
+
     def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> tuple[Planet, Planet]:
         """Gets and validates start/end planets for a trade route by name."""
         for element in tradeRouteRoot.iter():
@@ -367,3 +412,5 @@ class XMLReader:
                 for child in element.iter("Variant_Of_Existing_Type"):
                     return child.text
         return ""
+
+
