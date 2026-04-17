@@ -146,6 +146,66 @@ def test_find_meta_file_refs_and_get_start_end(reader, xml_workspace):
     assert end.name == "Kuat"
 
 
+def test_get_start_end_raises_when_route_missing(reader, xml_workspace):
+    routes_file = xml_workspace(
+        "Routes.XML",
+        """<?xml version='1.0'?>
+<TradeRoutes>
+    <TradeRoute Name='HydianWay'>
+        <Point_A>Alderaan</Point_A>
+        <Point_B>Kuat</Point_B>
+    </TradeRoute>
+</TradeRoutes>
+""",
+    )
+
+    route_root = et.parse(routes_file).getroot()
+    p1 = Planet("Alderaan")
+    p2 = Planet("Kuat")
+
+    with pytest.raises(ValueError, match="not found"):
+        reader.getStartEnd("CorellianRun", {p1, p2}, route_root)
+
+
+def test_get_start_end_raises_when_point_missing(reader, xml_workspace):
+    routes_file = xml_workspace(
+        "Routes.XML",
+        """<?xml version='1.0'?>
+<TradeRoutes>
+    <TradeRoute Name='CorellianRun'>
+        <Point_A>Alderaan</Point_A>
+    </TradeRoute>
+</TradeRoutes>
+""",
+    )
+
+    route_root = et.parse(routes_file).getroot()
+    p1 = Planet("Alderaan")
+
+    with pytest.raises(ValueError, match="missing Point_B"):
+        reader.getStartEnd("CorellianRun", {p1}, route_root)
+
+
+def test_get_start_end_raises_when_planet_not_found(reader, xml_workspace):
+    routes_file = xml_workspace(
+        "Routes.XML",
+        """<?xml version='1.0'?>
+<TradeRoutes>
+    <TradeRoute Name='CorellianRun'>
+        <Point_A>Alderaan</Point_A>
+        <Point_B>Kuat</Point_B>
+    </TradeRoute>
+</TradeRoutes>
+""",
+    )
+
+    route_root = et.parse(routes_file).getroot()
+    p1 = Planet("Alderaan")
+
+    with pytest.raises(ValueError, match="unknown end planet"):
+        reader.getStartEnd("CorellianRun", {p1}, route_root)
+
+
 def test_get_location_returns_xy(reader, xml_workspace):
     planet_file = xml_workspace(
         "Planets.XML",

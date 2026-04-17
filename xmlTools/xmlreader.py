@@ -292,17 +292,41 @@ class XMLReader:
         return namePowerList
 
     def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> tuple[Planet, Planet]:
-        """Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end"""
+        """Gets and validates start/end planets for a trade route by name."""
         for element in tradeRouteRoot.iter():
-            if str(element.get("Name")).lower() == name.lower():
-                traderoute_name = element.get("Name")
-                print(f"Loading traderoute: {traderoute_name}")
-                start_planet = getObject(element.find("Point_A").text, planetList)
-                end_planet = getObject(element.find("Point_B").text, planetList)
+            route_name = element.get("Name")
+            if route_name is None or route_name.lower() != name.lower():
+                continue
 
-                return start_planet, end_planet
+            print(f"Loading traderoute: {route_name}")
 
-        print("TradeRoute " + name + " not found! getStartEnd")
+            point_a = element.find("Point_A")
+            point_b = element.find("Point_B")
+
+            if point_a is None or point_a.text is None or not point_a.text.strip():
+                raise ValueError(f"TradeRoute {name} is missing Point_A")
+
+            if point_b is None or point_b.text is None or not point_b.text.strip():
+                raise ValueError(f"TradeRoute {name} is missing Point_B")
+
+            start_name = point_a.text.strip()
+            end_name = point_b.text.strip()
+
+            start_planet = getObject(start_name, planetList)
+            if start_planet is None:
+                raise ValueError(
+                    f"TradeRoute {name} references unknown start planet '{start_name}'"
+                )
+
+            end_planet = getObject(end_name, planetList)
+            if end_planet is None:
+                raise ValueError(
+                    f"TradeRoute {name} references unknown end planet '{end_name}'"
+                )
+
+            return start_planet, end_planet
+
+        raise ValueError(f"TradeRoute {name} not found! getStartEnd")
 
     def getLocation(self, name: str, XMLRoot) -> tuple[float, float]:
         """Gets the galactic position tag value for an object of name in root XMLRoot and returns x, y"""

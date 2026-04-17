@@ -119,9 +119,13 @@ class RepositoryCreator:
 
             for name in tqdm(tradeRouteNames):
                 newroute = TradeRoute(name)
-                newroute.start, newroute.end = self.__xml.getStartEnd(
-                    name, self.repository.planets, tradeRouteRoot
-                )
+                try:
+                    newroute.start, newroute.end = self.__xml.getStartEnd(
+                        name, self.repository.planets, tradeRouteRoot
+                    )
+                except ValueError as err:
+                    print(f"Skipping malformed trade route '{name}': {err}")
+                    continue
                 self.repository.addTradeRoute(newroute)
 
     def addFactionsFromXML(self, factionRoots) -> None:
