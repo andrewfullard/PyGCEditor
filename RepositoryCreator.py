@@ -316,44 +316,47 @@ class RepositoryCreator:
         return startingForcesLibrary
 
     def constructRepository(
-        self, folder: str, startingForcesLibraryURL: str
+        self, dataFolders, startingForcesLibraryURL: str
     ) -> GameObjectRepository:
-        """Reads a mod Data folder and searches the XML metafiles within
+        """Reads one or more mod Data folders and searches the XML metafiles within.
+        dataFolders is an ordered list [base, submod1, submod2, ...] where later entries
+        have higher priority and override earlier ones.
         Creates a repository with planets, trade routes and campaigns"""
-        self.__folder = folder
+        if isinstance(dataFolders, str):
+            dataFolders = [dataFolders]
+
+        self.__folder = dataFolders[0]
         self.__startingForcesLibraryURL = startingForcesLibraryURL
 
-        XMLStructure.dataFolder = self.__folder
+        XMLStructure.dataFolder = dataFolders[0]
+        XMLStructure.dataFolders = dataFolders
 
-        gameObjectFile = self.__folder + "/XML/GameObjectFiles.XML"
-        campaignFile = self.__folder + "/XML/CampaignFiles.XML"
-        tradeRouteFile = self.__folder + "/XML/TradeRouteFiles.XML"
-        factionFile = self.__folder + "/XML/FactionFiles.XML"
+        gameObjectFile = dataFolders[0] + "/XML/GameObjectFiles.XML"
+        campaignFile = dataFolders[0] + "/XML/CampaignFiles.XML"
+        tradeRouteFile = dataFolders[0] + "/XML/TradeRouteFiles.XML"
+        factionFile = dataFolders[0] + "/XML/FactionFiles.XML"
 
-        planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
-        tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
-        factionRoots = self.__xml.findMetaFileRefs(factionFile)
+        def metaFileExists(name):
+            return any(os.path.exists(os.path.join(f, "XML", name)) for f in dataFolders)
 
-        campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
-
-        if os.path.exists(gameObjectFile):
+        if metaFileExists("GameObjectFiles.XML"):
             print("\nLoading Planets")
-            planetRoots = self.__xml.findPlanetsFiles(gameObjectFile)
+            planetRoots = self.__xml.findPlanetsFiles(gameObjectFile, dataFolders)
             self.addPlanetsFromXML(planetRoots)
 
-        if os.path.exists(tradeRouteFile):
+        if metaFileExists("TradeRouteFiles.XML"):
             print("\nLoading Trade Routes")
-            tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile)
+            tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile, dataFolders)
             self.addTradeRoutesFromXML(tradeRouteRoots)
 
-        if os.path.exists(factionFile):
+        if metaFileExists("FactionFiles.XML"):
             print("\nLoading Factions")
-            factionRoots = self.__xml.findMetaFileRefs(factionFile)
+            factionRoots = self.__xml.findMetaFileRefs(factionFile, dataFolders)
             self.addFactionsFromXML(factionRoots)
 
-        if os.path.exists(campaignFile):
+        if metaFileExists("CampaignFiles.XML"):
             print("\nLoading Campigns")
-            campaignRootList = self.__xml.findMetaFileRefs(campaignFile)
+            campaignRootList = self.__xml.findMetaFileRefs(campaignFile, dataFolders)
             campaignNames, campaignRoots = self.getNamesRootsFromXML(
                 campaignRootList, "Campaign"
             )

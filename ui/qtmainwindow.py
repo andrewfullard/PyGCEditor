@@ -499,9 +499,9 @@ class QtMainWindow(MainWindow):
             self.__presenter.campaignPropertiesCommand.execute()
 
     def __openFolder(self) -> None:
-        """Set data folder dialog"""
+        """Set mod folder dialog"""
         folderName = QFileDialog.getExistingDirectory(
-            self.__widget, "Select Data folder:", "",QFileDialog.Option.ShowDirsOnly
+            self.__widget, "Select Mod folder:", "",QFileDialog.Option.ShowDirsOnly
         )
         if folderName:
             self.__presenter.onDataFolderChanged(folderName)
