@@ -32,6 +32,12 @@ class DisplayHelpers:
 
         try:
             sf = self.campaigns[index].startingForces
+            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower()) & (sf.Era == era)]
+        except KeyError:
+            return self.__getNeutralFaction()
+        
+        try:
+            sf = self.campaigns[index].startingForces
             planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())]
         except KeyError:
             return self.__getNeutralFaction()
