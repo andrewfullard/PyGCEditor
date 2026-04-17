@@ -53,6 +53,10 @@ class QtGalacticPlot(QWidget):
         self.__groundStructureSlots = []
         self.__planetsScatter = None
         self.__tradeRouteTraceStart = None
+        self.__tradeRouteTrace = []
+        self.__tradeRouteLines = []
+        self.__tradeRouteConnections = []
+        self.__highlightedPlanetIndex = None
 
     def plotGalaxy(
         self,
@@ -90,9 +94,17 @@ class QtGalacticPlot(QWidget):
         )
         self.__annotate.set_visible(False)
         self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
+        self.__tradeRouteLines = []
+        self.__tradeRouteConnections = []
+        self.__highlightedPlanetIndex = None
 
         self.__planetNames = []
         self.__planetOwners = []
+        self.__starbaseLevel = []
+        self.__shipyardLevel = []
+        self.__SupportsStructure = []
+        self.__income = []
+        self.__groundStructureSlots = []
 
         x = []
         y = []
@@ -132,7 +144,11 @@ class QtGalacticPlot(QWidget):
             x2 = t.end.x
             y2 = t.end.y
             # plot each route (start, end)
-            self.__axes.plot([x1, x2], [y1, y2], "k-", alpha=0.4, zorder=1)
+            route_line = self.__axes.plot([x1, x2], [y1, y2], "k-", alpha=0.4, zorder=1)[
+                0
+            ]
+            self.__tradeRouteLines.append(route_line)
+            self.__tradeRouteConnections.append((t.start.name, t.end.name))
 
         # Create automatic connections between planets
         if autoPlanetConnectionDistance > 0:
@@ -191,7 +207,7 @@ class QtGalacticPlot(QWidget):
                 line.remove()
 
             """Add tracing lines when drawing Trade Routes"""
-            if not self.__tradeRouteTraceStart == None:
+            if self.__tradeRouteTraceStart is not None:
                 startpos = self.__planetsScatter.get_offsets()[
                     self.__tradeRouteTraceStart
                 ]
@@ -212,13 +228,49 @@ class QtGalacticPlot(QWidget):
                 contains = False
 
             if contains:
+                hovered_planet_index = ind["ind"][0]
+                if self.__highlightedPlanetIndex != hovered_planet_index:
+                    self.__highlight_connected_trade_routes(hovered_planet_index)
+                    self.__highlightedPlanetIndex = hovered_planet_index
                 self.__update_annotation(ind)
                 self.__annotate.set_visible(True)
             else:
+                if self.__highlightedPlanetIndex is not None:
+                    self.__reset_trade_route_highlight()
+                    self.__highlightedPlanetIndex = None
                 if visible:
                     self.__annotate.set_visible(False)
 
             self.__galacticPlotCanvas.draw_idle()
+        else:
+            if self.__highlightedPlanetIndex is not None:
+                self.__reset_trade_route_highlight()
+                self.__highlightedPlanetIndex = None
+                self.__galacticPlotCanvas.draw_idle()
+
+    def __reset_trade_route_highlight(self) -> None:
+        """Restore default styling for all trade routes."""
+        for line in self.__tradeRouteLines:
+            line.set_color("k")
+            line.set_alpha(0.4)
+            line.set_linewidth(1.0)
+            line.set_zorder(1)
+
+    def __highlight_connected_trade_routes(self, planet_index: int) -> None:
+        """Highlight routes connected to the hovered planet."""
+        if planet_index < 0 or planet_index >= len(self.__planetNames):
+            self.__reset_trade_route_highlight()
+            return
+
+        hovered_planet_name = self.__planetNames[planet_index]
+        for line, (start_name, end_name) in zip(
+            self.__tradeRouteLines, self.__tradeRouteConnections
+        ):
+            is_connected = hovered_planet_name == start_name or hovered_planet_name == end_name
+            line.set_color("gold" if is_connected else "k")
+            line.set_alpha(0.9 if is_connected else 0.1)
+            line.set_linewidth(2.0 if is_connected else 1.0)
+            line.set_zorder(5 if is_connected else 1)
 
     def __update_annotation(self, ind) -> None:
         """Updates annotation parameters"""
