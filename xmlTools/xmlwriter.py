@@ -86,36 +86,42 @@ class XMLWriter:
             self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
             self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
 
-            # Rev
-            # story_paths = {
-            #     "Rebel": r"Conquests\Progressive\Story_Plots_Sith.xml",
-            #     "Empire": r"Conquests\Progressive\Story_Plots_Republic.xml",
-            #     "Underworld": r"Conquests\Progressive\Story_Plots_Container.xml"
-            #} 
-
-            # FotR
-            # story_paths = {
-            #     "Rebel": r"Conquests\Progressive\Story_Plots_CloneWars_CIS.xml",
-            #     "Empire": r"Conquests\Progressive\Story_Plots_CloneWars_Republic.xml",
-            #     "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
-            #     "Underworld": r"Conquests\Progressive\Story_Plots_CloneWars_Container.xml"
-            # }
-
-            # TR
-            story_paths = {
-                "Rebel": r"Conquests\Progressive\Story_Plots_FullProgressive_Rebel.xml",
-                "Empire": r"Conquests\Progressive\Story_Plots_FullProgressive_Empire.xml",
-                "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
-                "Underworld": r"Conquests\Progressive\Story_Plots_FullProgressive_Container.xml",
-                "EmpireoftheHand": r"Conquests\Story_Plots_Generic_EmpireoftheHand.xml",
-                "Greater_Maldrood": r"Conquests\Story_Plots_Generic_Greater_Maldrood.xml",
-                "Zsinj_Empire": r"Conquests\Story_Plots_Generic_Zsinj_Empire.xml",
-                "Corporate_Sector": r"Conquests\Story_Plots_Generic_Corporate_Sector.xml",
-                "Eriadu_Authority": r"Conquests\Story_Plots_Generic_Eriadu_Authority.xml",
-                "Hapes_Consortium": r"Conquests\Story_Plots_Generic_Hapes_Consortium.xml",
-                "Pentastar": r"Conquests\Story_Plots_Generic_Pentastar.xml",
-                "Imperial_Proteus": r"Conquests\Story_Plots_Generic_Imperial_Proteus.xml"
+            # Select story_paths based on the highest-priority active submod.
+            # Add new entries here as additional submods are supported.
+            story_paths_by_submod = {
+                "TR": {
+                    "Rebel": r"Conquests\Progressive\Story_Plots_FullProgressive_Rebel.xml",
+                    "Empire": r"Conquests\Progressive\Story_Plots_FullProgressive_Empire.xml",
+                    "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
+                    "Underworld": r"Conquests\Progressive\Story_Plots_FullProgressive_Container.xml",
+                    "EmpireoftheHand": r"Conquests\Story_Plots_Generic_EmpireoftheHand.xml",
+                    "Greater_Maldrood": r"Conquests\Story_Plots_Generic_Greater_Maldrood.xml",
+                    "Zsinj_Empire": r"Conquests\Story_Plots_Generic_Zsinj_Empire.xml",
+                    "Corporate_Sector": r"Conquests\Story_Plots_Generic_Corporate_Sector.xml",
+                    "Eriadu_Authority": r"Conquests\Story_Plots_Generic_Eriadu_Authority.xml",
+                    "Hapes_Consortium": r"Conquests\Story_Plots_Generic_Hapes_Consortium.xml",
+                    "Pentastar": r"Conquests\Story_Plots_Generic_Pentastar.xml",
+                    "Imperial_Proteus": r"Conquests\Story_Plots_Generic_Imperial_Proteus.xml",
+                },
+                "FotR": {
+                    "Rebel": r"Conquests\Progressive\Story_Plots_CloneWars_CIS.xml",
+                    "Empire": r"Conquests\Progressive\Story_Plots_CloneWars_Republic.xml",
+                    "Hutt_Cartels": r"Conquests\Story_Plots_Generic_Hutt_Cartels.xml",
+                    "Underworld": r"Conquests\Progressive\Story_Plots_CloneWars_Container.xml",
+                },
+                "Rev": {
+                    "Rebel": r"Conquests\Progressive\Story_Plots_Sith.xml",
+                    "Empire": r"Conquests\Progressive\Story_Plots_Republic.xml",
+                    "Underworld": r"Conquests\Progressive\Story_Plots_Container.xml",
+                },
             }
+
+            # Use the submod that has a known story_paths entry,
+            # falling back to an empty dict if none match.
+            story_paths = {}
+            submod = XMLStructure.submods[-1]
+            if submod in story_paths_by_submod:
+                story_paths = story_paths_by_submod[submod]
 
             story_text = ",\n".join(f"{faction}, {path}" for faction, path in story_paths.items())
 

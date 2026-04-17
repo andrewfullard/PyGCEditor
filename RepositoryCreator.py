@@ -331,6 +331,11 @@ class RepositoryCreator:
 
         XMLStructure.dataFolder = dataFolders[0]
         XMLStructure.dataFolders = dataFolders
+        # Derive submod names from folders beyond the base: ModPath/SubmodName/Data
+        XMLStructure.submods = [
+            os.path.basename(os.path.dirname(f))
+            for f in dataFolders[1:]
+        ]
 
         gameObjectFile = dataFolders[0] + "/XML/GameObjectFiles.XML"
         campaignFile = dataFolders[0] + "/XML/CampaignFiles.XML"
