@@ -381,7 +381,7 @@ class QtMainWindow(MainWindow):
                 for column in range(self.__planetListWidget.columnCount()):
                     if re.match(
                         "(.+)?"
-                        + re.sub("\s", "_", self.__planetSearch.text())
+                        + re.sub(r"\s", "_", self.__planetSearch.text())
                         + "(.+)?",
                         self.__planetListWidget.item(row, column).text(),
                         re.IGNORECASE,
