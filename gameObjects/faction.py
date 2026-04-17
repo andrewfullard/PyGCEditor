@@ -1,16 +1,19 @@
-'''Faction class definition'''
+"""Faction class definition"""
+
 from gameObjects.planet import Planet
 from gameObjects.aiplayer import AIPlayer
 
+
 class Faction:
-    '''Factions have a name, capital planet, AI, and color'''
+    """Factions have a name, capital planet, AI, and color"""
+
     def __init__(self, name: str):
         self.__name: str = name
         self.__capital: Planet = None
         self.__aiplayer: AIPlayer = None
         self.__color: list = [0, 0, 0, 0]
         self.__playable: bool = True
-        #self.__story: str = story 
+        # self.__story: str = story
 
     @property
     def name(self) -> str:

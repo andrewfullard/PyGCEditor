@@ -1,5 +1,12 @@
-#from PyQt6 import QtCore
-from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit
+# from PyQt6 import QtCore
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QVBoxLayout,
+    QFormLayout,
+    QPushButton,
+    QLineEdit,
+)
 
 from gameObjects.planet import Planet
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -7,8 +14,10 @@ from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
 from ui.qtautocomplete import AutoCompleter
 from ui.dialogs import Dialog, DialogResult
 
+
 class PlanetPositionChanger(Dialog):
-    '''Class for a "change planet position" dialog box'''
+    """Class for a "change planet position" dialog box"""
+
     def __init__(self, presenter: MainWindowPresenter, planet_name, old_x, old_y):
         self.__presenter = presenter
         self.__planet_name = planet_name
@@ -25,8 +34,8 @@ class PlanetPositionChanger(Dialog):
         self.__inputY: QLineEdit = QLineEdit(self.__dialog)
         self.__inputY.setText(str(self.__old_y))
 
-        #self.__inputX.textChanged.connect(self.__autoName)
-        #self.__inputY.textChanged.connect(self.__autoName)
+        # self.__inputX.textChanged.connect(self.__autoName)
+        # self.__inputY.textChanged.connect(self.__autoName)
 
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -53,18 +62,17 @@ class PlanetPositionChanger(Dialog):
         self.__x = None
         self.__y = None
 
-
     def show(self) -> DialogResult:
-        '''Display dialog non-modally'''
+        """Display dialog non-modally"""
         self.__dialog.exec()
         return self.__result
 
     def getNewCoordinates(self):
-        '''Returns the new coordinates'''
+        """Returns the new coordinates"""
         return self.__x, self.__y
 
     def __okayClicked(self) -> None:
-        '''Okay button handler. Performs minor error checking'''
+        """Okay button handler. Performs minor error checking"""
         try:
             self.__x = float(self.__inputX.text())
             self.__y = float(self.__inputY.text())
@@ -77,5 +85,5 @@ class PlanetPositionChanger(Dialog):
         self.__dialog.close()
 
     def __cancelClicked(self) -> None:
-        '''Cancel button handler. Closes dialog box'''
+        """Cancel button handler. Closes dialog box"""
         self.__dialog.close()

@@ -5,6 +5,7 @@ from xmlTools.xmlstructure import XMLStructure
 
 from util import getObject, commaSepListParser, commaReplaceInList
 
+
 # incomplete example of writing XML files to disk
 class XMLWriter:
     """Provides XML writing functions"""
@@ -27,7 +28,9 @@ class XMLWriter:
 
         filtered_starting_forces = campaign.startingForces[era_limiter]
 
-        for playableFaction in sorted(campaign.playableFactions, key=lambda faction: faction.name):
+        for playableFaction in sorted(
+            campaign.playableFactions, key=lambda faction: faction.name
+        ):
             campaignElement = et.SubElement(self.root, "Campaign")
 
             campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
@@ -39,9 +42,13 @@ class XMLWriter:
             self.subElementText(campaignElement, "Show_Completed_Tab", "True")
 
             self.subElementText(campaignElement, "Text_ID", campaign.textID)
-            self.subElementText(campaignElement, "Description_Text", campaign.descriptionText)
+            self.subElementText(
+                campaignElement, "Description_Text", campaign.descriptionText
+            )
             self.subElementText(campaignElement, "Era_Start", campaign.eraStart)
-            self.subElementText(campaignElement, "Use_Default_Forces", str(campaign.useDefaultForces))
+            self.subElementText(
+                campaignElement, "Use_Default_Forces", str(campaign.useDefaultForces)
+            )
 
             self.subElementText(campaignElement, "Camera_Shift_X", "0.0")
             self.subElementText(campaignElement, "Camera_Shift_Y", "0.0")
@@ -50,16 +57,26 @@ class XMLWriter:
             self.subElementText(campaignElement, "Locations", planets)
             self.subElementText(campaignElement, "Trade_Routes", tradeRoutes)
 
-            self.subElementText(campaignElement, "Starting_Active_Player", playableFaction.name)
+            self.subElementText(
+                campaignElement, "Starting_Active_Player", playableFaction.name
+            )
 
             for faction in sorted(factions, key=lambda faction: faction.name):
-                if faction == playableFaction: 
-                    self.subElementText(campaignElement, "AI_Player_Control", faction.name +", SandboxHuman")
+                if faction == playableFaction:
+                    self.subElementText(
+                        campaignElement,
+                        "AI_Player_Control",
+                        faction.name + ", SandboxHuman",
+                    )
                 else:
                     # Right now the players don't import properly
                     if faction.name.upper() != "NEUTRAL":
-                        self.subElementText(campaignElement, "AI_Player_Control", faction.name + ", None")
-            
+                        self.subElementText(
+                            campaignElement,
+                            "AI_Player_Control",
+                            faction.name + ", None",
+                        )
+
             # FotR
             # Galactic_Hints_Table = {
             #     "Hutt_Cartels": r"HuttGalacticHints"
@@ -72,19 +89,31 @@ class XMLWriter:
                 "Hapes_Consortium": r"HapesGalacticHints",
                 "Hutt_Cartels": r"HuttGalacticHints",
                 "Pentastar": r"PentastarGalacticHints",
-                "Zsinj_Empire": r"ZsinjGalacticHints"
+                "Zsinj_Empire": r"ZsinjGalacticHints",
             }
 
             for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.name.upper() != "NEUTRAL":
                     if faction.name in Galactic_Hints_Table:
-                        Galactic_Hint = f"{faction.name}, {Galactic_Hints_Table[faction.name]}"
+                        Galactic_Hint = (
+                            f"{faction.name}, {Galactic_Hints_Table[faction.name]}"
+                        )
                     else:
                         Galactic_Hint = f"{faction.name}, DefaultGalacticHints"
-                    self.subElementText(campaignElement, "Markup_Filename", Galactic_Hint)
+                    self.subElementText(
+                        campaignElement, "Markup_Filename", Galactic_Hint
+                    )
 
-            self.subElementText(campaignElement, "Human_Victory_Conditions", "Galactic_All_Planets_Controlled")
-            self.subElementText(campaignElement, "AI_Victory_Conditions", "Galactic_All_Planets_Controlled")
+            self.subElementText(
+                campaignElement,
+                "Human_Victory_Conditions",
+                "Galactic_All_Planets_Controlled",
+            )
+            self.subElementText(
+                campaignElement,
+                "AI_Victory_Conditions",
+                "Galactic_All_Planets_Controlled",
+            )
 
             # Select story_paths based on the highest-priority active submod.
             # Add new entries here as additional submods are supported.
@@ -123,24 +152,50 @@ class XMLWriter:
             if submod in story_paths_by_submod:
                 story_paths = story_paths_by_submod[submod]
 
-            story_text = ",\n".join(f"{faction}, {path}" for faction, path in story_paths.items())
+            story_text = ",\n".join(
+                f"{faction}, {path}" for faction, path in story_paths.items()
+            )
 
             self.subElementText(campaignElement, "Story_Name", story_text)
 
             for faction in sorted(factions, key=lambda faction: faction.name):
                 if faction.name.upper() != "NEUTRAL":
-                    self.subElementText(campaignElement, "Starting_Credits", faction.name +", 10000")
-                    self.subElementText(campaignElement, "Starting_Tech_Level", faction.name +", 1")
-                    self.subElementText(campaignElement, "Max_Tech_Level", faction.name +", 5")
+                    self.subElementText(
+                        campaignElement, "Starting_Credits", faction.name + ", 10000"
+                    )
+                    self.subElementText(
+                        campaignElement, "Starting_Tech_Level", faction.name + ", 1"
+                    )
+                    self.subElementText(
+                        campaignElement, "Max_Tech_Level", faction.name + ", 5"
+                    )
 
-            num2words = {'1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine', '10': 'Ten', '11': 'Eleven'}
+            num2words = {
+                "1": "One",
+                "2": "Two",
+                "3": "Three",
+                "4": "Four",
+                "5": "Five",
+                "6": "Six",
+                "7": "Seven",
+                "8": "Eight",
+                "9": "Nine",
+                "10": "Ten",
+                "11": "Eleven",
+            }
 
             dummy = False
             for index, row in filtered_starting_forces.iterrows():
                 i = 0
                 while i < row.Amount:
                     i = i + 1
-                    entry = str(row.Owner) + ", " + str(row.Planet) +", " + str(row.ObjectType)
+                    entry = (
+                        str(row.Owner)
+                        + ", "
+                        + str(row.Planet)
+                        + ", "
+                        + str(row.ObjectType)
+                    )
                     for planet in campaign.planets:
                         if planet.name.upper() == row.Planet.upper():
                             self.subElementText(
@@ -148,13 +203,20 @@ class XMLWriter:
                             )
                             if campaign.useDefaultForces == True:
                                 if dummy == False:
-                                    entry = str(row.Owner) + ", " + str(row.Planet) +", " + "Era_" + num2words[campaign.eraStart] + "_Dummy"
+                                    entry = (
+                                        str(row.Owner)
+                                        + ", "
+                                        + str(row.Planet)
+                                        + ", "
+                                        + "Era_"
+                                        + num2words[campaign.eraStart]
+                                        + "_Dummy"
+                                    )
                                     dummy = True
                                     self.subElementText(
                                         campaignElement, "Starting_Forces", entry
                                     )
 
-                    
         tree = et.ElementTree(self.root)
         self.writer(tree, outputName=outputName)
 
@@ -172,7 +234,7 @@ class XMLWriter:
 
         tradeRoutesRoot = et.Element("TradeRoutes")
         tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
-        
+
         for t in sorted(tradeRoutes, key=lambda t: t.name):
             route = et.SubElement(tradeRoutesRoot, "TradeRoute", Name=t.name)
 
@@ -206,7 +268,7 @@ class XMLWriter:
                         )
                         child.text = pos_text
                         break
-                except (KeyError):
+                except KeyError:
                     pass
             root.write(path + file, xml_declaration="1.0", pretty_print=True)
 
@@ -239,5 +301,6 @@ class XMLWriter:
     def writer(self, XMLRoot, outputName: str) -> None:
         """Writes XML file"""
         print("Writing campaign file", outputName)
-        XMLRoot.write(outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8")
-
+        XMLRoot.write(
+            outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8"
+        )

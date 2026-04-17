@@ -51,7 +51,7 @@ class XMLReader:
 
     def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
         """Returns the text from a given tag name in the given root"""
-        if XMLRoot.find(XMLTag)is not None:
+        if XMLRoot.find(XMLTag) is not None:
             if XMLRoot.find(XMLTag).text is not None:
                 return XMLRoot.find(XMLTag).text.strip()
         else:
@@ -74,7 +74,7 @@ class XMLReader:
 
     def isMetaFile(self, XMLRoot) -> bool:
         """Checks if the XML root is that of a metafile by checking the first element.
-            If the element tag is <File>, returns True. Otherwise False."""
+        If the element tag is <File>, returns True. Otherwise False."""
         if self.hasTag(XMLRoot, "File"):
             return True
         else:
@@ -115,7 +115,7 @@ class XMLReader:
 
     def findPlanetsFiles(self, gameObjectFile: str, dataFolders: list = None) -> list():
         """Searches GameObjectFiles for all XML files with the Planet tag.
-            Returns a list of their XML roots"""
+        Returns a list of their XML roots"""
         if dataFolders:
             metaFileName = os.path.basename(gameObjectFile)
             fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
@@ -151,7 +151,7 @@ class XMLReader:
 
     def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list():
         """Searches GameObjectFiles for all XML files with the Planet tag.
-            Returns a dictionary of file names and their XML roots"""
+        Returns a dictionary of file names and their XML roots"""
         metaRoot = et.parse(gameObjectFile).getroot()
         if self.isMetaFile(metaRoot):
             fileList = self.parseMetaFile(metaRoot)
@@ -218,8 +218,6 @@ class XMLReader:
             fileRoot = et.parse(filePath)
             result.append((filePath, fileRoot.getroot()))
         return result
-
-
 
     def stringToBool(self, string):
         return string.lower() in ("yes", "true")
@@ -297,8 +295,8 @@ class XMLReader:
         """Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end"""
         for element in tradeRouteRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
-                traderoute_name = element.get("Name") 
-                print(f"Loading traderoute: {traderoute_name}") 
+                traderoute_name = element.get("Name")
+                print(f"Loading traderoute: {traderoute_name}")
                 start_planet = getObject(element.find("Point_A").text, planetList)
                 end_planet = getObject(element.find("Point_B").text, planetList)
 

@@ -69,7 +69,9 @@ class QtMainWindow(MainWindow):
         self.__planetListWidget.itemClicked.connect(
             self.__onPlanetTableWidgetItemClicked
         )
-        self.__planetListWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.__planetListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu
+        )
         self.__planetListWidget.customContextMenuRequested.connect(
             self.__showPlanetContextMenu
         )
@@ -120,7 +122,7 @@ class QtMainWindow(MainWindow):
 
         self.__planetSearch: QLineEdit = QLineEdit()
 
-        self.__planetSearch.setPlaceholderText('Filter Planets')
+        self.__planetSearch.setPlaceholderText("Filter Planets")
 
         self.__planetSearch.textChanged.connect(self.filterPlanets)
 
@@ -164,7 +166,9 @@ class QtMainWindow(MainWindow):
         self.__saveAction: QAction = QAction("Save", self.__window)
         self.__saveAction.triggered.connect(self.__saveFile)
 
-        self.__importForcesSaveAction: QAction = QAction("Import Default Forces and Save", self.__window)
+        self.__importForcesSaveAction: QAction = QAction(
+            "Import Default Forces and Save", self.__window
+        )
         self.__importForcesSaveAction.triggered.connect(self.__importForcesSaveFile)
 
         self.__importStartingForcesAllSaveAction: QAction = QAction(
@@ -202,7 +206,7 @@ class QtMainWindow(MainWindow):
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
         self.__leftTabsWidget.addTab(self.__factions, "Factions")
-        
+
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
         self.__startingForces.setLayout(QVBoxLayout())
         self.__factions.setLayout(QVBoxLayout())
@@ -221,7 +225,9 @@ class QtMainWindow(MainWindow):
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignComboBox)
         self.__planetsTradeRoutes.layout().addWidget(self.__campaignPropertiesButton)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetCountLabel)
-        self.__planetsTradeRoutes.layout().addWidget(self.__planetMaxConnectionsCountLabel)
+        self.__planetsTradeRoutes.layout().addWidget(
+            self.__planetMaxConnectionsCountLabel
+        )
         self.__planetsTradeRoutes.layout().addWidget(self.__planetSearch)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetListWidget)
         self.__planetsTradeRoutes.layout().addWidget(self.__planetSelectButtons)
@@ -323,15 +329,24 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__planetListWidget)
 
         for p in planets:
-            self.__planetListWidget.item(p, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            self.__planetListWidget.item(p, 0).setCheckState(
+                QtCore.Qt.CheckState.Checked
+            )
 
     def selectSingleTradeRoute(self, index: int) -> bool:
         """Checks off trade route in the table for an index"""
-        if self.__tradeRouteListWidget.item(index, 0).checkState() == QtCore.Qt.CheckState.Checked:
-            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
+        if (
+            self.__tradeRouteListWidget.item(index, 0).checkState()
+            == QtCore.Qt.CheckState.Checked
+        ):
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(
+                QtCore.Qt.CheckState.Unchecked
+            )
             return False
         else:
-            self.__tradeRouteListWidget.item(index, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            self.__tradeRouteListWidget.item(index, 0).setCheckState(
+                QtCore.Qt.CheckState.Checked
+            )
             return True
 
     def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
@@ -339,14 +354,18 @@ class QtMainWindow(MainWindow):
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
         for t in tradeRoutes:
-            self.__tradeRouteListWidget.item(t, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            self.__tradeRouteListWidget.item(t, 0).setCheckState(
+                QtCore.Qt.CheckState.Checked
+            )
 
     def updateFactionSelection(self, factions: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
         self.__uncheckAllTable(self.__factionListWidget)
 
         for f in factions:
-            self.__factionListWidget.item(f, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+            self.__factionListWidget.item(f, 0).setCheckState(
+                QtCore.Qt.CheckState.Checked
+            )
 
     def clearPlanets(self) -> None:
         """Helper function to clear planet selections from the presenter"""
@@ -360,7 +379,13 @@ class QtMainWindow(MainWindow):
         else:
             for row in range(0, self.__planetListWidget.rowCount()):
                 for column in range(self.__planetListWidget.columnCount()):
-                    if re.match("(.+)?"+re.sub("\s", "_", self.__planetSearch.text())+"(.+)?", self.__planetListWidget.item(row, column).text(), re.IGNORECASE):
+                    if re.match(
+                        "(.+)?"
+                        + re.sub("\s", "_", self.__planetSearch.text())
+                        + "(.+)?",
+                        self.__planetListWidget.item(row, column).text(),
+                        re.IGNORECASE,
+                    ):
                         self.__planetListWidget.setRowHidden(row, False)
                         break
                     else:
@@ -379,7 +404,7 @@ class QtMainWindow(MainWindow):
         if len(tradeRoutes) == 0:
             self.__planetMaxConnectionsCountLabel.setText("Max Connections: 0")
             return
-        
+
         planets = {}
         for tradeRoute in tradeRoutes:
             if tradeRoute.start.name not in planets.keys():
@@ -403,7 +428,9 @@ class QtMainWindow(MainWindow):
         if maxNum != 0:
             maxConnections = maxPlanet + ", " + str(maxNum)
 
-        self.__planetMaxConnectionsCountLabel.setText("Max Connections: " + maxConnections)
+        self.__planetMaxConnectionsCountLabel.setText(
+            "Max Connections: " + maxConnections
+        )
 
     def updatePlanetInfoDisplay(
         self, planet: Planet, startingForces: pd.DataFrame, filter: str
@@ -443,8 +470,8 @@ class QtMainWindow(MainWindow):
         if not entry:
             return
         for key, value in entry.items():
-            text += str(key)+": "+str(value)+"\n"
-            
+            text += str(key) + ": " + str(value) + "\n"
+
         self.__totalFactionIncomeLabel.setText(text)
 
     def __addEntriesToTableWidget(
@@ -455,7 +482,10 @@ class QtMainWindow(MainWindow):
             rowCount = widget.rowCount()
             widget.setRowCount(rowCount + 1)
             item: QTableWidgetItem = QTableWidgetItem(entry)
-            item.setFlags(QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            item.setFlags(
+                QtCore.Qt.ItemFlag.ItemIsUserCheckable
+                | QtCore.Qt.ItemFlag.ItemIsEnabled
+            )
             item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             widget.setItem(rowCount, 0, item)
 
@@ -474,7 +504,7 @@ class QtMainWindow(MainWindow):
             checked = True
 
         self.__presenter.onFactionChecked(item.row(), checked)
-        
+
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()
 
@@ -501,7 +531,7 @@ class QtMainWindow(MainWindow):
     def __openFolder(self) -> None:
         """Set mod folder dialog"""
         folderName = QFileDialog.getExistingDirectory(
-            self.__widget, "Select Mod folder:", "",QFileDialog.Option.ShowDirsOnly
+            self.__widget, "Select Mod folder:", "", QFileDialog.Option.ShowDirsOnly
         )
         if folderName:
             self.__presenter.onDataFolderChanged(folderName)

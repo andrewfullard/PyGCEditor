@@ -9,7 +9,9 @@ class Config:
         self.__configFile = "config.xml"
         self.__configRoot = et.parse(self.__configFile).getroot()
 
-        self.autoPlanetConnectionDistance = int(self.__configRoot.find("MaximumFleetMovementDistance").text)
+        self.autoPlanetConnectionDistance = int(
+            self.__configRoot.find("MaximumFleetMovementDistance").text
+        )
         self.startingForcesLibraryURL = self.__configRoot.find(
             "StartingForcesLibraryURL"
         ).text
@@ -30,4 +32,3 @@ class Config:
 
         # dataPath remains the base Data folder for backward compatibility
         self.dataPath = self.dataFolders[0]
-

@@ -1,8 +1,9 @@
-'''AI Player class definition'''
+"""AI Player class definition"""
 
 
 class AIPlayer:
-    '''AIs have a name'''
+    """AIs have a name"""
+
     def __init__(self, name: str):
         self.__name: str = name
 

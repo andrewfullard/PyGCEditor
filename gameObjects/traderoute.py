@@ -1,9 +1,11 @@
 from gameObjects.planet import Planet
-'''Trade route class definition'''
+
+"""Trade route class definition"""
 
 
 class TradeRoute:
-    '''Trade routes have a name and a start/end planet'''
+    """Trade routes have a name and a start/end planet"""
+
     def __init__(self, name: str):
         self.__name: str = name
         self.__start: Planet = None

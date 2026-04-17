@@ -1,5 +1,6 @@
 class XMLStructure:
-    '''Class to share XML info'''
+    """Class to share XML info"""
+
     dataFolder = ""
     dataFolders = []
     submods = []

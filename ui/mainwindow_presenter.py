@@ -84,7 +84,9 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updatePlanetInfoDisplay(
-        self, planet: Planet, startingForces: pd.DataFrame(),
+        self,
+        planet: Planet,
+        startingForces: pd.DataFrame(),
     ) -> None:
         raise NotImplementedError()
 
@@ -160,9 +162,7 @@ class MainWindowPresenter:
     def importStartingForcesAll(self) -> None:
         """Imports all starting forces from spreadsheets into ALL GCs"""
         for i, campaign in enumerate(self.campaigns):
-            campaign.startingForces = (
-                self.__repository.startingForcesLibrary
-            )
+            campaign.startingForces = self.__repository.startingForcesLibrary
             self.campaigns[i] = campaign
 
     def onDataFolderChanged(self, modPath: str) -> None:
@@ -193,7 +193,11 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
-        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(self.getSelectedCampaign().planets, self.__planetOwners))
+        self.__mainWindow.updateTotalFactionIncome(
+            self.__helper.calculateFactionIncome(
+                self.getSelectedCampaign().planets, self.__planetOwners
+            )
+        )
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, index: int) -> None:
@@ -216,9 +220,15 @@ class MainWindowPresenter:
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
         )
-        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(self.getSelectedCampaign().planets, self.__planetOwners))
+        self.__mainWindow.updateTotalFactionIncome(
+            self.__helper.calculateFactionIncome(
+                self.getSelectedCampaign().planets, self.__planetOwners
+            )
+        )
         self.__mainWindow.updatePlanetCountDisplay(selectedPlanets)
-        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
+        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
+            self.__checkedTradeRoutes
+        )
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateGalacticPlot()
 
@@ -228,7 +238,7 @@ class MainWindowPresenter:
             self.__onPlotSelectedStartPlanet = self.__planets[index]
             self.__plot.TraceTradeRoute(index)
             return
-        
+
         if self.__onPlotSelectedStartPlanet and not self.__onPlotSelectedEndPlanet:
             self.__onPlotSelectedEndPlanet = self.__planets[index]
             self.__plot.TraceTradeRoute(None)
@@ -236,24 +246,30 @@ class MainWindowPresenter:
         if self.__onPlotSelectedStartPlanet and self.__onPlotSelectedEndPlanet:
             if not self.__onPlotSelectedStartPlanet == self.__onPlotSelectedEndPlanet:
                 try:
-                    traderoute = self.__repository.getTradeRouteByPlanets(self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet)
+                    traderoute = self.__repository.getTradeRouteByPlanets(
+                        self.__onPlotSelectedStartPlanet, self.__onPlotSelectedEndPlanet
+                    )
                     try:
                         index = self.__availableTradeRoutes.index(traderoute)
                     except ValueError:
-                        print("Error, trade route not available but it should be! Try turning a planet off and on")
+                        print(
+                            "Error, trade route not available but it should be! Try turning a planet off and on"
+                        )
 
                     if self.__mainWindow.selectSingleTradeRoute(index):
                         self.onTradeRouteChecked(index, True)
                     else:
                         self.onTradeRouteChecked(index, False)
                 except RuntimeError:
-                    self.newTradeRouteCommand.execute(start = self.__onPlotSelectedStartPlanet.name, end = self.__onPlotSelectedEndPlanet.name)
-            
+                    self.newTradeRouteCommand.execute(
+                        start=self.__onPlotSelectedStartPlanet.name,
+                        end=self.__onPlotSelectedEndPlanet.name,
+                    )
+
             self.__onPlotSelectedStartPlanet = None
             self.__onPlotSelectedEndPlanet = None
- 
+
             self.__updateGalacticPlot()
-            
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         """If a trade route is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
@@ -270,7 +286,9 @@ class MainWindowPresenter:
                     self.__availableTradeRoutes[index]
                 )
 
-        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
+        self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
+            self.__checkedTradeRoutes
+        )
         self.__updateGalacticPlot()
 
     def onFactionChecked(self, index: int, checked: bool) -> None:
@@ -278,11 +296,15 @@ class MainWindowPresenter:
         if checked:
             if self.__playableFactions[index] not in self.__checkedPlayableFactions:
                 self.__checkedPlayableFactions.add(self.__playableFactions[index])
-                self.getSelectedCampaign().playableFactions.add(self.__playableFactions[index])
+                self.getSelectedCampaign().playableFactions.add(
+                    self.__playableFactions[index]
+                )
         else:
             if self.__playableFactions[index] in self.__checkedPlayableFactions:
                 self.__checkedPlayableFactions.remove(self.__playableFactions[index])
-                self.getSelectedCampaign().playableFactions.remove(self.__playableFactions[index])
+                self.getSelectedCampaign().playableFactions.remove(
+                    self.__playableFactions[index]
+                )
 
     def onCampaignSelected(self, index: int) -> None:
         """If a campaign is selected by the user, clear then refresh the galaxy plot"""
@@ -321,7 +343,7 @@ class MainWindowPresenter:
                 if t is not None:
                     try:
                         selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
-                    except (ValueError):
+                    except ValueError:
                         print("The trade route " + t.name + " is missing!")
                 else:
                     missingRoutes.add(t)
@@ -331,13 +353,19 @@ class MainWindowPresenter:
             self.__checkedTradeRoutes -= missingRoutes
 
             self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)
-            self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(self.__checkedTradeRoutes)
+            self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
+                self.__checkedTradeRoutes
+            )
 
         self.__planetOwners = self.__helper.getPlanetOwners(
             index, self.__checkedPlanets
         )
 
-        self.__mainWindow.updateTotalFactionIncome(self.__helper.calculateFactionIncome(selectedCampaign.planets, self.__planetOwners))
+        self.__mainWindow.updateTotalFactionIncome(
+            self.__helper.calculateFactionIncome(
+                selectedCampaign.planets, self.__planetOwners
+            )
+        )
 
         if selectedCampaign.playableFactions is not None:
             self.__checkedPlayableFactions.update(selectedCampaign.playableFactions)
@@ -469,7 +497,7 @@ class MainWindowPresenter:
         default_forces_only : bool, optional
             If True, only save campaigns that specify that they use
             default starting forces, by default False
-        """        
+        """
         factions = self.__repository.factions
         for campaign in self.campaigns:
             if default_forces_only and campaign.useDefaultForces:
@@ -554,7 +582,7 @@ class MainWindowPresenter:
         """Updates the list of available trade routes based on the planets in the GC"""
         privateAvailableTradeRoutes = set(
             filter(
-                lambda tr: (tr.start in planetList and tr.end in planetList),
+                lambda tr: tr.start in planetList and tr.end in planetList,
                 self.__tradeRoutes,
             )
         )
@@ -575,7 +603,6 @@ class MainWindowPresenter:
         )
         self.__updateSelectedTradeRoutes(self.__selectedCampaignIndex)
 
-
     def __updateSelectedFactions(self, index: int) -> None:
         """Update the selected factions for the currently selected campaign"""
         selectedFactions = []
@@ -586,7 +613,6 @@ class MainWindowPresenter:
             selectedFactions.append(self.__factions.index(f))
 
         self.__mainWindow.updateFactionSelection(selectedFactions)
-
 
     def __updateGalacticPlot(self):
         autoConnectionDistance = self.config.autoPlanetConnectionDistance

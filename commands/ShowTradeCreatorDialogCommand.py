@@ -5,14 +5,18 @@ from ui.dialogs import Dialog, DialogResult
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindowPresenter
 
+
 class ShowTradeRouteCreatorDialogCommand(Command):
-    '''Class to handle displaying the trade route creator dialog box'''
-    def __init__(self, mainWindowPresenter: MainWindowPresenter, dialogFactory: DialogFactory):
+    """Class to handle displaying the trade route creator dialog box"""
+
+    def __init__(
+        self, mainWindowPresenter: MainWindowPresenter, dialogFactory: DialogFactory
+    ):
         self.__dialogFactory = dialogFactory
         self.__presenter = mainWindowPresenter
 
-    def execute(self, start = None, end = None) -> None:
-        '''Runs the dialog and passes results to the presenter and repository'''
+    def execute(self, start=None, end=None) -> None:
+        """Runs the dialog and passes results to the presenter and repository"""
         dialog = self.__dialogFactory.makeTradeRouteCreationDialog(start, end)
         result: DialogResult = dialog.show()
 

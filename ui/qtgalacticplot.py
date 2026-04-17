@@ -1,13 +1,16 @@
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
 from PyQt6.QtCore import pyqtSignal
-from matplotlib.backends.backend_qtagg import FigureCanvas, \
-    NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qtagg import (
+    FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar,
+)
 from matplotlib.figure import Axes, Figure
 
 
 class QtGalacticPlot(QWidget):
-    '''Class for plotting the galaxy'''
-    #signal to send to main window presenter when a planet is selected in the plot
+    """Class for plotting the galaxy"""
+
+    # signal to send to main window presenter when a planet is selected in the plot
     planetSelectedSignal = pyqtSignal(int)
     planetShiftSelectedSignal = pyqtSignal(int)
 
@@ -19,15 +22,27 @@ class QtGalacticPlot(QWidget):
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
 
-        self.__galacticPlotCanvas.mpl_connect('pick_event', self.__planetSelect)
-        self.__galacticPlotCanvas.mpl_connect('motion_notify_event', self.__planetHover)
+        self.__galacticPlotCanvas.mpl_connect("pick_event", self.__planetSelect)
+        self.__galacticPlotCanvas.mpl_connect("motion_notify_event", self.__planetHover)
 
-        self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(self.__galacticPlotCanvas, self.__galacticPlotWidget)
+        self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(
+            self.__galacticPlotCanvas, self.__galacticPlotWidget
+        )
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotNavBar)
         self.__galacticPlotWidget.layout().addWidget(self.__galacticPlotCanvas)
-        self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(111, aspect = "equal")
+        self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(
+            111, aspect="equal"
+        )
 
-        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
+        self.__annotate = self.__axes.annotate(
+            "",
+            xy=(0, 0),
+            xytext=(10, 10),
+            textcoords="offset points",
+            bbox=dict(boxstyle="round", fc="w"),
+            arrowprops=dict(arrowstyle="->"),
+            zorder=9,
+        )
         self.__annotate.set_visible(False)
         self.__planetNames = []
         self.__planetOwners = []
@@ -35,18 +50,25 @@ class QtGalacticPlot(QWidget):
         self.__shipyardLevel = []
         self.__SupportsStructure = []
         self.__income = []
-        self.__groundStructureSlots =[]
+        self.__groundStructureSlots = []
         self.__planetsScatter = None
         self.__tradeRouteTraceStart = None
 
-    def plotGalaxy(self, planets, tradeRoutes, allPlanets, planetOwners, autoPlanetConnectionDistance: int = 0) -> None:
-        '''Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes'''
+    def plotGalaxy(
+        self,
+        planets,
+        tradeRoutes,
+        allPlanets,
+        planetOwners,
+        autoPlanetConnectionDistance: int = 0,
+    ) -> None:
+        """Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes"""
         if self.__is_first_run:
             x = [p.x for p in allPlanets]
             y = [p.y for p in allPlanets]
             self.__axes.set_xlim(min(x), max(x))
             self.__axes.set_ylim(min(y), max(y))
-            
+
         self.__is_first_run = False
 
         xlim = self.__axes.get_xlim()
@@ -56,10 +78,18 @@ class QtGalacticPlot(QWidget):
         self.__axes.set_xlim(xlim)
         self.__axes.set_ylim(ylim)
 
-        #Has to be set again here for the planet hover labels to work
-        self.__annotate = self.__axes.annotate("", xy = (0,0), xytext = (10, 10), textcoords = "offset points", bbox = dict(boxstyle="round", fc="w"), arrowprops = dict(arrowstyle="->"), zorder = 9)
+        # Has to be set again here for the planet hover labels to work
+        self.__annotate = self.__axes.annotate(
+            "",
+            xy=(0, 0),
+            xytext=(10, 10),
+            textcoords="offset points",
+            bbox=dict(boxstyle="round", fc="w"),
+            arrowprops=dict(arrowstyle="->"),
+            zorder=9,
+        )
         self.__annotate.set_visible(False)
-        self.__tradeRouteTrace = self.__axes.plot([0,0], [0,0])
+        self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
 
         self.__planetNames = []
         self.__planetOwners = []
@@ -86,9 +116,11 @@ class QtGalacticPlot(QWidget):
             self.__SupportsStructure.append(p.SupportsStructure)
             self.__groundStructureSlots.append(p.groundStructureSlots)
 
-        self.__planetsScatter = self.__axes.scatter(x, y, c = 'grey', alpha = 0.1, picker = 5, zorder=2)
+        self.__planetsScatter = self.__axes.scatter(
+            x, y, c="grey", alpha=0.1, picker=5, zorder=2
+        )
 
-        x1 = 0        
+        x1 = 0
         y1 = 0
         x2 = 0
         y2 = 0
@@ -99,10 +131,10 @@ class QtGalacticPlot(QWidget):
             y1 = t.start.y
             x2 = t.end.x
             y2 = t.end.y
-            # plot each route (start, end)            
-            self.__axes.plot([x1, x2], [y1, y2], 'k-', alpha=0.4, zorder=1)
-        
-        #Create automatic connections between planets
+            # plot each route (start, end)
+            self.__axes.plot([x1, x2], [y1, y2], "k-", alpha=0.4, zorder=1)
+
+        # Create automatic connections between planets
         if autoPlanetConnectionDistance > 0:
             for p1 in planets:
                 for p2 in planets:
@@ -110,7 +142,9 @@ class QtGalacticPlot(QWidget):
                         break
                     dist: float = p1.distanceTo(p2)
                     if dist < autoPlanetConnectionDistance:
-                        self.__axes.plot([p1.x, p2.x], [p1.y, p2.y], 'k-', alpha=0.1, zorder=1)
+                        self.__axes.plot(
+                            [p1.x, p2.x], [p1.y, p2.y], "k-", alpha=0.1, zorder=1
+                        )
 
         x = []
         y = []
@@ -125,24 +159,22 @@ class QtGalacticPlot(QWidget):
                 else:
                     color.append((0, 0, 0))
 
-            self.__axes.scatter(x, y, c = color, edgecolors = 'black', zorder=4)    
+            self.__axes.scatter(x, y, c=color, edgecolors="black", zorder=4)
         else:
             for p in planets:
                 x.append(p.x)
                 y.append(p.y)
 
-            self.__axes.scatter(x, y, c = 'grey', zorder=3)
+            self.__axes.scatter(x, y, c="grey", zorder=3)
 
         self.__galacticPlotCanvas.draw_idle()
-        
-
 
     def getWidget(self) -> QWidget:
-        '''Returns the plot widget'''
+        """Returns the plot widget"""
         return self.__galacticPlotWidget
 
     def __planetSelect(self, event) -> None:
-        '''Event handler for selecting a planet on the map'''
+        """Event handler for selecting a planet on the map"""
         planet_index = event.ind[0]
         if event.mouseevent.button == 3:
             self.planetShiftSelectedSignal.emit(planet_index)
@@ -150,22 +182,30 @@ class QtGalacticPlot(QWidget):
             self.planetSelectedSignal.emit(planet_index)
 
     def __planetHover(self, event) -> None:
-        '''Handler for hovering on a planet in the plot'''
+        """Handler for hovering on a planet in the plot"""
         visible = self.__annotate.get_visible()
 
         if event.inaxes == self.__axes:
-            '''Remove previous tradeRouteTrace lines if they exist'''
+            """Remove previous tradeRouteTrace lines if they exist"""
             for line in self.__tradeRouteTrace:
                 line.remove()
 
-            '''Add tracing lines when drawing Trade Routes'''
+            """Add tracing lines when drawing Trade Routes"""
             if not self.__tradeRouteTraceStart == None:
-                startpos = self.__planetsScatter.get_offsets()[self.__tradeRouteTraceStart]
-                self.__tradeRouteTrace = self.__axes.plot([startpos[0], event.xdata], [startpos[1], event.ydata], color='y', lw=0.8, ls='--')
+                startpos = self.__planetsScatter.get_offsets()[
+                    self.__tradeRouteTraceStart
+                ]
+                self.__tradeRouteTrace = self.__axes.plot(
+                    [startpos[0], event.xdata],
+                    [startpos[1], event.ydata],
+                    color="y",
+                    lw=0.8,
+                    ls="--",
+                )
             else:
                 self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
 
-            '''Display annotation tooltip if the cursor is over a planet'''
+            """Display annotation tooltip if the cursor is over a planet"""
             if self.__planetsScatter:
                 contains, ind = self.__planetsScatter.contains(event)
             else:
@@ -177,17 +217,28 @@ class QtGalacticPlot(QWidget):
             else:
                 if visible:
                     self.__annotate.set_visible(False)
-            
+
             self.__galacticPlotCanvas.draw_idle()
 
     def __update_annotation(self, ind) -> None:
-        '''Updates annotation parameters'''
+        """Updates annotation parameters"""
         pos = self.__planetsScatter.get_offsets()[ind["ind"][0]]
         self.__annotate.xy = pos
-        text = "\n".join("Planet: {} \nFaction: {} \nStarbase: {} \nShipyard: {} \nGround Slots: {} \nIncome: {} \nSupports: {}".format(self.__planetNames[n], self.__planetOwners[n], self.__starbaseLevel[n], self.__shipyardLevel[n], self.__groundStructureSlots[n], self.__income[n], self.__SupportsStructure[n]) for n in ind["ind"])
+        text = "\n".join(
+            "Planet: {} \nFaction: {} \nStarbase: {} \nShipyard: {} \nGround Slots: {} \nIncome: {} \nSupports: {}".format(
+                self.__planetNames[n],
+                self.__planetOwners[n],
+                self.__starbaseLevel[n],
+                self.__shipyardLevel[n],
+                self.__groundStructureSlots[n],
+                self.__income[n],
+                self.__SupportsStructure[n],
+            )
+            for n in ind["ind"]
+        )
         self.__annotate.set_text(text)
 
     def TraceTradeRoute(self, ind) -> None:
-        '''Handler for tracing a traderoute between planets on plot'''
-        '''Trace movement is handled in __planetHover'''
+        """Handler for tracing a traderoute between planets on plot"""
+        """Trace movement is handled in __planetHover"""
         self.__tradeRouteTraceStart = ind

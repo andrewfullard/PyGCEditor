@@ -62,12 +62,18 @@ class RepositoryCreator:
                     "TEXT_PLANET_LIGHT": "Light Frigate",
                     "TEXT_PLANET_HEAVY": "Heavy Frigate",
                     "TEXT_PLANET_CAPITAL": "Capital",
-                    "TEXT_PLANET_DREAD": "Dreadnaught"
+                    "TEXT_PLANET_DREAD": "Dreadnaught",
                 }
-                shipyard = self.__xml.getObjectProperty(name, planetRoot, ".//Planet_Ability_Name")
-                newplanet.shipyardLevel = shipyard_list.get(shipyard, "No Shipyard Defined")
+                shipyard = self.__xml.getObjectProperty(
+                    name, planetRoot, ".//Planet_Ability_Name"
+                )
+                newplanet.shipyardLevel = shipyard_list.get(
+                    shipyard, "No Shipyard Defined"
+                )
 
-                structure = self.__xml.getObjectProperty(name, planetRoot, ".//Encyclopedia_Weather_Name")
+                structure = self.__xml.getObjectProperty(
+                    name, planetRoot, ".//Encyclopedia_Weather_Name"
+                )
                 if structure and structure.startswith("TEXT_RESOURCE_SUPPORTS_"):
                     coded_name = structure.replace("TEXT_RESOURCE_SUPPORTS_", "")
                     newplanet.SupportsStructure = coded_name
@@ -90,8 +96,8 @@ class RepositoryCreator:
                 )
 
                 income_value = self.__xml.getObjectProperty(
-                            name, planetRoot, ".//Planet_Credit_Value"
-                        )
+                    name, planetRoot, ".//Planet_Credit_Value"
+                )
                 if income_value:
                     newplanet.income = int(float(income_value))
 
@@ -137,10 +143,8 @@ class RepositoryCreator:
 
         current_campaign_set = ""
 
-        for (filePath, campaign, campaignRoot) in campaignEntries:
-            setName = self.__xml.getValueFromXMLRoot(
-                campaignRoot, ".//Campaign_Set"
-            )
+        for filePath, campaign, campaignRoot in campaignEntries:
+            setName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Campaign_Set")
 
             startingActivePlayer = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Starting_Active_Player"
@@ -155,12 +159,16 @@ class RepositoryCreator:
             else:
                 # MP campaigns don't have a starting active player
                 if startingActivePlayer:
-                    self.repository.getCampaignBySetName(setName).playableFactions.add(self.repository.getFactionByName(startingActivePlayer))
+                    self.repository.getCampaignBySetName(setName).playableFactions.add(
+                        self.repository.getFactionByName(startingActivePlayer)
+                    )
                 continue
 
             newCampaign.setName = setName
             if startingActivePlayer:
-                newCampaign.playableFactions.add(self.repository.getFactionByName(startingActivePlayer))
+                newCampaign.playableFactions.add(
+                    self.repository.getFactionByName(startingActivePlayer)
+                )
 
             newCampaignPlanets = set()
             newCampaignTradeRoutes = set()
@@ -235,7 +243,13 @@ class RepositoryCreator:
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
 
-            print("Found ", len(newCampaignPlanets), "planets and ", len(newCampaignTradeRoutes), "trade routes")
+            print(
+                "Found ",
+                len(newCampaignPlanets),
+                "planets and ",
+                len(newCampaignTradeRoutes),
+                "trade routes",
+            )
 
             self.repository.addCampaign(newCampaign)
 
@@ -296,15 +310,19 @@ class RepositoryCreator:
         for index, row in tqdm(startingForcesLibrary.iterrows()):
             if row["Planet"] != current_planet:
                 current_planet = row["Planet"]
-            
+
             if row["Era"] != current_era:
                 current_era = row["Era"]
                 if not pd.isna(row["ReuseEra"]):
                     era_to_reuse = row["ReuseEra"]
-                    reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (startingForcesLibrary.Planet == current_planet)
+                    reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (
+                        startingForcesLibrary.Planet == current_planet
+                    )
                     data_to_add = startingForcesLibrary[reuse_filter].copy()
                     data_to_add = data_to_add.assign(Era=current_era)
-                    startingForcesLibrary = pd.concat([startingForcesLibrary, data_to_add])
+                    startingForcesLibrary = pd.concat(
+                        [startingForcesLibrary, data_to_add]
+                    )
                     continue
 
         startingForcesLibrary.reset_index(drop=True, inplace=True)
@@ -312,7 +330,7 @@ class RepositoryCreator:
         startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
         startingForcesLibrary.dropna(inplace=True)
 
-        startingForcesLibrary.sort_values(by=['Planet'], inplace=True)
+        startingForcesLibrary.sort_values(by=["Planet"], inplace=True)
 
         return startingForcesLibrary
 
@@ -333,8 +351,7 @@ class RepositoryCreator:
         XMLStructure.dataFolders = dataFolders
         # Derive submod names from folders beyond the base: ModPath/SubmodName/Data
         XMLStructure.submods = [
-            os.path.basename(os.path.dirname(f))
-            for f in dataFolders[1:]
+            os.path.basename(os.path.dirname(f)) for f in dataFolders[1:]
         ]
 
         gameObjectFile = dataFolders[0] + "/XML/GameObjectFiles.XML"
@@ -343,7 +360,9 @@ class RepositoryCreator:
         factionFile = dataFolders[0] + "/XML/FactionFiles.XML"
 
         def metaFileExists(name):
-            return any(os.path.exists(os.path.join(f, "XML", name)) for f in dataFolders)
+            return any(
+                os.path.exists(os.path.join(f, "XML", name)) for f in dataFolders
+            )
 
         if metaFileExists("GameObjectFiles.XML"):
             print("\nLoading Planets")
@@ -362,7 +381,9 @@ class RepositoryCreator:
 
         if metaFileExists("CampaignFiles.XML"):
             print("\nLoading Campigns")
-            campaignPathRootList = self.__xml.findMetaFileRefsWithPaths(campaignFile, dataFolders)
+            campaignPathRootList = self.__xml.findMetaFileRefsWithPaths(
+                campaignFile, dataFolders
+            )
             campaignEntries = [
                 (filePath, name, root)
                 for filePath, fileRoot in campaignPathRootList

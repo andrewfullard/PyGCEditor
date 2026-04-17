@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from PyQt6.QtWidgets import QGridLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout
+from PyQt6.QtWidgets import (
+    QGridLayout,
+    QWidget,
+    QLineEdit,
+    QPushButton,
+    QLabel,
+    QHBoxLayout,
+)
 from PyQt6.QtCore import pyqtSignal
 
-class FormWidget(ABC):
 
+class FormWidget(ABC):
     @abstractmethod
     def getContent(self) -> Any:
         pass
@@ -15,7 +22,6 @@ class FormWidget(ABC):
 
 
 class Form(QWidget):
-
     onConfirm: pyqtSignal = pyqtSignal()
     onCancel: pyqtSignal = pyqtSignal()
 
@@ -30,7 +36,6 @@ class Form(QWidget):
 
         self.setLayout(QGridLayout())
         self.__rows = 0
-
 
     def __onConfirm(self) -> None:
         self.onConfirm.emit()
@@ -57,10 +62,9 @@ class Form(QWidget):
 
 
 class TextWidget(FormWidget):
-
     def __init__(self):
         self.__widget: QLineEdit = QLineEdit()
-    
+
     def getContent(self) -> str:
         return self.__widget.text()
 
@@ -69,7 +73,6 @@ class TextWidget(FormWidget):
 
 
 class FormBuilder:
-
     def __init__(self):
         self.__form = None
 
@@ -81,7 +84,7 @@ class FormBuilder:
     def add_input(self, label: str, input_type: str):
         if input_type == "str":
             self.__form.addWidget(label, TextWidget())
-        
+
         return self
 
     def finish(self) -> Form:

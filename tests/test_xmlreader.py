@@ -62,7 +62,11 @@ def test_parse_meta_and_find_planets_files(reader, xml_workspace):
 
     meta_root = et.parse(game_objects_meta).getroot()
     assert reader.isMetaFile(meta_root)
-    assert reader.parseMetaFile(meta_root) == ["Planets.XML", "Units.XML", "Missing.XML"]
+    assert reader.parseMetaFile(meta_root) == [
+        "Planets.XML",
+        "Units.XML",
+        "Missing.XML",
+    ]
 
     planets_files = reader.findPlanetsFiles(game_objects_meta)
     assert len(planets_files) == 1
@@ -72,8 +76,8 @@ def test_parse_meta_and_find_planets_files(reader, xml_workspace):
 
 def test_find_planet_files_and_roots_returns_planet_only(reader, xml_workspace):
     game_objects_meta = xml_workspace(
-    "GameObjectFiles.XML",
-    """<?xml version='1.0'?>
+        "GameObjectFiles.XML",
+        """<?xml version='1.0'?>
 <GameObjectFiles>
     <File>Planets.XML</File>
     <File>Units.XML</File>
@@ -109,8 +113,8 @@ def test_find_planet_files_and_roots_returns_planet_only(reader, xml_workspace):
 
 def test_find_meta_file_refs_and_get_start_end(reader, xml_workspace):
     trade_meta = xml_workspace(
-    "TradeRouteFiles.XML",
-    """<?xml version='1.0'?>
+        "TradeRouteFiles.XML",
+        """<?xml version='1.0'?>
 <TradeRouteFiles>
     <File>Routes.XML</File>
     <File>MissingRoutes.XML</File>

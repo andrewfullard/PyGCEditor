@@ -1,9 +1,11 @@
 from math import sqrt
-'''Planet class definition'''
+
+"""Planet class definition"""
 
 
 class Planet:
-    '''Planets have a name and location (x, y), starbase level, shipyard and special structure slots'''
+    """Planets have a name and location (x, y), starbase level, shipyard and special structure slots"""
+
     def __init__(self, name: str):
         self.__name: str = name
         self.__variantOf: str = ""
@@ -15,10 +17,9 @@ class Planet:
         self.__SupportsStructure: str = ""
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
-    
+
     def distanceTo(self, target):
-        return sqrt((self.x - target.x)**2 + (self.y - target.y)**2)
-        
+        return sqrt((self.x - target.x) ** 2 + (self.y - target.y) ** 2)
 
     @property
     def name(self) -> str:
@@ -78,7 +79,7 @@ class Planet:
     def shipyardLevel(self, value: str) -> None:
         if value:
             self.__shipyardLevel = value
-    
+
     @property
     def SupportsStructure(self) -> str:
         return self.__SupportsStructure
@@ -87,7 +88,7 @@ class Planet:
     def SupportsStructure(self, value: str) -> None:
         if value:
             self.__SupportsStructure = value
-    
+
     @property
     def groundStructureSlots(self) -> int:
         return self.__groundStructureSlots

@@ -4,8 +4,10 @@ from ui.qtcampaignproperties import QtCampaignProperties
 from ui.qtautoconnectionsettings import QtAutoConnectionSettings
 from gameObjects.campaign import Campaign
 
+
 class DialogFactory:
-    '''Produces dialog boxes'''
+    """Produces dialog boxes"""
+
     def __init__(self, repository: GameObjectRepository):
         self.__repository: GameObjectRepository = repository
 
@@ -14,6 +16,6 @@ class DialogFactory:
 
     def makeAutoConnectionSettingsDialog(self) -> QtAutoConnectionSettings:
         return QtAutoConnectionSettings(self.__repository)
-        
+
     def makeCampaignPropertiesDialog(self, campaign: Campaign) -> QtCampaignProperties:
         return QtCampaignProperties(campaign)

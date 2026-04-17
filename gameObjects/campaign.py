@@ -181,4 +181,3 @@ class Campaign:
     def isListed(self, value: str) -> None:
         if value:
             self.__isListed = value
-            

@@ -1,13 +1,23 @@
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QFormLayout, QPushButton, QLineEdit, QCheckBox
+from PyQt6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QVBoxLayout,
+    QFormLayout,
+    QPushButton,
+    QLineEdit,
+    QCheckBox,
+)
 
 from gameObjects.campaign import Campaign
 from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.dialogs import Dialog, DialogResult
 
+
 class QtCampaignProperties:
-    '''Class for a "campaign properties" dialog box'''
-    def __init__(self, campaign = Campaign()):
+    """Class for a "campaign properties" dialog box"""
+
+    def __init__(self, campaign=Campaign()):
         self.__dialog: QDialog = QDialog()
         self.__layout: QVBoxLayout = QVBoxLayout()
         self.__formLayout: QFormLayout = QFormLayout()
@@ -25,10 +35,10 @@ class QtCampaignProperties:
         self.__storyName: QLineEdit = QLineEdit(self.__dialog)
         self.__isListed: QLineEdit = QLineEdit(self.__dialog)
         self.__useDefaultForces: QCheckBox = QCheckBox(self.__dialog)
-     
+
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
-        
+
         self.__cancelButton: QPushButton = QPushButton("Cancel")
         self.__cancelButton.clicked.connect(self.__cancelClicked)
 
@@ -43,21 +53,21 @@ class QtCampaignProperties:
         self.__formLayout.addRow("Underworld Story Name", self.__underworldStoryName)
         self.__formLayout.addRow("Story Name", self.__storyName)
         self.__formLayout.addRow("Show Campaign", self.__isListed)
-        self.__formLayout.addRow("Use default starting forces?", self.__useDefaultForces)
+        self.__formLayout.addRow(
+            "Use default starting forces?", self.__useDefaultForces
+        )
 
         self.__buttonLayout.addWidget(self.__okayButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
-        
+
         self.__layout.addLayout(self.__formLayout)
         self.__layout.addLayout(self.__buttonLayout)
 
-        self.__dialog.setWindowTitle("Campaign Properties")      
+        self.__dialog.setWindowTitle("Campaign Properties")
         self.__dialog.setLayout(self.__layout)
         self.__dialog.resize(500, 300)
 
         self.__result = DialogResult.Cancel
-
-        
 
         # self.__repository = repository
 
@@ -65,9 +75,9 @@ class QtCampaignProperties:
         self.__setName = ""
 
         self.__campaign = campaign or Campaign()
-       
+
     def show(self) -> DialogResult:
-        '''Display dialog modally'''
+        """Display dialog modally"""
 
         self.__inputName.setText(self.__campaign.name)
         self.__inputSetName.setText(self.__campaign.setName)
@@ -86,7 +96,7 @@ class QtCampaignProperties:
         return self.__result
 
     def getCampaignProperties(self) -> Campaign:
-        '''Returns the Campaign properties'''
+        """Returns the Campaign properties"""
 
         self.__campaign.name = self.__inputName.text()
         self.__campaign.setName = self.__inputSetName.text()
@@ -101,10 +111,10 @@ class QtCampaignProperties:
         self.__campaign.isListed = self.__isListed.text()
         self.__campaign.useDefaultForces = self.__useDefaultForces.isChecked()
 
-        return self.__campaign 
+        return self.__campaign
 
     def __okayClicked(self) -> None:
-        '''Okay button handler. Performs minor error checking'''
+        """Okay button handler. Performs minor error checking"""
         self.__name = self.__inputName.text()
 
         if len(self.__name) == 0:
@@ -114,5 +124,5 @@ class QtCampaignProperties:
         self.__dialog.close()
 
     def __cancelClicked(self) -> None:
-        '''Cancel button handler. Closes dialog box'''
+        """Cancel button handler. Closes dialog box"""
         self.__dialog.close()

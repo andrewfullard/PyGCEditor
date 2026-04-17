@@ -75,5 +75,4 @@ class DisplayHelpers:
             df = pd.DataFrame({"income": incomes, "Faction": factions})
             total = df.groupby("Faction").sum()
 
-
         return total.to_dict()["income"]

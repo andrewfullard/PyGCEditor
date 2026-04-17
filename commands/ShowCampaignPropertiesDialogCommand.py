@@ -5,15 +5,19 @@ from ui.dialogs import Dialog, DialogResult
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindowPresenter
 
+
 class ShowCampaignCreatorDialogCommand(Command):
-    '''Class to handle displaying the campaign creator dialog box'''
-    def __init__(self, mainWindowPresenter: MainWindowPresenter, dialogFactory: DialogFactory):
+    """Class to handle displaying the campaign creator dialog box"""
+
+    def __init__(
+        self, mainWindowPresenter: MainWindowPresenter, dialogFactory: DialogFactory
+    ):
         self.__dialogFactory = dialogFactory
         self.__presenter = mainWindowPresenter
 
     def execute(self) -> None:
-        '''Runs the dialog and passes results to the presenter and repository'''
-        currentCampaign = self.__presenter.getSelectedCampaign()    
+        """Runs the dialog and passes results to the presenter and repository"""
+        currentCampaign = self.__presenter.getSelectedCampaign()
         dialog = self.__dialogFactory.makeCampaignPropertiesDialog(currentCampaign)
         result: DialogResult = dialog.show()
 
