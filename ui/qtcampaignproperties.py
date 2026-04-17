@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QLineEdit,
     QCheckBox,
+    QTextEdit,
 )
 
 from gameObjects.campaign import Campaign
@@ -30,7 +31,7 @@ class QtCampaignProperties:
         self.__rebelStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__empireStoryName: QLineEdit = QLineEdit(self.__dialog)
         self.__underworldStoryName: QLineEdit = QLineEdit(self.__dialog)
-        self.__storyName: QLineEdit = QLineEdit(self.__dialog)
+        self.__storyName: QTextEdit = QTextEdit(self.__dialog)
         self.__isListed: QLineEdit = QLineEdit(self.__dialog)
         self.__useDefaultForces: QCheckBox = QCheckBox(self.__dialog)
 
@@ -63,7 +64,7 @@ class QtCampaignProperties:
 
         self.__dialog.setWindowTitle("Campaign Properties")
         self.__dialog.setLayout(self.__layout)
-        self.__dialog.resize(500, 300)
+        self.__dialog.resize(600, 420)
 
         self.__result = DialogResult.Cancel
 
@@ -86,7 +87,7 @@ class QtCampaignProperties:
         self.__rebelStoryName.setText(self.__campaign.rebelStoryName)
         self.__empireStoryName.setText(self.__campaign.empireStoryName)
         self.__underworldStoryName.setText(self.__campaign.underworldStoryName)
-        self.__storyName.setText(self.__campaign.storyName)
+        self.__storyName.setPlainText(self.__campaign.storyName)
         self.__isListed.setText(self.__campaign.isListed)
         self.__useDefaultForces.setChecked(self.__campaign.useDefaultForces)
 
@@ -105,7 +106,7 @@ class QtCampaignProperties:
         self.__campaign.rebelStoryName = self.__rebelStoryName.text()
         self.__campaign.empireStoryName = self.__empireStoryName.text()
         self.__campaign.underworldStoryName = self.__underworldStoryName.text()
-        self.__campaign.storyName = self.__storyName.text()
+        self.__campaign.storyName = self.__storyName.toPlainText()
         self.__campaign.isListed = self.__isListed.text()
         self.__campaign.useDefaultForces = self.__useDefaultForces.isChecked()
 

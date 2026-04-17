@@ -119,7 +119,7 @@ class Campaign:
 
     @storyName.setter
     def storyName(self, value: str) -> None:
-        if value:
+        if value is not None:
             self.__storyName = value
 
     @property
