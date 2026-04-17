@@ -47,7 +47,7 @@ class Campaign:
     def fileName(self) -> str:
         return self.__fileName
 
-    @name.setter
+    @fileName.setter
     def fileName(self, value: str) -> None:
         if value:
             self.__fileName = value

@@ -131,13 +131,13 @@ class RepositoryCreator:
                 newFaction.playable = playable
                 self.repository.addFaction(newFaction)
 
-    def addCampaignsFromXML(self, campaignNames, campaignRoots) -> None:
-        """Takes a list of Campaign GameObject XML roots and their names, and adds
-        them to the repository, after finding their planets and trade routes"""
+    def addCampaignsFromXML(self, campaignEntries) -> None:
+        """Takes a list of (filePath, campaignName, campaignRoot) tuples and adds
+        campaigns to the repository, after finding their planets and trade routes"""
 
         current_campaign_set = ""
 
-        for (campaign, campaignRoot) in zip(campaignNames, campaignRoots):
+        for (filePath, campaign, campaignRoot) in campaignEntries:
             setName = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Campaign_Set"
             )
@@ -151,6 +151,7 @@ class RepositoryCreator:
             if setName != current_campaign_set:
                 current_campaign_set = setName
                 newCampaign = Campaign(campaign)
+                newCampaign.fileName = filePath
             else:
                 # MP campaigns don't have a starting active player
                 if startingActivePlayer:
@@ -356,11 +357,15 @@ class RepositoryCreator:
 
         if metaFileExists("CampaignFiles.XML"):
             print("\nLoading Campigns")
-            campaignRootList = self.__xml.findMetaFileRefs(campaignFile, dataFolders)
-            campaignNames, campaignRoots = self.getNamesRootsFromXML(
-                campaignRootList, "Campaign"
-            )
-            self.addCampaignsFromXML(campaignNames, campaignRoots)
+            campaignPathRootList = self.__xml.findMetaFileRefsWithPaths(campaignFile, dataFolders)
+            campaignEntries = [
+                (filePath, name, root)
+                for filePath, fileRoot in campaignPathRootList
+                for name, root in zip(
+                    self.__xml.getNamesFromXML(fileRoot), fileRoot.iter("Campaign")
+                )
+            ]
+            self.addCampaignsFromXML(campaignEntries)
 
         print("\nChecking for planet variants")
         self.runPlanetVariantOfCheck()

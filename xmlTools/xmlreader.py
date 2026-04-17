@@ -204,6 +204,21 @@ class XMLReader:
             else:
                 print("Not a meta file! findMetaFileRefs")
 
+    def findMetaFileRefsWithPaths(self, metaFile: str, dataFolders: list) -> list:
+        """Like findMetaFileRefs but returns [(filePath, root), ...] so callers can
+        track the source file for each root."""
+        metaFileName = os.path.basename(metaFile)
+        fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
+        result = []
+        for file in fileList:
+            filePath = self._findFileAcrossFolders(file, dataFolders)
+            if filePath is None:
+                print(file + " not found. Continuing")
+                continue
+            fileRoot = et.parse(filePath)
+            result.append((filePath, fileRoot.getroot()))
+        return result
+
 
 
     def stringToBool(self, string):

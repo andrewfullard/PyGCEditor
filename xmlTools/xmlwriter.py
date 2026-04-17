@@ -1,5 +1,7 @@
 import lxml.etree as et
-from xmlTools.xmlreader import XMLReader
+import os
+from typing import Optional
+from xmlTools.xmlstructure import XMLStructure
 
 from util import getObject, commaSepListParser, commaReplaceInList
 
@@ -148,10 +150,20 @@ class XMLWriter:
 
                     
         tree = et.ElementTree(self.root)
-        self.writer(tree, outputName=campaign.setName + ".XML")
+        self.writer(tree, outputName=outputName)
 
-    def tradeRouteWriter(self, tradeRoutes) -> None:
-        """Writes a list of trade routes to file"""
+    def tradeRouteWriter(self, tradeRoutes, outputPath: Optional[str] = None) -> None:
+        """Writes a list of trade routes to file.
+        outputPath: full path for the output file. Defaults to NewTradeRoutes.xml
+        in the highest-priority data folder's XML directory."""
+        if outputPath is None:
+            if XMLStructure.dataFolders:
+                outputPath = os.path.join(
+                    XMLStructure.dataFolders[-1], "XML", "NewTradeRoutes.xml"
+                )
+            else:
+                outputPath = "NewTradeRoutes.xml"
+
         tradeRoutesRoot = et.Element("TradeRoutes")
         tradeRoutesTree = et.ElementTree(tradeRoutesRoot)
         
@@ -168,7 +180,7 @@ class XMLWriter:
             creditGainFactor = self.subElementText(route, "Credit_Gain_Factor", "0")
             visibleLineName = self.subElementText(route, "Visible_Line_Name", "DEFAULT")
 
-        self.writer(tradeRoutesTree, outputName="NewTradeRoutes.xml")
+        self.writer(tradeRoutesTree, outputName=outputPath)
 
     def planetCoordinatesWriter(self, path, planetFilesRoots, newPlanetData):
         """Save updated planet coordinates"""
