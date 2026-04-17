@@ -3,6 +3,8 @@
     <ModPath>G:\SteamLibrary\steamapps\common\Star Wars Empire at War\corruption\Mods\EmpireAtWarExpanded</ModPath>
     <!-- Add one <Submod> element per submod, in ascending priority order -->
     <!-- Example: <Submod>CoreSaga</Submod> -->
+    <Submod>CoreSaga</Submod>
+    <Submod>TR</Submod>
     <MaximumFleetMovementDistance>0</MaximumFleetMovementDistance>
-    <StartingForcesLibraryURL>F:\EAW Work\EaWXStartingForces\ICWProgressives.csv</StartingForcesLibraryURL>
-<Submod>CoreSaga</Submod><Submod>FotR</Submod></Config>
+    <StartingForcesLibraryURL></StartingForcesLibraryURL>
+</Config>

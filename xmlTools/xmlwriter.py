@@ -229,9 +229,14 @@ class XMLWriter:
         in the highest-priority data folder's XML directory."""
         if outputPath is None:
             if XMLStructure.dataFolders:
-                outputPath = os.path.join(
+                candidatePath = os.path.join(
                     XMLStructure.dataFolders[-1], "XML", "NewTradeRoutes.xml"
                 )
+                candidateFolder = os.path.dirname(candidatePath)
+                if candidateFolder and os.path.isdir(candidateFolder):
+                    outputPath = candidatePath
+                else:
+                    outputPath = "NewTradeRoutes.xml"
             else:
                 outputPath = "NewTradeRoutes.xml"
 

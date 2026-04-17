@@ -146,6 +146,6 @@ def test_get_planet_names_and_starting_forces_library(repo):
     repo.startingForcesLibrary = df
     assert repo.startingForcesLibrary.equals(df)
 
-    # None should be ignored by the setter.
+    # None should be accepted by the setter.
     repo.startingForcesLibrary = None
-    assert repo.startingForcesLibrary.equals(df)
+    assert repo.startingForcesLibrary is None

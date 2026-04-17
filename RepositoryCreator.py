@@ -305,36 +305,69 @@ class RepositoryCreator:
             return ["Empty", 0, "Neutral", "Empty", 1]
 
     def getStartingForcesLibrary(self, libraryURL: str):
+        if not libraryURL or not os.path.isfile(libraryURL):
+            print("Starting forces library not found; continuing without it")
+            return None
 
-        startingForcesLibrary = pd.read_csv(libraryURL)
+        try:
+            startingForcesLibrary = pd.read_csv(libraryURL)
+        except (
+            FileNotFoundError,
+            OSError,
+            pd.errors.EmptyDataError,
+            pd.errors.ParserError,
+            UnicodeDecodeError,
+        ) as err:
+            print(f"Failed to load starting forces library '{libraryURL}': {err}")
+            return None
+
+        required_columns = {
+            "Planet",
+            "Era",
+            "Owner",
+            "ObjectType",
+            "Amount",
+            "ReuseEra",
+        }
+        missing_columns = required_columns.difference(startingForcesLibrary.columns)
+        if missing_columns:
+            print(
+                "Starting forces library is malformed; missing columns: "
+                + ", ".join(sorted(missing_columns))
+            )
+            return None
 
         current_planet = None
         current_era = 0
 
-        for index, row in tqdm(startingForcesLibrary.iterrows()):
-            if row["Planet"] != current_planet:
-                current_planet = row["Planet"]
+        try:
+            for index, row in tqdm(startingForcesLibrary.iterrows()):
+                if row["Planet"] != current_planet:
+                    current_planet = row["Planet"]
 
-            if row["Era"] != current_era:
-                current_era = row["Era"]
-                if not pd.isna(row["ReuseEra"]):
-                    era_to_reuse = row["ReuseEra"]
-                    reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (
-                        startingForcesLibrary.Planet == current_planet
-                    )
-                    data_to_add = startingForcesLibrary[reuse_filter].copy()
-                    data_to_add = data_to_add.assign(Era=current_era)
-                    startingForcesLibrary = pd.concat(
-                        [startingForcesLibrary, data_to_add]
-                    )
-                    continue
+                if row["Era"] != current_era:
+                    current_era = row["Era"]
+                    if not pd.isna(row["ReuseEra"]):
+                        era_to_reuse = row["ReuseEra"]
+                        reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (
+                            startingForcesLibrary.Planet == current_planet
+                        )
+                        data_to_add = startingForcesLibrary[reuse_filter].copy()
+                        data_to_add = data_to_add.assign(Era=current_era)
+                        startingForcesLibrary = pd.concat(
+                            [startingForcesLibrary, data_to_add]
+                        )
+                        continue
 
-        startingForcesLibrary.reset_index(drop=True, inplace=True)
+            startingForcesLibrary.reset_index(drop=True, inplace=True)
 
-        startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
-        startingForcesLibrary.dropna(inplace=True)
+            startingForcesLibrary.drop(["ReuseEra"], inplace=True, axis=1)
+            startingForcesLibrary.dropna(inplace=True)
 
-        startingForcesLibrary.sort_values(by=["Planet"], inplace=True)
+            startingForcesLibrary.sort_values(by=["Planet"], inplace=True)
+        except (KeyError, TypeError, ValueError) as err:
+            print(f"Starting forces library is malformed; continuing without it: {err}")
+            return None
 
         return startingForcesLibrary
 

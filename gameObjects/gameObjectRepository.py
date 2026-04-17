@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List, Optional, Set
 import pandas as pd
 
 from gameObjects.planet import Planet
@@ -17,7 +17,7 @@ class GameObjectRepository:
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.__factions: Set[Faction] = set()
         self.__aiplayers: Set[AIPlayer] = set()
-        self.__startingForcesLibrary: pd.DataFrame = pd.DataFrame()
+        self.__startingForcesLibrary: Optional[pd.DataFrame] = None
 
     def addCampaign(self, campaign: Campaign) -> None:
         """Add a Campaign to the repository"""
@@ -146,10 +146,9 @@ class GameObjectRepository:
         return set(self.__aiplayers)
 
     @property
-    def startingForcesLibrary(self) -> pd.DataFrame:
+    def startingForcesLibrary(self) -> Optional[pd.DataFrame]:
         return self.__startingForcesLibrary
 
     @startingForcesLibrary.setter
     def startingForcesLibrary(self, value) -> None:
-        if value is not None:
-            self.__startingForcesLibrary = value
+        self.__startingForcesLibrary = value
