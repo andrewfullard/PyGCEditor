@@ -7,6 +7,7 @@ from commands.ShowCampaignPropertiesDialogCommand import (
     ShowCampaignCreatorDialogCommand,
 )
 from commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
+from commands.ShowOptionsDialogCommand import ShowOptionsDialogCommand
 from config import Config
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
@@ -44,6 +45,7 @@ presenter.planetContextMenu = PlanetContextMenu(presenter)
 presenter.autoConnectionSettingsCommand = AutoConnectionSettingsCommand(
     presenter, dialogFactory
 )
+presenter.optionsDialogCommand = ShowOptionsDialogCommand(presenter, dialogFactory)
 
 qtMainWindow.setMainWindowPresenter(presenter)
 qtMainWindow.getWindow().show()

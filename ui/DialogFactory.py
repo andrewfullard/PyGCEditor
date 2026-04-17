@@ -2,6 +2,7 @@ from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.qttraderoutecreator import QtTradeRouteCreator
 from ui.qtcampaignproperties import QtCampaignProperties
 from ui.qtautoconnectionsettings import QtAutoConnectionSettings
+from ui.qtoptionsdialog import QtOptionsDialog
 from gameObjects.campaign import Campaign
 
 
@@ -19,3 +20,6 @@ class DialogFactory:
 
     def makeCampaignPropertiesDialog(self, campaign: Campaign) -> QtCampaignProperties:
         return QtCampaignProperties(campaign)
+
+    def makeOptionsDialog(self) -> QtOptionsDialog:
+        return QtOptionsDialog()

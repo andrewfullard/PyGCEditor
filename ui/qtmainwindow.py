@@ -135,6 +135,9 @@ class QtMainWindow(MainWindow):
         self.__openAutoConnectionSettingsAction.triggered.connect(
             self.__showAutoConnectionSettings
         )
+
+        self.__openOptionsAction: QAction = QAction("Configuration options", self.__window)
+        self.__openOptionsAction.triggered.connect(self.__showOptionsDialog)
         self.__forcesListTable = QTableView()
         self.__forcesListTable.setSortingEnabled(False)
 
@@ -182,6 +185,7 @@ class QtMainWindow(MainWindow):
         self.__quitAction.triggered.connect(self.__quit)
 
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
+        self.__optionsMenu.addAction(self.__openOptionsAction)
 
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__importForcesSaveAction)
@@ -507,6 +511,9 @@ class QtMainWindow(MainWindow):
 
     def __showAutoConnectionSettings(self):
         self.__presenter.autoConnectionSettingsCommand.execute()
+
+    def __showOptionsDialog(self) -> None:
+        self.__presenter.optionsDialogCommand.execute()
 
     def __showPlanetContextMenu(self, position) -> None:
         self.__presenter.planetContextMenu.show(

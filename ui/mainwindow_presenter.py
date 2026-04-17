@@ -152,6 +152,7 @@ class MainWindowPresenter:
 
         self.newTradeRouteCommand = None
         self.campaignPropertiesCommand = None
+        self.optionsDialogCommand = None
 
     def importStartingForces(self) -> None:
         """Imports all starting forces from spreadsheets"""
@@ -176,6 +177,34 @@ class MainWindowPresenter:
             dataFolders, self.__config.startingForcesLibraryURL
         )
         self.__updateWidgets()
+
+    def onConfigChanged(
+        self,
+        modPath: str,
+        submods: List[str],
+        autoPlanetConnectionDistance: int,
+        startingForcesLibraryURL: str,
+    ) -> None:
+        """Persist config updates and refresh repository data folders if needed."""
+        oldDataFolders = list(self.__config.dataFolders)
+
+        self.__config.save(
+            modPath,
+            submods,
+            autoPlanetConnectionDistance,
+            startingForcesLibraryURL,
+        )
+
+        if self.__config.dataFolders != oldDataFolders:
+            self.__repository.emptyRepository()
+            self.__repository = self.__repositoryCreator.constructRepository(
+                self.__config.dataFolders,
+                self.__config.startingForcesLibraryURL,
+            )
+            self.__updateWidgets()
+            return
+
+        self.__updateGalacticPlot()
 
     def onPlanetChecked(self, index: int, checked: bool) -> None:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
