@@ -13,7 +13,13 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.10'
+      - name: Install system dependencies for PyQt6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libgl1
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: python -m pytest tests
