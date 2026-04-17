@@ -1,4 +1,3 @@
-from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -9,7 +8,6 @@ from PyQt6.QtWidgets import (
     QCheckBox,
 )
 
-from gameObjects.campaign import Campaign
 from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.dialogs import Dialog, DialogResult
 

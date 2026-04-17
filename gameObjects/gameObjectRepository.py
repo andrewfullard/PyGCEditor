@@ -35,25 +35,25 @@ class GameObjectRepository:
         """Remove a Planet from the repository"""
         self.__planets.remove(planet)
 
-    def planetExists(self, name: str) -> None:
+    def planetExists(self, name: str) -> bool:
         """Returns true if a planet exists by name, false otherwise"""
         try:
             self.getPlanetByName(name)
             return True
-        except:
+        except RuntimeError:
             return False
 
-    def tradeRouteExists(self, startName: str, endName: str) -> None:
+    def tradeRouteExists(self, startName: str, endName: str) -> bool:
         """Returns true if a planet exists by name, false otherwise"""
         try:
             self.getTradeRouteByPlanets(
                 self.getPlanetByName(startName), self.getPlanetByName(endName)
             )
             return True
-        except:
+        except RuntimeError:
             return False
 
-    def getCampaignBySetName(self, setName: str) -> None:
+    def getCampaignBySetName(self, setName: str) -> Campaign:
         """Returns a planet object given its name"""
         for campaign in self.campaigns:
             if campaign.setName == setName:
@@ -61,7 +61,7 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existant campaign set " + setName)
 
-    def getPlanetByName(self, name: str) -> None:
+    def getPlanetByName(self, name: str) -> Planet:
         """Returns a planet object given its name"""
         for planet in self.planets:
             if planet.name == name:
@@ -69,7 +69,7 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existing planet " + name)
 
-    def getFactionByName(self, name: str) -> None:
+    def getFactionByName(self, name: str) -> Faction:
         """Returns a planet object given its name"""
         for faction in self.factions:
             if faction.name == name:
@@ -77,7 +77,7 @@ class GameObjectRepository:
 
         raise RuntimeError("Searching for non existing faction " + name)
 
-    def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> None:
+    def getTradeRouteByPlanets(self, start: Planet, end: Planet) -> TradeRoute:
         """Returns a traderoute object given its start and end planets"""
         for tradeRoute in self.tradeRoutes:
             if (tradeRoute.start == start) and (tradeRoute.end == end):

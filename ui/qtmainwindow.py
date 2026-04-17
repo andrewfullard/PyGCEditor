@@ -316,7 +316,7 @@ class QtMainWindow(MainWindow):
         """Update the planets combobox"""
         self.__planetComboBox.clear()
         if planets:
-            if type(planets) == set:
+            if type(planets) is set:
                 planets = list(planets)
             planets.sort()
             self.__planetComboBox.addItems(planets)
@@ -395,11 +395,11 @@ class QtMainWindow(MainWindow):
         """Helper function to clear traderoute selections from the presenter"""
         self.__uncheckAllTable(self.__tradeRouteListWidget)
 
-    def updatePlanetCountDisplay(self, planets: List[int]) -> None:
+    def updatePlanetCountDisplay(self, planets: List) -> None:
         """Updates count of planets on main window."""
         self.__planetCountLabel.setText("Planet Count: " + str(len(planets)))
 
-    def updatePlanetMaxConnectionsCountDisplay(self, tradeRoutes: List[int]) -> None:
+    def updatePlanetMaxConnectionsCountDisplay(self, tradeRoutes: List) -> None:
         """Updates count of the max number of connections any planet has on main window."""
         if len(tradeRoutes) == 0:
             self.__planetMaxConnectionsCountLabel.setText("Max Connections: 0")
@@ -464,7 +464,7 @@ class QtMainWindow(MainWindow):
             + str(planet.income)
         )
 
-    def updateTotalFactionIncome(self, entry: list) -> None:
+    def updateTotalFactionIncome(self, entry: dict) -> None:
         """Updates the total faction income label"""
         text = "Total income per faction\n"
         if not entry:

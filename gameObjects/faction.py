@@ -9,8 +9,8 @@ class Faction:
 
     def __init__(self, name: str):
         self.__name: str = name
-        self.__capital: Planet = None
-        self.__aiplayer: AIPlayer = None
+        self.__capital: Planet
+        self.__aiplayer: AIPlayer
         self.__color: list = [0, 0, 0, 0]
         self.__playable: bool = True
         # self.__story: str = story
@@ -43,7 +43,7 @@ class Faction:
             self.__aiplayer = value
 
     @property
-    def color(self) -> list():
+    def color(self) -> list:
         return self.__color
 
     @color.setter
@@ -52,7 +52,7 @@ class Faction:
             self.__color = value
 
     @property
-    def playable(self) -> list():
+    def playable(self) -> bool:
         return self.__playable
 
     @playable.setter

@@ -1,11 +1,9 @@
 from typing import Set
-from typing import List
 import pandas as pd
 
 from gameObjects.planet import Planet
 from gameObjects.faction import Faction
 from gameObjects.traderoute import TradeRoute
-from gameObjects.startingForce import StartingForce
 
 """Campaign class definition"""
 

@@ -8,8 +8,8 @@ class TradeRoute:
 
     def __init__(self, name: str):
         self.__name: str = name
-        self.__start: Planet = None
-        self.__end: Planet = None
+        self.__start: Planet
+        self.__end: Planet
 
     @property
     def name(self) -> str:

@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QMenu
 
-from ui.dialogs import Dialog, DialogResult
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from ui.dialogs import DialogResult
+from ui.mainwindow_presenter import MainWindowPresenter
 from ui.planetpositionchanger import PlanetPositionChanger
 
 
@@ -13,7 +13,7 @@ class PlanetContextMenu:
         self.__changePositionAction = self.__menu.addAction("Change position")
         self.__presenter = presenter
 
-        self.__dialog = None
+        self.__dialog: PlanetPositionChanger
 
     def show(self, item, position) -> None:
 

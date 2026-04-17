@@ -120,7 +120,7 @@ class QtTradeRouteCreator(Dialog):
         self.__result = DialogResult.Ok
         self.__dialog.close()
 
-    def __tradeRouteDataIsValid(self) -> bool:
+    def __tradeRouteDataIsValid(self):
         """Checks if the trade route data is filled in and the planets exist in the repo"""
         return (
             self.__name

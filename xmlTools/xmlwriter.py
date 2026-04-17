@@ -201,8 +201,8 @@ class XMLWriter:
                             self.subElementText(
                                 campaignElement, "Starting_Forces", entry
                             )
-                            if campaign.useDefaultForces == True:
-                                if dummy == False:
+                            if campaign.useDefaultForces:
+                                if not dummy:
                                     entry = (
                                         str(row.Owner)
                                         + ", "

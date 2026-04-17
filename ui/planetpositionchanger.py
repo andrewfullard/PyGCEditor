@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
 
 from gameObjects.planet import Planet
 from gameObjects.gameObjectRepository import GameObjectRepository
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from ui.mainwindow_presenter import MainWindowPresenter
 from ui.qtautocomplete import AutoCompleter
 from ui.dialogs import Dialog, DialogResult
 
@@ -54,8 +54,6 @@ class PlanetPositionChanger(Dialog):
 
         self.__dialog.setWindowTitle("Adjust position of " + self.__planet_name)
         self.__dialog.setLayout(self.__layout)
-
-        self.__presenter = None
 
         self.__result = DialogResult.Cancel
 

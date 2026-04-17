@@ -14,7 +14,7 @@ class QtGalacticPlot(QWidget):
     planetSelectedSignal = pyqtSignal(int)
     planetShiftSelectedSignal = pyqtSignal(int)
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget):
         super(QtGalacticPlot, self).__init__()
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
@@ -103,7 +103,7 @@ class QtGalacticPlot(QWidget):
                 if ap.name == pa.name:
                     self.__planetOwners.append(po.name)
                     found_pa = True
-            if found_pa == False:
+            if not found_pa:
                 self.__planetOwners.append("N/A")
 
         for p in allPlanets:

@@ -1,5 +1,5 @@
 from commands.Command import Command
-from ui.dialogs import Dialog, DialogResult
+from ui.dialogs import DialogResult
 from ui.DialogFactory import DialogFactory
 from ui.mainwindow_presenter import MainWindowPresenter
 

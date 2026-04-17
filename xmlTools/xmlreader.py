@@ -35,7 +35,7 @@ class XMLReader:
 
     """ General XML file parsing """
 
-    def parseXMLFileList(self, XMLFileList: list) -> list():
+    def parseXMLFileList(self, XMLFileList: list) -> list:
         """Parses a list of XML files and returns their roots as a list"""
         rootList = []
         for XMLFile in XMLFileList:
@@ -49,7 +49,7 @@ class XMLReader:
         else:
             return False
 
-    def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str():
+    def getValueFromXMLRoot(self, XMLRoot, XMLTag: str) -> str:
         """Returns the text from a given tag name in the given root"""
         if XMLRoot.find(XMLTag) is not None:
             if XMLRoot.find(XMLTag).text is not None:
@@ -58,7 +58,7 @@ class XMLReader:
             print("Tag ", XMLTag, " not found")
             return ""
 
-    def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set():
+    def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set:
         """Parses a XML root and returns a Python set of all names in the XML tag given"""
         outputSet = set()
 
@@ -80,7 +80,7 @@ class XMLReader:
         else:
             return False
 
-    def parseMetaFile(self, XMLRoot) -> list():
+    def parseMetaFile(self, XMLRoot) -> list:
         """Returns a list of XML files from a metafile such as GameObjectFiles.xml"""
         fileList = []
         for element in XMLRoot.iter("File"):
@@ -113,7 +113,7 @@ class XMLReader:
                             entries.append(entry)
         return entries
 
-    def findPlanetsFiles(self, gameObjectFile: str, dataFolders: list = None) -> list():
+    def findPlanetsFiles(self, gameObjectFile: str, dataFolders: list = None) -> list:
         """Searches GameObjectFiles for all XML files with the Planet tag.
         Returns a list of their XML roots"""
         if dataFolders:
@@ -149,7 +149,7 @@ class XMLReader:
             else:
                 print("Not a meta file! findPlanetsFiles")
 
-    def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list():
+    def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list:
         """Searches GameObjectFiles for all XML files with the Planet tag.
         Returns a dictionary of file names and their XML roots"""
         metaRoot = et.parse(gameObjectFile).getroot()
@@ -171,7 +171,7 @@ class XMLReader:
         else:
             print("Not a meta file! findPlanetsFiles")
 
-    def findMetaFileRefs(self, metaFile: str, dataFolders: list = None) -> list():
+    def findMetaFileRefs(self, metaFile: str, dataFolders: list = None) -> list:
         """Searches a metafile and returns a list of XML roots that are referenced in the metafile"""
         if dataFolders:
             metaFileName = os.path.basename(metaFile)
@@ -222,7 +222,7 @@ class XMLReader:
     def stringToBool(self, string):
         return string.lower() in ("yes", "true")
 
-    def getNamesFromXML(self, XMLRoot) -> list():
+    def getNamesFromXML(self, XMLRoot) -> list:
         """General XML root parser to return list of element Names (e.g. all planet names)"""
         nameList = []
 
@@ -232,7 +232,7 @@ class XMLReader:
 
         return nameList
 
-    def getFactionInfo(self, XMLRoot) -> list():
+    def getFactionInfo(self, XMLRoot) -> list:
         """XML root parser to return list of faction name and color (color in 0-1 RGBA space)"""
         factionList = []
 
@@ -247,7 +247,7 @@ class XMLReader:
 
         return factionList
 
-    def getUnitInfo(self, XMLRoot) -> list():
+    def getUnitInfo(self, XMLRoot) -> list:
         """XML root parser to return list of unit name, parent, combat power, and company size"""
         namePowerList = []
 
@@ -291,7 +291,7 @@ class XMLReader:
 
         return namePowerList
 
-    def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> Planet:
+    def getStartEnd(self, name: str, planetList: set, tradeRouteRoot) -> tuple[Planet, Planet]:
         """Gets the start and end Planet objects for a trade route of name in root tradeRouteRoot and returns start, end"""
         for element in tradeRouteRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
@@ -304,7 +304,7 @@ class XMLReader:
 
         print("TradeRoute " + name + " not found! getStartEnd")
 
-    def getLocation(self, name: str, XMLRoot) -> float:
+    def getLocation(self, name: str, XMLRoot) -> tuple[float, float]:
         """Gets the galactic position tag value for an object of name in root XMLRoot and returns x, y"""
         for element in XMLRoot.iter():
             if str(element.get("Name")).lower() == name.lower():
@@ -331,7 +331,7 @@ class XMLReader:
 
         print("Object " + name + " not found!")
 
-    def getMultiTag(self, XMLRoot, tagName: str) -> list():
+    def getMultiTag(self, XMLRoot, tagName: str) -> list:
         """Returns a list of text from multiple of the same tag"""
         result = []
         for child in XMLRoot.findall(tagName):
