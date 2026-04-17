@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Set, Dict
+from typing import List, Optional, Set, Dict
 import os
 import pandas as pd
 from xmlTools.xmlreader import XMLReader
@@ -60,6 +60,14 @@ class MainWindow(ABC):
 
     @abstractmethod
     def updatePlanetComboBox(self, planets: List[str]) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def updatePlanetComboBoxSelection(self, planetName: str) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def getSelectedPlanetName(self) -> str:
         raise NotImplementedError()
 
     @abstractmethod
@@ -156,6 +164,7 @@ class MainWindowPresenter:
         self.getSelectedCampaign().startingForces = (
             self.__repository.startingForcesLibrary
         )
+        self.__refreshForcesDisplay()
 
     def importStartingForcesAll(self) -> None:
         """Imports all starting forces from spreadsheets into ALL GCs"""
@@ -216,6 +225,7 @@ class MainWindowPresenter:
                 self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         self.__syncPlanetDependentDisplays(update_planet_count=False)
+        self.__refreshForcesDisplay(preferredPlanetName=self.__planets[index].name)
         self.__updateGalacticPlot()
 
     def planetSelectedOnPlot(self, index: int) -> None:
@@ -239,6 +249,7 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
             self.__checkedTradeRoutes
         )
+        self.__refreshForcesDisplay(preferredPlanetName=self.__planets[index].name)
         self.__updateGalacticPlot()
 
     def planetShiftSelectedOnPlot(self, index: int) -> None:
@@ -335,6 +346,7 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
             self.__checkedTradeRoutes
         )
+        self.__refreshForcesDisplay()
         self.__updateGalacticPlot()
 
     def getSelectedCampaign(self) -> Campaign:
@@ -386,16 +398,26 @@ class MainWindowPresenter:
 
     def onPlanetSelected(self, entry: str) -> None:
         """If a planet is selected by the user, display the associated starting forces and planet info"""
-        planet = self.__repository.getPlanetByName(entry)
+        if not entry:
+            self.__mainWindow.updatePlanetInfoDisplay(None, None, filter=False)
+            return
+
+        try:
+            planet = self.__repository.getPlanetByName(entry)
+        except RuntimeError:
+            self.__mainWindow.updatePlanetInfoDisplay(None, None, filter=False)
+            return
 
         campaignForces = self.getSelectedCampaign().startingForces
-        try:
-            campaignForces["Planet"] == entry
-        except KeyError:
+        if campaignForces is None or "Planet" not in campaignForces.columns:
             self.__mainWindow.updatePlanetInfoDisplay(planet, None, filter=False)
             return
 
         self.__mainWindow.updatePlanetInfoDisplay(planet, campaignForces, filter=entry)
+
+    def onForcesTabActivated(self) -> None:
+        """Refresh Forces tab displays when users switch back to it."""
+        self.__refreshForcesDisplay()
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         """Updates position of a planet in the repository"""
@@ -416,6 +438,7 @@ class MainWindowPresenter:
 
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+        self.__refreshForcesDisplay()
         self.__updateGalacticPlot()
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
@@ -600,6 +623,22 @@ class MainWindowPresenter:
             for p in self.__checkedPlanets:
                 selected_planets.append(self.__getNames(self.__planets).index(p.name))
             self.__mainWindow.updatePlanetCountDisplay(selected_planets)
+
+    def __refreshForcesDisplay(self, preferredPlanetName: Optional[str] = None) -> None:
+        planetNames = sorted(self.__getNames(self.__checkedPlanets))
+        self.__mainWindow.updatePlanetComboBox(planetNames)
+
+        if not planetNames:
+            self.__mainWindow.updatePlanetInfoDisplay(None, None, filter=False)
+            return
+
+        selectedPlanetName = preferredPlanetName or self.__mainWindow.getSelectedPlanetName()
+
+        if selectedPlanetName not in planetNames:
+            selectedPlanetName = planetNames[0]
+
+        self.__mainWindow.updatePlanetComboBoxSelection(selectedPlanetName)
+        self.onPlanetSelected(selectedPlanetName)
 
     def __updateAvailableTradeRoutes(self, planetList: list):
         """Updates the list of available trade routes based on the planets in the GC"""

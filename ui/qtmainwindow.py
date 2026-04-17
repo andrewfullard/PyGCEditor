@@ -124,6 +124,7 @@ class QtMainWindow(MainWindow):
 
         # Left pane, Forces tab
         self.__planetComboBox: QComboBox = QComboBox()
+        self.__planetComboBox.activated.connect(self.__onPlanetSelected)
 
         self.__openAutoConnectionSettingsAction: QAction = QAction(
             "Auto connection settings", self.__window
@@ -206,6 +207,7 @@ class QtMainWindow(MainWindow):
         self.__leftTabsWidget.addTab(self.__planetsTradeRoutes, "Layout")
         self.__leftTabsWidget.addTab(self.__startingForces, "Forces")
         self.__leftTabsWidget.addTab(self.__factions, "Factions")
+        self.__leftTabsWidget.currentChanged.connect(self.__onTabChanged)
 
         self.__planetsTradeRoutes.setLayout(QVBoxLayout())
         self.__startingForces.setLayout(QVBoxLayout())
@@ -321,8 +323,15 @@ class QtMainWindow(MainWindow):
             planets.sort()
             self.__planetComboBox.addItems(planets)
 
-        self.__planetComboBox.activated.connect(self.__onPlanetSelected)
         self.updatePlanetCountDisplay(planets)
+
+    def updatePlanetComboBoxSelection(self, planetName: str) -> None:
+        index = self.__planetComboBox.findText(planetName)
+        if index >= 0:
+            self.__planetComboBox.setCurrentIndex(index)
+
+    def getSelectedPlanetName(self) -> str:
+        return self.__planetComboBox.currentText()
 
     def updatePlanetSelection(self, planets: List[int]) -> None:
         """Clears table, then checks off planets in the table from a list of indexes"""
@@ -451,6 +460,10 @@ class QtMainWindow(MainWindow):
         self.__forcesListTable.setModel(model)
         self.__forcesListTable.resizeColumnsToContents()
 
+        if planet is None:
+            self.__planetInfoLabel.setText("No planet selected")
+            return
+
         self.__planetInfoLabel.setText(
             "Max starbase level: "
             + str(planet.starbaseLevel)
@@ -578,6 +591,11 @@ class QtMainWindow(MainWindow):
     def __onCampaignSelected(self, index: int) -> None:
         """Presents a selected campaign"""
         self.__presenter.onCampaignSelected(index)
+
+    def __onTabChanged(self, index: int) -> None:
+        """Refresh Forces tab data after returning from other tabs."""
+        if index == 1:
+            self.__presenter.onForcesTabActivated()
 
     def __importStartingForcesButtonClicked(self) -> None:
         """Imports all starting forces from spreadsheets"""
