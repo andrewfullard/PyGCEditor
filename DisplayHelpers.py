@@ -30,14 +30,16 @@ class DisplayHelpers:
     def __getPlanetOwner(self, index: int, planet: str, era: int) -> Faction:
         """Gets the owner of a planet in the GC selected by index and era"""
 
+        sf = self.campaigns[index].startingForces
+        if sf is None:
+            return self.__getNeutralFaction()
+
         try:
-            sf = self.campaigns[index].startingForces
             planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower()) & (sf.Era == era)]
         except KeyError:
             return self.__getNeutralFaction()
-        
+
         try:
-            sf = self.campaigns[index].startingForces
             planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())]
         except KeyError:
             return self.__getNeutralFaction()
