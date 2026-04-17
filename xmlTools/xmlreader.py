@@ -298,8 +298,6 @@ class XMLReader:
             if route_name is None or route_name.lower() != name.lower():
                 continue
 
-            print(f"Loading traderoute: {route_name}")
-
             point_a = element.find("Point_A")
             point_b = element.find("Point_B")
 
