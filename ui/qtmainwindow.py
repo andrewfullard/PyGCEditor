@@ -465,12 +465,19 @@ class QtMainWindow(MainWindow):
         )
 
     def updateTotalFactionIncome(self, entry: dict) -> None:
-        """Updates the total faction income label"""
-        text = "Total income per faction\n"
+        """Updates total planets and income per faction."""
+        text = "Total planets and income per faction\n"
         if not entry:
+            self.__totalFactionIncomeLabel.setText(text)
             return
-        for key, value in entry.items():
-            text += str(key) + ": " + str(value) + "\n"
+
+        for key, value in sorted(entry.items()):
+            if isinstance(value, dict):
+                planets = value.get("planets", 0)
+                income = value.get("income", 0)
+                text += f"{key}: {planets} planets, {income} income\n"
+            else:
+                text += f"{key}: {value}\n"
 
         self.__totalFactionIncomeLabel.setText(text)
 

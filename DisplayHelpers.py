@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import pandas as pd
 
 from gameObjects.campaign import Campaign
@@ -52,22 +54,31 @@ class DisplayHelpers:
             if faction.name == "Neutral":
                 return faction
 
-        print("Error! Neutral faction not found!")
+        raise RuntimeError("Error! Neutral faction not found!")
 
-    def calculateFactionIncome(self, planets: set, planet_owners: list) -> dict:
-        """Gets a list of owners of planets in the GC selected by index"""
+    def calculateFactionIncome(
+        self, planets: Iterable[Planet], planet_owners: Iterable[Faction | None]
+    ) -> dict:
+        """Calculates per-faction planet totals and income totals."""
         incomes = []
         factions = []
-        total = {"income": {}}
+        owners = list(planet_owners)
+
         for p in planets:
             incomes.append(p.income)
-        for f in planet_owners:
+        for f in owners:
             if f:
                 factions.append(f.name)
             else:
                 factions.append("None")
-        if len(planet_owners) > 0:
-            df = pd.DataFrame({"income": incomes, "Faction": factions})
-            total = df.groupby("Faction").sum()
 
-        return total.to_dict()["income"]
+        if len(owners) == 0:
+            return {}
+
+        df = pd.DataFrame({"income": incomes, "Faction": factions})
+        totals = df.groupby("Faction").agg(
+            income=("income", "sum"),
+            planets=("Faction", "size"),
+        )
+
+        return totals.to_dict(orient="index")
