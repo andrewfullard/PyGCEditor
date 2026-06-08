@@ -65,7 +65,7 @@ class DisplayHelpers:
         raise RuntimeError("Error! Neutral faction not found!")
 
     def calculateFactionIncome(
-        self, planets: Iterable[Planet], planet_owners: Iterable[Faction | None]
+        self, planets: Iterable[Planet], planet_owners: Iterable[Faction]
     ) -> dict:
         """Calculates per-faction planet totals and income totals."""
         incomes = []
