@@ -22,12 +22,14 @@ class DisplayHelpers:
         owners = []
         for planet in planetList:
             owners.append(
-                self.__getPlanetOwner(index, planet.name, self.campaigns[index].era)
+                self.__getPlanetOwner(
+                    index, planet.name, self.campaigns[index].eraStart
+                )
             )
 
         return owners
 
-    def __getPlanetOwner(self, index: int, planet: str, era: int) -> Faction:
+    def __getPlanetOwner(self, index: int, planet: str, era: str) -> Faction:
         """Gets the owner of a planet in the GC selected by index and era"""
 
         sf = self.campaigns[index].startingForces
@@ -35,13 +37,11 @@ class DisplayHelpers:
             return self.__getNeutralFaction()
 
         try:
-            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower()) & (sf.Era == era)]
-        except KeyError:
-            return self.__getNeutralFaction()
-
-        try:
-            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())]
-        except KeyError:
+            planet_info = sf.loc[
+                (sf.Planet.str.lower() == planet.lower())
+                & (pd.to_numeric(sf.Era, errors="coerce") == int(era))
+            ]
+        except (KeyError, TypeError, ValueError):
             return self.__getNeutralFaction()
 
         try:

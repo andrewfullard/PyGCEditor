@@ -161,15 +161,13 @@ class MainWindowPresenter:
 
     def importStartingForces(self) -> None:
         """Imports all starting forces from spreadsheets"""
-        self.getSelectedCampaign().startingForces = (
-            self.__repository.startingForcesLibrary
-        )
+        self.__syncStartingForcesFromLibrary()
         self.__refreshForcesDisplay()
 
     def importStartingForcesAll(self) -> None:
         """Imports all starting forces from spreadsheets into ALL GCs"""
         for i, campaign in enumerate(self.campaigns):
-            campaign.startingForces = self.__repository.startingForcesLibrary
+            self.__syncStartingForcesFromLibrary(campaign)
             self.campaigns[i] = campaign
 
     def onDataFolderChanged(self, modPath: str) -> None:
@@ -436,8 +434,8 @@ class MainWindowPresenter:
             self.__checkedPlanets.clear()
             self.getSelectedCampaign().planets.clear()
 
-        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
+        self.__syncPlanetDependentDisplays(update_planet_count=True)
         self.__refreshForcesDisplay()
         self.__updateGalacticPlot()
 
@@ -608,6 +606,7 @@ class MainWindowPresenter:
         self.__mainWindow.updateFactionSelection(selectedFactions)
 
     def __syncPlanetDependentDisplays(self, update_planet_count: bool) -> None:
+        self.__syncStartingForcesFromLibrary()
         self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
         self.__planetOwners = self.__helper.getPlanetOwners(
             self.__selectedCampaignIndex, self.__checkedPlanets
@@ -623,6 +622,46 @@ class MainWindowPresenter:
             for p in self.__checkedPlanets:
                 selected_planets.append(self.__getNames(self.__planets).index(p.name))
             self.__mainWindow.updatePlanetCountDisplay(selected_planets)
+
+    def __syncStartingForcesFromLibrary(
+        self, campaign: Optional[Campaign] = None
+    ) -> None:
+        campaign = campaign or self.getSelectedCampaign()
+        library = self.__repository.startingForcesLibrary
+
+        if campaign is None or library is None:
+            return
+
+        if campaign.startingForcesOverrides.empty and not campaign.startingForces.empty:
+            campaign.startingForcesOverrides = campaign.startingForces.copy()
+
+        try:
+            era = int(campaign.eraStart)
+        except (TypeError, ValueError):
+            return
+
+        planet_names = {planet.name.lower() for planet in campaign.planets}
+        eras = pd.to_numeric(library["Era"], errors="coerce")
+        planets = library["Planet"].astype(str).str.lower()
+        starting_forces = library[(eras == era) & planets.isin(planet_names)].copy()
+
+        overrides = campaign.startingForcesOverrides
+        if not overrides.empty:
+            override_planets = overrides["Planet"].astype(str).str.lower()
+            overrides = overrides[override_planets.isin(planet_names)].copy()
+            if not overrides.empty:
+                overrides["Era"] = era
+                overridden_planets = set(overrides["Planet"].astype(str).str.lower())
+                starting_forces = starting_forces[
+                    ~starting_forces["Planet"].astype(str).str.lower().isin(
+                        overridden_planets
+                    )
+                ]
+                starting_forces = pd.concat(
+                    [starting_forces, overrides], ignore_index=True
+                )
+
+        campaign.startingForces = starting_forces
 
     def __refreshForcesDisplay(self, preferredPlanetName: Optional[str] = None) -> None:
         planetNames = sorted(self.__getNames(self.__checkedPlanets))

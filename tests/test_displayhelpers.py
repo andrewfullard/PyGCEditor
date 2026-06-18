@@ -1,3 +1,5 @@
+import pandas as pd
+
 from DisplayHelpers import DisplayHelpers
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
@@ -37,3 +39,28 @@ def test_calculate_faction_income_empty_returns_empty_dict() -> None:
     totals = helper.calculateFactionIncome(planets=[], planet_owners=[])
 
     assert totals == {}
+
+
+def test_get_planet_owners_uses_campaign_starting_era() -> None:
+    repository = GameObjectRepository()
+    empire = Faction("Empire")
+    rebel = Faction("Rebel")
+    neutral = Faction("Neutral")
+    planet = Planet("Alderaan")
+    campaign = Campaign("GC")
+    campaign.eraStart = "2"
+    campaign.startingForces = pd.DataFrame(
+        [
+            ["Alderaan", 1, "Empire", "Garrison", 1],
+            ["Alderaan", 2, "Rebel", "Garrison", 1],
+        ],
+        columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
+    )
+
+    repository.addFaction(empire)
+    repository.addFaction(rebel)
+    repository.addFaction(neutral)
+
+    owners = DisplayHelpers(repository, [campaign]).getPlanetOwners(0, {planet})
+
+    assert owners == [rebel]

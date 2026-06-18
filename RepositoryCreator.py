@@ -219,6 +219,7 @@ class RepositoryCreator:
                 newCampaignStartingForces,
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
+            newCampaign.startingForcesOverrides = newCampaign.startingForces.copy()
 
             print(
                 "Found ",

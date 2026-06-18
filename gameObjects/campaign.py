@@ -31,6 +31,7 @@ class Campaign:
         self.__playableFactions: Set[Faction] = set()
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.startingForces = pd.DataFrame()
+        self.startingForcesOverrides = pd.DataFrame()
 
     @property
     def name(self) -> str:
