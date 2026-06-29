@@ -128,7 +128,77 @@ def test_campaign_writer_uses_default_story_name_when_empty(writer, tmp_path):
     assert "Rebel, Conquests\\Progressive\\Story_Plots_FullProgressive_Rebel.xml" in story_name.text
 
 
+def test_campaign_writer_outputs_enabled_alternate_set(writer, tmp_path):
+    campaign = Campaign("FullMedium_Era_2")
+    campaign.setName = "FullMedium_Era_2"
+    campaign.playableFactions = {Faction("Empire")}
+    campaign.planets = {Planet("Coruscant"), Planet("Kessel"), Planet("Thyferra")}
+    campaign.startingForces = alternate_starting_forces_dataframe()
+    campaign.alternateSets = [
+        {
+            "enabled": True,
+            "suffix": "CCoGM",
+            "faction": "Empire",
+            "dummy_planet": "Coruscant",
+            "planet_affiliations": {
+                "Thyferra": "Warlord",
+                "Kessel": "Empire",
+            },
+        }
+    ]
+
+    output_path = tmp_path / "Campaigns.xml"
+    writer.campaignWriter(campaign, [Faction("Empire"), Faction("Warlord")], str(output_path))
+
+    root = et.parse(str(output_path)).getroot()
+    campaigns = root.findall("Campaign")
+    assert [entry.get("Name") for entry in campaigns] == [
+        "FullMedium_Era_2_Empire",
+        "FullMedium_Era_2_Empire_CCoGM",
+    ]
+    assert campaigns[1].find("Campaign_Set").text == "FullMedium_Era_2_CCoGM"
+
+    starting_forces = [entry.text for entry in campaigns[1].findall("Starting_Forces")]
+    assert "Warlord, Thyferra, TaxAgency" in starting_forces
+    assert "Empire, Kessel, Mine" in starting_forces
+    assert "Empire, Coruscant, CCoGM_Dummy" in starting_forces
+
+
+def test_campaign_alternate_sets_round_trip(tmp_path):
+    campaign = Campaign("GC")
+    campaign.alternateSets = [
+        {
+            "enabled": True,
+            "suffix": "CCoGM",
+            "faction": "Empire",
+            "dummy_planet": "Coruscant",
+            "planet_affiliations": {"Kessel": "Empire"},
+        }
+    ]
+
+    campaign_file = str(tmp_path / "Campaigns.xml")
+    campaign.saveAlternateSets(campaign_file)
+
+    loaded = Campaign("GC")
+    loaded.loadAlternateSets(campaign_file)
+
+    assert loaded.alternateSets == campaign.alternateSets
+
+
 def writer_starting_forces_dataframe():
     import pandas as pd
 
     return pd.DataFrame(columns=["Planet", "Era", "Owner", "ObjectType", "Amount"])
+
+
+def alternate_starting_forces_dataframe():
+    import pandas as pd
+
+    return pd.DataFrame(
+        [
+            ["Coruscant", 0, "Empire", "Empire_Capital", 1],
+            ["Kessel", 0, "Warlord", "Mine", 1],
+            ["Thyferra", 0, "Empire", "TaxAgency", 1],
+        ],
+        columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
+    )

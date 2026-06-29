@@ -3,6 +3,7 @@ import pandas as pd
 
 from RepositoryCreator import RepositoryCreator
 from gameObjects.campaign import Campaign
+from gameObjects.faction import Faction
 from gameObjects.planet import Planet
 
 
@@ -53,6 +54,67 @@ def test_get_starting_forces_library_returns_none_when_file_malformed(tmp_path) 
     result = creator.getStartingForcesLibrary(str(malformed_csv))
 
     assert result is None
+
+
+def test_add_campaigns_folds_existing_ccogm_alternate_into_base_campaign() -> None:
+    creator = RepositoryCreator()
+    creator.repository.addFaction(Faction("Empire"))
+    for planet_name in ("Coruscant", "Kessel", "Thyferra"):
+        creator.repository.addPlanet(Planet(planet_name))
+
+    base = et.fromstring(
+        """
+<Campaign Name="FullMedium_Era_2_Empire">
+    <Campaign_Set>FullMedium_Era_2</Campaign_Set>
+    <Starting_Active_Player>Empire</Starting_Active_Player>
+    <Locations>Coruscant, Kessel, Thyferra</Locations>
+    <Starting_Forces>Empire, Coruscant, Generate_Force</Starting_Forces>
+    <Starting_Forces>Warlords, Kessel, Generate_Force</Starting_Forces>
+    <Starting_Forces>Empire, Thyferra, Generate_Force</Starting_Forces>
+</Campaign>
+"""
+    )
+    alternate = et.fromstring(
+        """
+<Campaign Name="FullMedium_Era_2_Empire_CCoGM">
+    <Campaign_Set>FullMedium_Era_2_CCoGM</Campaign_Set>
+    <Starting_Active_Player>Empire</Starting_Active_Player>
+    <Locations>Coruscant, Kessel, Thyferra</Locations>
+    <Starting_Forces>Empire, Coruscant, Generate_Force</Starting_Forces>
+    <Starting_Forces>Empire, Coruscant, CCoGM_Dummy</Starting_Forces>
+    <Starting_Forces>Empire, Kessel, Generate_Force</Starting_Forces>
+    <Starting_Forces>Warlords, Thyferra, Generate_Force</Starting_Forces>
+</Campaign>
+"""
+    )
+
+    creator.addCampaignsFromXML(
+        [
+            ("FullMedium_Era_2.XML", "FullMedium_Era_2_Empire", base),
+            (
+                "FullMedium_Era_2.XML",
+                "FullMedium_Era_2_Empire_CCoGM",
+                alternate,
+            ),
+        ]
+    )
+
+    campaigns = creator.repository.campaigns
+    campaign = creator.repository.getCampaignBySetName("FullMedium_Era_2")
+
+    assert len(campaigns) == 1
+    assert campaign.alternateSets == [
+        {
+            "enabled": True,
+            "suffix": "CCoGM",
+            "faction": "Empire",
+            "dummy_planet": "Coruscant",
+            "planet_affiliations": {
+                "Kessel": "Empire",
+                "Thyferra": "Warlords",
+            },
+        }
+    ]
 
 
 def test_construct_repository_keeps_campaigns_when_starting_forces_library_missing(
