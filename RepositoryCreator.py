@@ -129,10 +129,14 @@ class RepositoryCreator:
 
             print("Loading campaign", campaign, "from set", setName)
 
+            if self.__tryAddAlternateSet(campaign, setName, startingActivePlayer, campaignRoot):
+                continue
+
             if setName != current_campaign_set:
                 current_campaign_set = setName
                 newCampaign = Campaign(campaign)
                 newCampaign.fileName = filePath
+                newCampaign.loadAlternateSets()
             else:
                 # MP campaigns don't have a starting active player
                 if startingActivePlayer:
@@ -229,6 +233,69 @@ class RepositoryCreator:
             )
 
             self.repository.addCampaign(newCampaign)
+
+    def __tryAddAlternateSet(
+        self, campaignName: str, setName: str, faction: str, campaignRoot
+    ) -> bool:
+        """Fold embedded regime campaigns into their base campaign when possible."""
+        if not faction:
+            return False
+
+        for baseCampaign in self.repository.campaigns:
+            prefix = baseCampaign.setName + "_"
+            if not setName.startswith(prefix):
+                continue
+
+            suffix = setName[len(prefix) :]
+            if campaignName != baseCampaign.setName + "_" + faction + "_" + suffix:
+                continue
+
+            alternateForces = [
+                self.getStartingForces(entry)
+                for entry in self.__xml.getMultiTag(campaignRoot, ".//Starting_Forces")
+            ]
+            baseOwners = self.__planetOwners(baseCampaign.startingForces.values)
+            alternateOwners = self.__planetOwners(alternateForces)
+            dummyName = suffix + "_Dummy"
+
+            alternateSets = baseCampaign.alternateSets
+            if not any(
+                entry["suffix"] == suffix and entry["faction"] == faction
+                for entry in alternateSets
+            ):
+                alternateSets.append(
+                    {
+                        "enabled": True,
+                        "suffix": suffix,
+                        "faction": faction,
+                        "dummy_planet": self.__dummyPlanet(alternateForces, dummyName),
+                        "planet_affiliations": {
+                            planet: owner
+                            for planet, owner in alternateOwners.items()
+                            if baseOwners.get(planet) != owner
+                        },
+                    }
+                )
+                baseCampaign.alternateSets = alternateSets
+
+            return True
+
+        return False
+
+    def __planetOwners(self, startingForces) -> dict:
+        owners = {}
+        for planet, era, owner, objectType, amount in startingForces:
+            objectType = str(objectType)
+            if objectType.endswith("_Dummy") or objectType.endswith("_Capital"):
+                continue
+            owners.setdefault(str(planet), str(owner))
+        return owners
+
+    def __dummyPlanet(self, startingForces, dummyName: str) -> str:
+        for planet, era, owner, objectType, amount in startingForces:
+            if str(objectType) == dummyName:
+                return str(planet)
+        return ""
 
     def runPlanetVariantOfCheck(self) -> None:
         for planet in tqdm(self.repository.planets):

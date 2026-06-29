@@ -28,13 +28,19 @@ class XMLWriter:
 
         filtered_starting_forces = campaign.startingForces[era_limiter]
 
-        for playableFaction in sorted(
-            campaign.playableFactions, key=lambda faction: faction.name
+        def writeCampaignElement(
+            playableFaction,
+            campaignName,
+            campaignSetName,
+            startingForces,
+            dummyName="",
+            dummyFaction="",
+            dummyPlanet="",
         ):
             campaignElement = et.SubElement(self.root, "Campaign")
 
-            campaignElement.set("Name", campaign.setName + "_" + playableFaction.name)
-            self.subElementText(campaignElement, "Campaign_Set", campaign.setName)
+            campaignElement.set("Name", campaignName)
+            self.subElementText(campaignElement, "Campaign_Set", campaignSetName)
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
             self.subElementText(campaignElement, "Is_Listed", campaign.isListed)
 
@@ -145,8 +151,38 @@ class XMLWriter:
                 "11": "Eleven",
             }
 
+            def alternateDummyPlanetName():
+                def planetOwnedByDummyFaction(planetName):
+                    planet_forces = startingForces[
+                        startingForces.Planet.str.upper() == planetName.upper()
+                    ]
+                    return not planet_forces.empty and (
+                        str(planet_forces.iloc[0].Owner).upper()
+                        == dummyFaction.upper()
+                    )
+
+                if dummyPlanet and planetOwnedByDummyFaction(dummyPlanet):
+                    return dummyPlanet
+
+                for index, row in startingForces.iterrows():
+                    objectType = str(row.ObjectType)
+                    if (
+                        objectType.startswith("Era_")
+                        and objectType.endswith("_Dummy")
+                        and planetOwnedByDummyFaction(str(row.Planet))
+                    ):
+                        return str(row.Planet)
+
+                for planet in sorted(campaign.planets, key=lambda planet: planet.name):
+                    if planetOwnedByDummyFaction(planet.name):
+                        return planet.name
+
+                return ""
+
+            alternateDummyPlanet = alternateDummyPlanetName() if dummyName else ""
             dummy = False
-            for index, row in filtered_starting_forces.iterrows():
+            wroteAlternateDummy = False
+            for index, row in startingForces.iterrows():
                 i = 0
                 while i < row.Amount:
                     i = i + 1
@@ -177,6 +213,63 @@ class XMLWriter:
                                     self.subElementText(
                                         campaignElement, "Starting_Forces", entry
                                     )
+
+                            if (
+                                dummyName
+                                and not wroteAlternateDummy
+                                and str(row.Planet).upper()
+                                == alternateDummyPlanet.upper()
+                            ):
+                                entry = (
+                                    dummyFaction
+                                    + ", "
+                                    + alternateDummyPlanet
+                                    + ", "
+                                    + dummyName
+                                )
+                                wroteAlternateDummy = True
+                                self.subElementText(
+                                    campaignElement, "Starting_Forces", entry
+                                )
+
+        playableFactions = sorted(
+            campaign.playableFactions, key=lambda faction: faction.name
+        )
+        for playableFaction in playableFactions:
+            writeCampaignElement(
+                playableFaction,
+                campaign.setName + "_" + playableFaction.name,
+                campaign.setName,
+                filtered_starting_forces,
+            )
+
+        for alternateSet in campaign.alternateSets:
+            suffix = alternateSet.get("suffix", "")
+            targetFaction = alternateSet.get("faction", "")
+            if not alternateSet.get("enabled") or not suffix or not targetFaction:
+                continue
+
+            for playableFaction in playableFactions:
+                if playableFaction.name != targetFaction:
+                    continue
+
+                alternateForces = filtered_starting_forces.copy()
+                overrides = alternateSet.get("planet_affiliations", {})
+                for planetName, owner in overrides.items():
+                    alternateForces.loc[
+                        alternateForces.Planet.str.upper() == planetName.upper(),
+                        "Owner",
+                    ] = owner
+
+                writeCampaignElement(
+                    playableFaction,
+                    campaign.setName + "_" + playableFaction.name + "_" + suffix,
+                    campaign.setName + "_" + suffix,
+                    alternateForces,
+                    suffix + "_Dummy",
+                    targetFaction,
+                    alternateSet.get("dummy_planet", ""),
+                )
 
         tree = et.ElementTree(self.root)
         self.writer(tree, outputName=outputName)
