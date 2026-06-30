@@ -64,13 +64,7 @@ def safe_file_name(name: str) -> str:
 
 
 def campaign_export_name(campaign) -> str:
-    name = campaign.setName if campaign.setName != "Empty" else campaign.name
-    for faction in sorted(
-        campaign.playableFactions, key=lambda f: len(f.name), reverse=True
-    ):
-        pattern = rf"(^|_){re.escape(faction.name)}(?=_|$)"
-        name = re.sub(pattern, lambda match: match.group(1), name).strip("_")
-    return name or campaign.name
+    return campaign.setName if campaign.setName != "Empty" else campaign.name
 
 
 def export_campaigns(repository, output_dir: Path) -> None:

@@ -1,7 +1,8 @@
 import pandas as pd
 
-from export_campaign_planets_lua import campaign_lua_table
+from export_campaign_planets_lua import campaign_export_name, campaign_lua_table
 from gameObjects.campaign import Campaign
+from gameObjects.faction import Faction
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 
@@ -32,8 +33,24 @@ def test_campaign_lua_table_exports_owners_and_adjacency():
 
     assert campaign_lua_table(campaign) == (
         "return {\n"
-        '    ["BYSS"] = { owner = "EMPIRE", adjacent = {"Coruscant"} },\n'
-        '    ["CARIDA"] = { owner = "NEUTRAL", adjacent = {"Coruscant"} },\n'
-        '    ["Coruscant"] = { owner = "REBEL", adjacent = {"BYSS", "CARIDA"} },\n'
+        '    ["BYSS"] = { owner = "EMPIRE", adjacent = {"CORUSCANT"} },\n'
+        '    ["CARIDA"] = { owner = "NEUTRAL", adjacent = {"CORUSCANT"} },\n'
+        '    ["CORUSCANT"] = { owner = "REBEL", adjacent = {"BYSS", "CARIDA"} },\n'
         "}\n"
     )
+
+
+def test_campaign_export_name_removes_playable_faction():
+    campaign = Campaign("FullProgressive_Empire")
+    campaign.setName = "FullProgressive"
+    campaign.playableFactions = {Faction("Empire")}
+
+    assert campaign_export_name(campaign) == "FullProgressive"
+
+
+def test_campaign_export_name_keeps_faction_words_in_set_name():
+    campaign = Campaign("Crimson_Empire")
+    campaign.setName = "Crimson_Empire"
+    campaign.playableFactions = {Faction("Empire")}
+
+    assert campaign_export_name(campaign) == "Crimson_Empire"
