@@ -701,6 +701,7 @@ class MainWindowPresenter:
             self.__planets,
             self.__planetOwners,
             autoPlanetConnectionDistance=autoConnectionDistance,
+            allTradeRoutes=self.__tradeRoutes,
         )
 
     @property

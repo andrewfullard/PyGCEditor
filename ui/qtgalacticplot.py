@@ -61,6 +61,9 @@ class QtGalacticPlot(QWidget):
         self.__tradeRouteTrace = []
         self.__tradeRouteLines = []
         self.__tradeRouteConnections = []
+        self.__inactiveTradeRouteLines = []
+        self.__allTradeRoutes = []
+        self.__selectedPlanetNames = set()
         self.__highlightedPlanetIndex = None
 
     def plotGalaxy(
@@ -70,6 +73,7 @@ class QtGalacticPlot(QWidget):
         allPlanets,
         planetOwners,
         autoPlanetConnectionDistance: int = 0,
+        allTradeRoutes=None,
     ) -> None:
         """Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes"""
         if self.__is_first_run:
@@ -87,6 +91,8 @@ class QtGalacticPlot(QWidget):
         self.__axes.set_xlim(xlim)
         self.__axes.set_ylim(ylim)
         self.__applyMapColors()
+        self.__allTradeRoutes = allTradeRoutes or []
+        self.__selectedPlanetNames = {planet.name for planet in planets}
 
         # Has to be set again here for the planet hover labels to work
         self.__annotate = self.__axes.annotate(
@@ -104,6 +110,7 @@ class QtGalacticPlot(QWidget):
         )
         self.__tradeRouteLines = []
         self.__tradeRouteConnections = []
+        self.__inactiveTradeRouteLines = []
         self.__highlightedPlanetIndex = None
 
         self.__planetNames = []
@@ -146,22 +153,9 @@ class QtGalacticPlot(QWidget):
             zorder=2,
         )
 
-        x1 = 0
-        y1 = 0
-        x2 = 0
-        y2 = 0
-
         # loop through routes
         for t in tradeRoutes:
-            x1 = t.start.x
-            y1 = t.start.y
-            x2 = t.end.x
-            y2 = t.end.y
-            # plot each route (start, end)
-            route_line = self.__axes.plot([x1, x2], [y1, y2], "k-", alpha=0.4, zorder=1)[
-                0
-            ]
-            route_line.set_color(self.__routeColor)
+            route_line = self.__plot_trade_route(t, alpha=0.4, zorder=1)
             self.__tradeRouteLines.append(route_line)
             self.__tradeRouteConnections.append((t.start.name, t.end.name))
 
@@ -279,13 +273,16 @@ class QtGalacticPlot(QWidget):
             if contains:
                 hovered_planet_index = ind["ind"][0]
                 if self.__highlightedPlanetIndex != hovered_planet_index:
-                    self.__highlight_connected_trade_routes(hovered_planet_index)
+                    self.__reset_trade_route_highlight()
+                    self.__remove_inactive_trade_route_preview()
+                    self.__show_inactive_trade_routes(hovered_planet_index)
                     self.__highlightedPlanetIndex = hovered_planet_index
                 self.__update_annotation(ind)
                 self.__annotate.set_visible(True)
             else:
                 if self.__highlightedPlanetIndex is not None:
                     self.__reset_trade_route_highlight()
+                    self.__remove_inactive_trade_route_preview()
                     self.__highlightedPlanetIndex = None
                 if visible:
                     self.__annotate.set_visible(False)
@@ -294,6 +291,7 @@ class QtGalacticPlot(QWidget):
         else:
             if self.__highlightedPlanetIndex is not None:
                 self.__reset_trade_route_highlight()
+                self.__remove_inactive_trade_route_preview()
                 self.__highlightedPlanetIndex = None
                 self.__galacticPlotCanvas.draw_idle()
 
@@ -304,6 +302,42 @@ class QtGalacticPlot(QWidget):
             line.set_alpha(0.4)
             line.set_linewidth(1.0)
             line.set_zorder(1)
+
+    def __remove_inactive_trade_route_preview(self) -> None:
+        for line in self.__inactiveTradeRouteLines:
+            line.remove()
+        self.__inactiveTradeRouteLines = []
+
+    def __show_inactive_trade_routes(self, planet_index: int) -> None:
+        """Show subtle previews for routes available from an unselected planet."""
+        if planet_index < 0 or planet_index >= len(self.__planetNames):
+            return
+
+        planet_name = self.__planetNames[planet_index]
+        if planet_name in self.__selectedPlanetNames:
+            self.__highlight_connected_trade_routes(planet_index)
+            return
+
+        for trade_route in self.__allTradeRoutes:
+            if trade_route.start.name != planet_name and trade_route.end.name != planet_name:
+                continue
+
+            line = self.__plot_trade_route(
+                trade_route,
+                alpha=0.25,
+                linewidth=1.0,
+                linestyle="--",
+                zorder=0,
+            )
+            self.__inactiveTradeRouteLines.append(line)
+
+    def __plot_trade_route(self, trade_route, **style):
+        return self.__axes.plot(
+            [trade_route.start.x, trade_route.end.x],
+            [trade_route.start.y, trade_route.end.y],
+            color=self.__routeColor,
+            **style,
+        )[0]
 
     def __highlight_connected_trade_routes(self, planet_index: int) -> None:
         """Highlight routes connected to the hovered planet."""
