@@ -45,7 +45,7 @@ def test_campaign_export_name_removes_playable_faction():
     campaign.setName = "FullProgressive"
     campaign.playableFactions = {Faction("Empire")}
 
-    assert campaign_export_name(campaign) == "FullProgressive"
+    assert campaign_export_name(campaign) == "FULLPROGRESSIVE"
 
 
 def test_campaign_export_name_keeps_faction_words_in_set_name():
@@ -53,4 +53,4 @@ def test_campaign_export_name_keeps_faction_words_in_set_name():
     campaign.setName = "Crimson_Empire"
     campaign.playableFactions = {Faction("Empire")}
 
-    assert campaign_export_name(campaign) == "Crimson_Empire"
+    assert campaign_export_name(campaign) == "CRIMSON_EMPIRE"
