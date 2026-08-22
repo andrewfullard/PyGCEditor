@@ -36,7 +36,7 @@ def main(argv=None, start_event_loop: bool = True) -> int:
 
     qtMainWindow: QtMainWindow = QtMainWindow()
     presenter: MainWindowPresenter = MainWindowPresenter(
-        qtMainWindow, repository, config
+        qtMainWindow, repository, config, dialogFactory
     )
     presenter.newTradeRouteCommand = ShowTradeRouteCreatorDialogCommand(
         presenter, dialogFactory

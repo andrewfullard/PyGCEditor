@@ -15,6 +15,7 @@ from ui.qtgalacticplot import QtGalacticPlot
 from RepositoryCreator import RepositoryCreator
 from xmlTools.xmlstructure import XMLStructure
 from DisplayHelpers import DisplayHelpers
+from ui.DialogFactory import DialogFactory
 
 
 class MainWindow(ABC):
@@ -116,7 +117,11 @@ class MainWindowPresenter:
     """Window display class"""
 
     def __init__(
-        self, mainWindow: MainWindow, repository: GameObjectRepository, config: Config
+        self,
+        mainWindow: MainWindow,
+        repository: GameObjectRepository,
+        config: Config,
+        dialogFactory: Optional[DialogFactory] = None,
     ):
         self.__mainWindow: MainWindow = mainWindow
         self.__plot: QtGalacticPlot = self.__mainWindow.makeGalacticPlot()
@@ -125,6 +130,7 @@ class MainWindowPresenter:
 
         self.__repository = repository
         self.__repositoryCreator = RepositoryCreator()
+        self.__dialogFactory = dialogFactory
 
         self.__config = config
 
@@ -182,6 +188,8 @@ class MainWindowPresenter:
         self.__repository = self.__repositoryCreator.constructRepository(
             dataFolders, self.__config.startingForcesLibraryURL
         )
+        if self.__dialogFactory is not None:
+            self.__dialogFactory.setRepository(self.__repository)
         self.__updateWidgets()
 
     def onConfigChanged(
@@ -207,6 +215,8 @@ class MainWindowPresenter:
                 self.__config.dataFolders,
                 self.__config.startingForcesLibraryURL,
             )
+            if self.__dialogFactory is not None:
+                self.__dialogFactory.setRepository(self.__repository)
             self.__updateWidgets()
             return
 

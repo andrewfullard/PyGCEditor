@@ -12,6 +12,9 @@ class DialogFactory:
     def __init__(self, repository: GameObjectRepository):
         self.__repository: GameObjectRepository = repository
 
+    def setRepository(self, repository: GameObjectRepository) -> None:
+        self.__repository = repository
+
     def makeTradeRouteCreationDialog(self, start, end) -> QtTradeRouteCreator:
         return QtTradeRouteCreator(self.__repository, start, end)
 
