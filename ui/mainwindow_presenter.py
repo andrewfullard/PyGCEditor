@@ -436,7 +436,7 @@ class MainWindowPresenter:
             self.__checkedPlanets.clear()
             self.getSelectedCampaign().planets.clear()
 
-        self.__mainWindow.updatePlanetComboBox(self.__getNames(self.__checkedPlanets))
+        self.__syncPlanetDependentDisplays(update_planet_count=True)
         self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         self.__refreshForcesDisplay()
         self.__updateGalacticPlot()
