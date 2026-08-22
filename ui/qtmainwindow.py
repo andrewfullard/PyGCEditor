@@ -41,6 +41,7 @@ class QtMainWindow(MainWindow):
         self.__widget: QWidget = QSplitter(self.__window)
         self.__window.setCentralWidget(self.__widget)
         self.__window.setWindowTitle("Galactic Conquest Editor")
+        self.__plot = None
 
         # Left pane, GC layout tab
         self.__campaignComboBox: QComboBox = QComboBox()
@@ -188,6 +189,10 @@ class QtMainWindow(MainWindow):
 
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
+        self.__darkMapAction: QAction = QAction("Dark Map", self.__window)
+        self.__darkMapAction.setCheckable(True)
+        self.__darkMapAction.toggled.connect(self.__setDarkMap)
+        self.__optionsMenu.addAction(self.__darkMapAction)
 
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__importForcesAction)
@@ -288,12 +293,17 @@ class QtMainWindow(MainWindow):
     def makeGalacticPlot(self) -> QtGalacticPlot:
         """Plot planets and trade routes"""
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
+        self.__plot = plot
         self.__widget.addWidget(plot.getWidget())
         return plot
 
     def getWindow(self) -> QMainWindow:
         """Returns the window"""
         return self.__window
+
+    def __setDarkMap(self, enabled: bool) -> None:
+        if self.__plot is not None:
+            self.__plot.setDarkMode(enabled)
 
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""

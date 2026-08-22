@@ -33,6 +33,10 @@ class QtGalacticPlot(QWidget):
         self.__axes: Axes = self.__galacticPlotCanvas.figure.add_subplot(
             111, aspect="equal"
         )
+        self.__backgroundColor = "#ffffff"
+        self.__foregroundColor = "#202124"
+        self.__routeColor = "k"
+        self.__planetOutlineColor = "black"
 
         self.__annotate = self.__axes.annotate(
             "",
@@ -44,6 +48,7 @@ class QtGalacticPlot(QWidget):
             zorder=9,
         )
         self.__annotate.set_visible(False)
+        self.__applyMapColors()
         self.__planetNames = []
         self.__planetOwners = []
         self.__starbaseLevel = []
@@ -81,6 +86,7 @@ class QtGalacticPlot(QWidget):
         self.__axes.clear()
         self.__axes.set_xlim(xlim)
         self.__axes.set_ylim(ylim)
+        self.__applyMapColors()
 
         # Has to be set again here for the planet hover labels to work
         self.__annotate = self.__axes.annotate(
@@ -93,7 +99,9 @@ class QtGalacticPlot(QWidget):
             zorder=9,
         )
         self.__annotate.set_visible(False)
-        self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
+        self.__tradeRouteTrace = self.__axes.plot(
+            [0, 0], [0, 0], color=self.__routeColor
+        )
         self.__tradeRouteLines = []
         self.__tradeRouteConnections = []
         self.__highlightedPlanetIndex = None
@@ -129,7 +137,13 @@ class QtGalacticPlot(QWidget):
             self.__groundStructureSlots.append(p.groundStructureSlots)
 
         self.__planetsScatter = self.__axes.scatter(
-            x, y, c="grey", alpha=0.1, picker=5, zorder=2
+            x,
+            y,
+            c="grey",
+            alpha=0.1,
+            edgecolors=self.__planetOutlineColor,
+            picker=5,
+            zorder=2,
         )
 
         x1 = 0
@@ -147,6 +161,7 @@ class QtGalacticPlot(QWidget):
             route_line = self.__axes.plot([x1, x2], [y1, y2], "k-", alpha=0.4, zorder=1)[
                 0
             ]
+            route_line.set_color(self.__routeColor)
             self.__tradeRouteLines.append(route_line)
             self.__tradeRouteConnections.append((t.start.name, t.end.name))
 
@@ -159,7 +174,11 @@ class QtGalacticPlot(QWidget):
                     dist: float = p1.distanceTo(p2)
                     if dist < autoPlanetConnectionDistance:
                         self.__axes.plot(
-                            [p1.x, p2.x], [p1.y, p2.y], "k-", alpha=0.1, zorder=1
+                            [p1.x, p2.x],
+                            [p1.y, p2.y],
+                            color=self.__routeColor,
+                            alpha=0.1,
+                            zorder=1,
                         )
 
         x = []
@@ -175,7 +194,9 @@ class QtGalacticPlot(QWidget):
                 else:
                     color.append((0, 0, 0))
 
-            self.__axes.scatter(x, y, c=color, edgecolors="black", zorder=4)
+            self.__axes.scatter(
+                x, y, c=color, edgecolors=self.__planetOutlineColor, zorder=4
+            )
         else:
             for p in planets:
                 x.append(p.x)
@@ -188,6 +209,32 @@ class QtGalacticPlot(QWidget):
     def getWidget(self) -> QWidget:
         """Returns the plot widget"""
         return self.__galacticPlotWidget
+
+    def setDarkMode(self, enabled: bool) -> None:
+        """Set the map colors without changing planet faction colors."""
+        if enabled:
+            self.__backgroundColor = "#202124"
+            self.__foregroundColor = "#f1f3f4"
+            self.__routeColor = "#d9e2ec"
+            self.__planetOutlineColor = "#f1f3f4"
+        else:
+            self.__backgroundColor = "#ffffff"
+            self.__foregroundColor = "#202124"
+            self.__routeColor = "k"
+            self.__planetOutlineColor = "black"
+
+        self.__applyMapColors()
+        self.__galacticPlotCanvas.draw_idle()
+
+    def __applyMapColors(self) -> None:
+        self.__galacticPlotCanvas.figure.set_facecolor(self.__backgroundColor)
+        self.__axes.set_facecolor(self.__backgroundColor)
+        self.__axes.tick_params(colors=self.__foregroundColor)
+        for spine in self.__axes.spines.values():
+            spine.set_color(self.__foregroundColor)
+        self.__annotate.get_bbox_patch().set_facecolor(self.__backgroundColor)
+        self.__annotate.get_bbox_patch().set_edgecolor(self.__foregroundColor)
+        self.__annotate.set_color(self.__foregroundColor)
 
     def __planetSelect(self, event) -> None:
         """Event handler for selecting a planet on the map"""
@@ -219,7 +266,9 @@ class QtGalacticPlot(QWidget):
                     ls="--",
                 )
             else:
-                self.__tradeRouteTrace = self.__axes.plot([0, 0], [0, 0])
+                self.__tradeRouteTrace = self.__axes.plot(
+                    [0, 0], [0, 0], color=self.__routeColor
+                )
 
             """Display annotation tooltip if the cursor is over a planet"""
             if self.__planetsScatter:
@@ -251,7 +300,7 @@ class QtGalacticPlot(QWidget):
     def __reset_trade_route_highlight(self) -> None:
         """Restore default styling for all trade routes."""
         for line in self.__tradeRouteLines:
-            line.set_color("k")
+            line.set_color(self.__routeColor)
             line.set_alpha(0.4)
             line.set_linewidth(1.0)
             line.set_zorder(1)
@@ -267,7 +316,7 @@ class QtGalacticPlot(QWidget):
             self.__tradeRouteLines, self.__tradeRouteConnections
         ):
             is_connected = hovered_planet_name == start_name or hovered_planet_name == end_name
-            line.set_color("gold" if is_connected else "k")
+            line.set_color("gold" if is_connected else self.__routeColor)
             line.set_alpha(0.9 if is_connected else 0.1)
             line.set_linewidth(2.0 if is_connected else 1.0)
             line.set_zorder(5 if is_connected else 1)

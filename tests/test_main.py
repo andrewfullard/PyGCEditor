@@ -8,6 +8,7 @@ from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from ui.qtmainwindow import QtMainWindow
 
 
 def _build_dummy_repository() -> GameObjectRepository:
@@ -77,3 +78,30 @@ def test_main_launches_with_dummy_data(monkeypatch):
     result = main.main(argv=["main.py"], start_event_loop=True)
 
     assert result == 0
+
+
+def test_dark_map_action_changes_map_colors_only(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    window = QtMainWindow()
+    plot = window.makeGalacticPlot()
+    options_menu = next(
+        action.menu()
+        for action in window.getWindow().menuBar().actions()
+        if action.text() == "Options"
+    )
+    dark_map_action = next(
+        action for action in options_menu.actions() if action.text() == "Dark Map"
+    )
+    axes = plot._QtGalacticPlot__axes
+
+    dark_map_action.trigger()
+    assert axes.get_facecolor()[:3] == (32 / 255, 33 / 255, 36 / 255)
+
+    dark_map_action.trigger()
+    assert axes.get_facecolor()[:3] == (1.0, 1.0, 1.0)
+
+    window.getWindow().close()
