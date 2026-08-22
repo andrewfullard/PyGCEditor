@@ -171,6 +171,7 @@ class MainWindowPresenter:
             self.__repository.startingForcesLibrary
         )
         self.__refreshForcesDisplay()
+        self.__syncPlanetDependentDisplays(False)
 
     def importStartingForcesAll(self) -> None:
         """Imports all starting forces from spreadsheets into ALL GCs"""
