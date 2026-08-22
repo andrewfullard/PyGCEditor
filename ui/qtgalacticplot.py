@@ -24,6 +24,10 @@ class QtGalacticPlot(QWidget):
 
         self.__galacticPlotCanvas.mpl_connect("pick_event", self.__planetSelect)
         self.__galacticPlotCanvas.mpl_connect("motion_notify_event", self.__planetHover)
+        self.__galacticPlotCanvas.mpl_connect("scroll_event", self.__zoomPlot)
+        self.__galacticPlotCanvas.mpl_connect("button_press_event", self.__startPan)
+        self.__galacticPlotCanvas.mpl_connect("motion_notify_event", self.__panPlot)
+        self.__galacticPlotCanvas.mpl_connect("button_release_event", self.__endPan)
 
         self.__galacticPlotNavBar: NavigationToolbar = NavigationToolbar(
             self.__galacticPlotCanvas, self.__galacticPlotWidget
@@ -64,6 +68,7 @@ class QtGalacticPlot(QWidget):
         self.__inactiveTradeRouteLines = []
         self.__allTradeRoutes = []
         self.__selectedPlanetNames = set()
+        self.__panStart = None
         self.__highlightedPlanetIndex = None
 
     def plotGalaxy(
@@ -235,8 +240,48 @@ class QtGalacticPlot(QWidget):
         planet_index = event.ind[0]
         if event.mouseevent.button == 3:
             self.planetShiftSelectedSignal.emit(planet_index)
-        else:
+        elif event.mouseevent.button == 1:
             self.planetSelectedSignal.emit(planet_index)
+
+    def __zoomPlot(self, event) -> None:
+        """Zoom the map around the cursor position with the scroll wheel."""
+        if event.inaxes != self.__axes or event.xdata is None or event.ydata is None:
+            return
+
+        zoom_factor = 0.8 if event.step > 0 else 1.25
+        xlim = self.__axes.get_xlim()
+        ylim = self.__axes.get_ylim()
+        self.__axes.set_xlim(
+            event.xdata + (xlim[0] - event.xdata) * zoom_factor,
+            event.xdata + (xlim[1] - event.xdata) * zoom_factor,
+        )
+        self.__axes.set_ylim(
+            event.ydata + (ylim[0] - event.ydata) * zoom_factor,
+            event.ydata + (ylim[1] - event.ydata) * zoom_factor,
+        )
+        self.__galacticPlotCanvas.draw_idle()
+
+    def __startPan(self, event) -> None:
+        """Begin panning when the middle mouse button is pressed."""
+        if event.button == 2 and event.inaxes == self.__axes:
+            self.__panStart = (event.xdata, event.ydata, self.__axes.get_xlim(), self.__axes.get_ylim())
+
+    def __panPlot(self, event) -> None:
+        """Move the map while the middle mouse button is held and dragged."""
+        if self.__panStart is None or event.xdata is None or event.ydata is None:
+            return
+
+        start_x, start_y, xlim, ylim = self.__panStart
+        delta_x = start_x - event.xdata
+        delta_y = start_y - event.ydata
+        self.__axes.set_xlim(xlim[0] + delta_x, xlim[1] + delta_x)
+        self.__axes.set_ylim(ylim[0] + delta_y, ylim[1] + delta_y)
+        self.__galacticPlotCanvas.draw_idle()
+
+    def __endPan(self, event) -> None:
+        """End panning when the middle mouse button is released."""
+        if event.button == 2:
+            self.__panStart = None
 
     def __planetHover(self, event) -> None:
         """Handler for hovering on a planet in the plot"""
