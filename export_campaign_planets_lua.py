@@ -64,7 +64,7 @@ def safe_file_name(name: str) -> str:
 
 
 def campaign_export_name(campaign) -> str:
-    return campaign.setName if campaign.setName != "Empty" else campaign.name
+    return campaign.setName.upper() if campaign.setName != "Empty" else campaign.name.upper()
 
 
 def export_campaigns(repository, output_dir: Path) -> None:
