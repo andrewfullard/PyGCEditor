@@ -166,6 +166,11 @@ class QtMainWindow(MainWindow):
         self.__saveAction: QAction = QAction("Save", self.__window)
         self.__saveAction.triggered.connect(self.__saveFile)
 
+        self.__importForcesAction: QAction = QAction(
+            "Import Default Forces", self.__window
+        )
+        self.__importForcesAction.triggered.connect(self.__importForcesFile)
+
         self.__importForcesSaveAction: QAction = QAction(
             "Import Default Forces and Save", self.__window
         )
@@ -185,6 +190,7 @@ class QtMainWindow(MainWindow):
         self.__optionsMenu.addAction(self.__openOptionsAction)
 
         self.__fileMenu.addAction(self.__saveAction)
+        self.__fileMenu.addAction(self.__importForcesAction)
         self.__fileMenu.addAction(self.__importForcesSaveAction)
         self.__fileMenu.addAction(self.__importStartingForcesAllSaveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
@@ -560,6 +566,10 @@ class QtMainWindow(MainWindow):
         )
         if fileName:
             self.__presenter.saveFile(fileName)
+
+    def __importForcesFile(self) -> None:
+        """Import default forces without saving"""
+        self.__presenter.importStartingForces()
 
     def __importForcesSaveFile(self) -> None:
         """Import default forces and save"""
