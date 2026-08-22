@@ -291,6 +291,36 @@ class XMLReader:
 
         return namePowerList
 
+    def getGroundForceTypes(self, XMLRoot) -> dict:
+        """Returns ground-force names and their variant parents from a game-object file."""
+        ground_force_types = {}
+
+        for element in XMLRoot:
+            name = element.get("Name")
+            if name is None:
+                continue
+
+            tag = element.tag.lower()
+            child_tags = {child.tag.lower() for child in element}
+            is_ground = (
+                "ground" in tag
+                or "company" in tag
+                or "company_units" in child_tags
+            )
+            is_space = (
+                "space" in tag
+                or "squadron" in tag
+                or "squadron_units" in child_tags
+            )
+
+            if is_ground and not is_space:
+                variant = element.find("Variant_Of_Existing_Type")
+                ground_force_types[name] = (
+                    variant.text.strip() if variant is not None and variant.text else None
+                )
+
+        return ground_force_types
+
     def getPlanetInfo(self, XMLRoot) -> list:
         """Iterates XMLRoot once, extracting all planet fields per element.
         Returns a list of dicts with keys: name, variant_of, coordinates,

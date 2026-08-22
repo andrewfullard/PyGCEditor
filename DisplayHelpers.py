@@ -36,17 +36,21 @@ class DisplayHelpers:
 
         try:
             planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower()) & (sf.Era == era)]
-        except KeyError:
+        except (AttributeError, KeyError):
+            return self.__getNeutralFaction()
+
+        if planet_info.empty or not self.repository.groundForceTypes:
+            return self.__getNeutralFaction()
+
+        ground_info = planet_info.loc[
+            planet_info.ObjectType.isin(self.repository.groundForceTypes)
+        ]
+        if ground_info.empty:
             return self.__getNeutralFaction()
 
         try:
-            planet_info = sf.loc[(sf.Planet.str.lower() == planet.lower())]
-        except KeyError:
-            return self.__getNeutralFaction()
-
-        try:
-            faction_name = planet_info.values[0][2]
-        except IndexError:
+            faction_name = ground_info.iloc[0]["Owner"]
+        except (KeyError, IndexError):
             return self.__getNeutralFaction()
 
         faction = getObject(faction_name, self.repository.factions)
