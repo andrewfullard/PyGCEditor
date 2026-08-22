@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas as pd
 from tqdm import tqdm
@@ -12,6 +13,9 @@ from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
 
 from util import getObject
+
+
+logger = logging.getLogger(__name__)
 
 
 class RepositoryCreator:
@@ -50,15 +54,14 @@ class RepositoryCreator:
                 coordinates = record["coordinates"]
 
                 if coordinates is None:
-                    print(
-                        "Planet "
-                        + name
-                        + " not added to repository, missing coordinates"
+                    logger.warning(
+                        "Planet %s not added to repository, missing coordinates", name
                     )
                     continue
 
                 newplanet = Planet(name)
                 newplanet.variantOf = record["variant_of"]
+                newplanet.emptyXmlTags = record["empty_xml_tags"]
                 newplanet.x, newplanet.y = coordinates
 
                 # TODO better way than this hack to convert to int
@@ -97,7 +100,7 @@ class RepositoryCreator:
                         name, self.repository.planets, tradeRouteRoot
                     )
                 except ValueError as err:
-                    print(f"Skipping malformed trade route '{name}': {err}")
+                    logger.warning("Skipping malformed trade route '%s': %s", name, err)
                     continue
                 self.repository.addTradeRoute(newroute)
 
@@ -127,7 +130,7 @@ class RepositoryCreator:
                 campaignRoot, ".//Starting_Active_Player"
             ).strip()
 
-            print("Loading campaign", campaign, "from set", setName)
+            logger.info("Loading campaign %s from set %s", campaign, setName)
 
             if setName != current_campaign_set:
                 current_campaign_set = setName
@@ -220,12 +223,10 @@ class RepositoryCreator:
                 columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
             )
 
-            print(
-                "Found ",
+            logger.info(
+                "Found %d planets and %d trade routes",
                 len(newCampaignPlanets),
-                "planets and ",
                 len(newCampaignTradeRoutes),
-                "trade routes",
             )
 
             self.repository.addCampaign(newCampaign)
@@ -233,23 +234,21 @@ class RepositoryCreator:
     def runPlanetVariantOfCheck(self) -> None:
         for planet in tqdm(self.repository.planets):
             if (planet.x is None) or (planet.y is None):
-                print(planet.name + " needs parent coordinates")
+                logger.warning("%s needs parent coordinates", planet.name)
                 if planet.variantOf != "":
                     parent = self.getPlanetParentWithCoordinates(planet)
                     planet.x = parent.x
                     planet.y = parent.y
-                    print(
-                        planet.name
-                        + " now uses "
-                        + parent.name
-                        + " coordinates!"
-                        + parent.x.__str__()
-                        + ", "
-                        + parent.y.__str__()
+                    logger.info(
+                        "%s now uses %s coordinates!%s, %s",
+                        planet.name,
+                        parent.name,
+                        parent.x,
+                        parent.y,
                     )
 
                 else:
-                    print(planet.name + " has no parent!")
+                    logger.error("%s has no parent!", planet.name)
 
     def getPlanetParentWithCoordinates(self, planet) -> Planet:
         p = self.repository.getPlanetByName(planet.variantOf)
@@ -274,12 +273,12 @@ class RepositoryCreator:
             unitName = entry[2]
             return [planetName, 0, factionName, unitName, 1]
         else:
-            print("Malformed starting forces entry ", entry)
+            logger.warning("Malformed starting forces entry %s", entry)
             return ["Empty", 0, "Neutral", "Empty", 1]
 
     def getStartingForcesLibrary(self, libraryURL: str):
         if not libraryURL or not os.path.isfile(libraryURL):
-            print("Starting forces library not found; continuing without it")
+            logger.warning("Starting forces library not found; continuing without it")
             return None
 
         try:
@@ -291,7 +290,7 @@ class RepositoryCreator:
             pd.errors.ParserError,
             UnicodeDecodeError,
         ) as err:
-            print(f"Failed to load starting forces library '{libraryURL}': {err}")
+            logger.error("Failed to load starting forces library '%s': %s", libraryURL, err)
             return None
 
         required_columns = {
@@ -304,9 +303,9 @@ class RepositoryCreator:
         }
         missing_columns = required_columns.difference(startingForcesLibrary.columns)
         if missing_columns:
-            print(
-                "Starting forces library is malformed; missing columns: "
-                + ", ".join(sorted(missing_columns))
+            logger.error(
+                "Starting forces library is malformed; missing columns: %s",
+                ", ".join(sorted(missing_columns)),
             )
             return None
 
@@ -339,7 +338,9 @@ class RepositoryCreator:
 
             startingForcesLibrary.sort_values(by=["Planet"], inplace=True)
         except (KeyError, TypeError, ValueError) as err:
-            print(f"Starting forces library is malformed; continuing without it: {err}")
+            logger.error(
+                "Starting forces library is malformed; continuing without it: %s", err
+            )
             return None
 
         return startingForcesLibrary
@@ -375,22 +376,22 @@ class RepositoryCreator:
             )
 
         if metaFileExists("GameObjectFiles.XML"):
-            print("\nLoading Planets")
+            logger.info("Loading Planets")
             planetRoots = self.__xml.findPlanetsFiles(gameObjectFile, dataFolders)
             self.addPlanetsFromXML(planetRoots)
 
         if metaFileExists("TradeRouteFiles.XML"):
-            print("\nLoading Trade Routes")
+            logger.info("Loading Trade Routes")
             tradeRouteRoots = self.__xml.findMetaFileRefs(tradeRouteFile, dataFolders)
             self.addTradeRoutesFromXML(tradeRouteRoots)
 
         if metaFileExists("FactionFiles.XML"):
-            print("\nLoading Factions")
+            logger.info("Loading Factions")
             factionRoots = self.__xml.findMetaFileRefs(factionFile, dataFolders)
             self.addFactionsFromXML(factionRoots)
 
         if metaFileExists("CampaignFiles.XML"):
-            print("\nLoading Campigns")
+            logger.info("Loading Campigns")
             campaignPathRootList = self.__xml.findMetaFileRefsWithPaths(
                 campaignFile, dataFolders
             )
@@ -403,9 +404,9 @@ class RepositoryCreator:
             ]
             self.addCampaignsFromXML(campaignEntries)
 
-        print("\nChecking for planet variants")
+        logger.info("Checking for planet variants")
         self.runPlanetVariantOfCheck()
-        print("\nLoading starting forces")
+        logger.info("Loading starting forces")
         self.repository.startingForcesLibrary = self.getStartingForcesLibrary(
             self.__startingForcesLibraryURL
         )

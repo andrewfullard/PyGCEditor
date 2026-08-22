@@ -1,9 +1,13 @@
+import logging
 import lxml.etree as et
 import os.path
 from gameObjects.planet import Planet
 from xmlTools.xmlstructure import XMLStructure
 
 from util import getObject, commaSepListParser, commaReplaceInList
+
+
+logger = logging.getLogger(__name__)
 
 """ XML with etree:
 
@@ -55,7 +59,7 @@ class XMLReader:
             if XMLRoot.find(XMLTag).text is not None:
                 return XMLRoot.find(XMLTag).text.strip()
         else:
-            print("Tag ", XMLTag, " not found")
+            logger.warning("Tag %s not found", XMLTag)
             return ""
 
     def getListFromXMLRoot(self, XMLRoot, XMLTag: str) -> set:
@@ -123,7 +127,7 @@ class XMLReader:
             for file in fileList:
                 filePath = self._findFileAcrossFolders(file, dataFolders)
                 if filePath is None:
-                    print(file + " not found. Continuing")
+                    logger.warning("%s not found. Continuing", file)
                     continue
                 fileRoot = et.parse(filePath)
                 if self.hasTag(fileRoot, "Planet"):
@@ -137,7 +141,7 @@ class XMLReader:
 
                 for file in fileList:
                     if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
-                        print(file + " not found. Continuing")
+                        logger.warning("%s not found. Continuing", file)
                         continue
 
                     fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
@@ -147,7 +151,7 @@ class XMLReader:
                 return planetsFiles
 
             else:
-                print("Not a meta file! findPlanetsFiles")
+                logger.error("Not a meta file: findPlanetsFiles")
 
     def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list:
         """Searches GameObjectFiles for all XML files with the Planet tag.
@@ -159,7 +163,7 @@ class XMLReader:
 
             for file in fileList:
                 if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
-                    print(file + " not found. Continuing")
+                    logger.warning("%s not found. Continuing", file)
                     continue
 
                 fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
@@ -169,7 +173,7 @@ class XMLReader:
             return planetsFiles
 
         else:
-            print("Not a meta file! findPlanetsFiles")
+            logger.error("Not a meta file: findPlanetsFiles")
 
     def findMetaFileRefs(self, metaFile: str, dataFolders: list = None) -> list:
         """Searches a metafile and returns a list of XML roots that are referenced in the metafile"""
@@ -180,7 +184,7 @@ class XMLReader:
             for file in fileList:
                 filePath = self._findFileAcrossFolders(file, dataFolders)
                 if filePath is None:
-                    print(file + " not found. Continuing")
+                    logger.warning("%s not found. Continuing", file)
                     continue
                 fileRoot = et.parse(filePath)
                 metaFileRefs.append(fileRoot.getroot())
@@ -193,7 +197,7 @@ class XMLReader:
 
                 for file in fileList:
                     if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
-                        print(file + " not found. Continuing")
+                        logger.warning("%s not found. Continuing", file)
                         continue
 
                     fileRoot = et.parse(XMLStructure.dataFolder + "/XML/" + file)
@@ -202,7 +206,7 @@ class XMLReader:
                 return metaFileRefs
 
             else:
-                print("Not a meta file! findMetaFileRefs")
+                logger.error("Not a meta file: findMetaFileRefs")
 
     def findMetaFileRefsWithPaths(self, metaFile: str, dataFolders: list) -> list:
         """Like findMetaFileRefs but returns [(filePath, root), ...] so callers can
@@ -213,7 +217,7 @@ class XMLReader:
         for file in fileList:
             filePath = self._findFileAcrossFolders(file, dataFolders)
             if filePath is None:
-                print(file + " not found. Continuing")
+                logger.warning("%s not found. Continuing", file)
                 continue
             fileRoot = et.parse(filePath)
             result.append((filePath, fileRoot.getroot()))
@@ -311,10 +315,18 @@ class XMLReader:
                 if len(parts) == 3:
                     coordinates = (float(parts[0]), float(parts[1]))
                 else:
-                    print("Planet " + name + " has no proper XYZ location set!")
+                    logger.warning("Planet %s has no proper XYZ location set!", name)
                     coordinates = None
             else:
                 coordinates = None
+
+            empty_xml_tags = [
+                child.tag
+                for child in element.iter()
+                if child is not element
+                and len(child) == 0
+                and (child.text is None or not child.text.strip())
+            ]
 
             def _prop(tag):
                 el = element.find(tag)
@@ -332,6 +344,7 @@ class XMLReader:
                 "space_slots": _prop(".//Special_Structures_Space"),
                 "ground_slots": _prop(".//Special_Structures_Land"),
                 "income": _prop(".//Planet_Credit_Value"),
+                "empty_xml_tags": empty_xml_tags,
             })
 
         return planets
@@ -380,10 +393,10 @@ class XMLReader:
                     if len(outputList) == 3:
                         return float(outputList[0]), float(outputList[1])
                     else:
-                        print("Planet " + name + " has no proper XYZ location set!")
+                        logger.warning("Planet %s has no proper XYZ location set!", name)
                         return None
 
-        print("Planet " + name + " not found! getLocation")
+        logger.error("Planet %s not found: getLocation", name)
         return None
 
     def getObjectProperty(self, name: str, XMLRoot, tag: str) -> str:
@@ -396,7 +409,7 @@ class XMLReader:
                 else:
                     return "0"
 
-        print("Object " + name + " not found!")
+        logger.error("Object %s not found!", name)
 
     def getMultiTag(self, XMLRoot, tagName: str) -> list:
         """Returns a list of text from multiple of the same tag"""

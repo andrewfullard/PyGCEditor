@@ -1,10 +1,13 @@
 import argparse
+import logging
 import re
 from collections import defaultdict
 from pathlib import Path
-
 from config import Config
 from RepositoryCreator import RepositoryCreator
+
+
+logger = logging.getLogger(__name__)
 
 
 def lua_quote(value) -> str:
@@ -72,7 +75,7 @@ def export_campaigns(repository, output_dir: Path) -> None:
     for campaign in sorted(repository.campaigns, key=lambda c: c.name):
         output_path = output_dir / f"{safe_file_name(campaign_export_name(campaign))}.lua"
         output_path.write_text(campaign_lua_table(campaign), encoding="utf-8")
-        print(output_path)
+        logger.info("Exported %s", output_path)
 
 
 def main() -> int:

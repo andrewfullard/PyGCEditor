@@ -128,6 +128,23 @@ def test_campaign_writer_uses_default_story_name_when_empty(writer, tmp_path):
     assert "Rebel, Conquests\\Progressive\\Story_Plots_FullProgressive_Rebel.xml" in story_name.text
 
 
+def test_campaign_writer_logs_planets_with_empty_xml_tags(writer, tmp_path, caplog):
+    campaign = Campaign("GC")
+    campaign.setName = "GC"
+    campaign.playableFactions = {Faction("Rebel")}
+    campaign.startingForces = writer_starting_forces_dataframe()
+
+    planet = Planet("Alderaan")
+    planet.emptyXmlTags = ["Planet_Ability_Name", "Planet_Credit_Value"]
+    campaign.planets = {planet}
+
+    with caplog.at_level("ERROR"):
+        writer.campaignWriter(campaign, [Faction("Rebel")], str(tmp_path / "GC.xml"))
+
+    assert "Planet Alderaan has empty XML tags" in caplog.text
+    assert "Planet_Ability_Name" in caplog.text
+
+
 def writer_starting_forces_dataframe():
     import pandas as pd
 

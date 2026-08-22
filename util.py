@@ -1,3 +1,9 @@
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 def getObject(name: str, objectList: set):
     """Finds a named object in a list of objects and returns it"""
     for o in objectList:
@@ -5,7 +11,7 @@ def getObject(name: str, objectList: set):
             if o is not None:
                 return o
 
-    print("Object " + name + " not found!")
+    logger.warning("Object %s not found!", name)
 
 
 def commaSepListParser(entry: str) -> list():

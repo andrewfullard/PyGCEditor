@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import logging
 from typing import List, Optional, Set, Dict
 import os
 import pandas as pd
@@ -16,6 +17,9 @@ from RepositoryCreator import RepositoryCreator
 from xmlTools.xmlstructure import XMLStructure
 from DisplayHelpers import DisplayHelpers
 from ui.DialogFactory import DialogFactory
+
+
+logger = logging.getLogger(__name__)
 
 
 class MainWindow(ABC):
@@ -182,7 +186,7 @@ class MainWindowPresenter:
     def onDataFolderChanged(self, modPath: str) -> None:
         """Updates the repository and refreshes the main window when a new mod folder is selected"""
         self.__repository.emptyRepository()
-        print("Loading from folder " + modPath)
+        logger.info("Loading from folder %s", modPath)
         dataFolders = [os.path.join(modPath, "Data")]
         for submod in self.__config.submods:
             dataFolders.append(os.path.join(modPath, submod, "Data"))
@@ -283,8 +287,8 @@ class MainWindowPresenter:
                     try:
                         index = self.__availableTradeRoutes.index(traderoute)
                     except ValueError:
-                        print(
-                            "Error, trade route not available but it should be! Try turning a planet off and on"
+                        logger.error(
+                            "Trade route not available but it should be; try turning a planet off and on"
                         )
 
                     if self.__mainWindow.selectSingleTradeRoute(index):
@@ -601,10 +605,10 @@ class MainWindowPresenter:
                 try:
                     selectedTradeRoutes.append(self.__availableTradeRoutes.index(t))
                 except ValueError:
-                    print("The trade route " + t.name + " is missing!")
+                    logger.error("The trade route %s is missing!", t.name)
             else:
                 missingRoutes.add(t)
-                print("Trade route missing!")
+                logger.error("Trade route missing!")
 
         self.__checkedTradeRoutes -= missingRoutes
         self.__mainWindow.updateTradeRouteSelection(selectedTradeRoutes)

@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from PyQt6.QtWidgets import QApplication
@@ -17,6 +18,7 @@ from RepositoryCreator import RepositoryCreator
 
 
 def main(argv=None, start_event_loop: bool = True) -> int:
+    logging.basicConfig(level=logging.INFO)
     config: Config = Config()
     args = argv if argv is not None else sys.argv
 

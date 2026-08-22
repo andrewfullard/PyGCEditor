@@ -1,4 +1,5 @@
 from math import sqrt
+from typing import List
 
 """Planet class definition"""
 
@@ -17,6 +18,7 @@ class Planet:
         self.__SupportsStructure: str = ""
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
+        self.__emptyXmlTags: List[str] = []
 
     def distanceTo(self, target):
         return sqrt((self.x - target.x) ** 2 + (self.y - target.y) ** 2)
@@ -104,3 +106,11 @@ class Planet:
     @income.setter
     def income(self, value: int) -> None:
         self.__income = value
+
+    @property
+    def emptyXmlTags(self) -> List[str]:
+        return list(self.__emptyXmlTags)
+
+    @emptyXmlTags.setter
+    def emptyXmlTags(self, value: List[str]) -> None:
+        self.__emptyXmlTags = list(value)

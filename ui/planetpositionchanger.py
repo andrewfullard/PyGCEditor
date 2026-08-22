@@ -1,3 +1,5 @@
+import logging
+
 # from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QDialog,
@@ -10,6 +12,9 @@ from PyQt6.QtWidgets import (
 
 from ui.mainwindow_presenter import MainWindowPresenter
 from ui.dialogs import Dialog, DialogResult
+
+
+logger = logging.getLogger(__name__)
 
 
 class PlanetPositionChanger(Dialog):
@@ -72,7 +77,7 @@ class PlanetPositionChanger(Dialog):
             self.__x = float(self.__inputX.text())
             self.__y = float(self.__inputY.text())
         except ValueError:
-            print("Error! Wrong coordinate format. X: ", self.__x, "Y: ", self.__y)
+            logger.error("Wrong coordinate format. X: %s Y: %s", self.__x, self.__y)
             self.__dialog.close()
             return
 
