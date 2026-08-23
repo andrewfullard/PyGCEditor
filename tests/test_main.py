@@ -179,9 +179,13 @@ def test_undo_action_calls_presenter(monkeypatch):
     class TestPresenter:
         def __init__(self):
             self.undoCalls = 0
+            self.redoCalls = 0
 
         def undo(self):
             self.undoCalls += 1
+
+        def redo(self):
+            self.redoCalls += 1
 
     window = QtMainWindow()
     presenter = TestPresenter()
@@ -197,6 +201,12 @@ def test_undo_action_calls_presenter(monkeypatch):
 
     assert presenter.undoCalls == 1
     assert undo_action.shortcut().toString() == "Ctrl+Z"
+
+    redo_action = next(action for action in edit_menu.actions() if action.text() == "Redo")
+    redo_action.trigger()
+
+    assert presenter.redoCalls == 1
+    assert redo_action.shortcut().toString() == "Ctrl+Y"
     window.getWindow().close()
 
 

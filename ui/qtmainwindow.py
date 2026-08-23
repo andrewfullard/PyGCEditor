@@ -195,6 +195,9 @@ class QtMainWindow:
         self.__undoAction: QAction = QAction("Undo", self.__window)
         self.__undoAction.setShortcut("Ctrl+Z")
         self.__undoAction.triggered.connect(self.__undo)
+        self.__redoAction: QAction = QAction("Redo", self.__window)
+        self.__redoAction.setShortcut("Ctrl+Y")
+        self.__redoAction.triggered.connect(self.__redo)
 
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
@@ -218,6 +221,7 @@ class QtMainWindow:
 
         self.__menuBar.addMenu(self.__fileMenu)
         self.__editMenu.addAction(self.__undoAction)
+        self.__editMenu.addAction(self.__redoAction)
         self.__menuBar.addMenu(self.__editMenu)
         self.__menuBar.addMenu(self.__addMenu)
         self.__menuBar.addMenu(self.__optionsMenu)
@@ -330,6 +334,9 @@ class QtMainWindow:
 
     def __undo(self) -> None:
         self.__presenter.undo()
+
+    def __redo(self) -> None:
+        self.__presenter.redo()
 
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""

@@ -51,6 +51,7 @@ class MainWindowPresenter:
         self.__newTradeRoutes: List[TradeRoute] = list()
         self.__updatedPlanetCoords: Dict[str, List[float]] = dict()
         self.__undoHistory: List[dict] = []
+        self.__redoHistory: List[dict] = []
 
         self.__selectedCampaignIndex: int = 0
 
@@ -411,7 +412,20 @@ class MainWindowPresenter:
         if not self.__undoHistory:
             return
 
+        self.__redoHistory.append(self.__captureSnapshot())
         snapshot = self.__undoHistory.pop()
+        self.__restoreSnapshot(snapshot)
+
+    def redo(self) -> None:
+        """Redo the most recently undone edit, if one is available."""
+        if not self.__redoHistory:
+            return
+
+        self.__undoHistory.append(self.__captureSnapshot())
+        snapshot = self.__redoHistory.pop()
+        self.__restoreSnapshot(snapshot)
+
+    def __restoreSnapshot(self, snapshot: dict) -> None:
         for campaign in self.campaigns:
             self.__repository.removeCampaign(campaign)
         for campaign in snapshot["campaigns"]:
@@ -444,6 +458,11 @@ class MainWindowPresenter:
         self.__updateWidgets()
 
     def __recordUndo(self) -> None:
+        self.__undoHistory.append(self.__captureSnapshot())
+        del self.__undoHistory[:-20]
+        self.__redoHistory.clear()
+
+    def __captureSnapshot(self) -> dict:
         campaign_states = [
             (
                 campaign,
@@ -454,21 +473,18 @@ class MainWindowPresenter:
             )
             for campaign in self.campaigns
         ]
-        self.__undoHistory.append(
-            {
-                "campaigns": list(self.campaigns),
-                "campaign_states": campaign_states,
-                "trade_routes": self.__repository.tradeRoutes,
-                "planet_positions": [
-                    (planet, planet.x, planet.y)
-                    for planet in self.__repository.planets
-                ],
-                "new_trade_routes": list(self.__newTradeRoutes),
-                "updated_planet_coords": dict(self.__updatedPlanetCoords),
-                "selected_campaign_index": self.__selectedCampaignIndex,
-            }
-        )
-        del self.__undoHistory[:-20]
+        return {
+            "campaigns": list(self.campaigns),
+            "campaign_states": campaign_states,
+            "trade_routes": self.__repository.tradeRoutes,
+            "planet_positions": [
+                (planet, planet.x, planet.y)
+                for planet in self.__repository.planets
+            ],
+            "new_trade_routes": list(self.__newTradeRoutes),
+            "updated_planet_coords": dict(self.__updatedPlanetCoords),
+            "selected_campaign_index": self.__selectedCampaignIndex,
+        }
 
     def saveFile(self, fileName: str) -> None:
         """Saves XML files"""
