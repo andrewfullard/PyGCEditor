@@ -7,4 +7,5 @@
     <Submod>TR</Submod>
     <MaximumFleetMovementDistance>0</MaximumFleetMovementDistance>
     <StartingForcesLibraryURL></StartingForcesLibraryURL>
+    <DarkMap>False</DarkMap>
 </Config>

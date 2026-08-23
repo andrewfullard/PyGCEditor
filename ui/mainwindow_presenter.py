@@ -160,6 +160,7 @@ class MainWindowPresenter:
         self.__plot.planetShiftSelectedSignal.connect(self.planetShiftSelectedOnPlot)
 
         self.__helper = DisplayHelpers(self.__repository, self.campaigns)
+        self.__plot.setDarkMode(self.__config.darkMap)
 
         self.__updateWidgets()
 
@@ -211,6 +212,7 @@ class MainWindowPresenter:
         submods: List[str],
         autoPlanetConnectionDistance: int,
         startingForcesLibraryURL: str,
+        darkMap: bool,
     ) -> None:
         """Persist config updates and refresh repository data folders if needed."""
         oldDataFolders = list(self.__config.dataFolders)
@@ -220,7 +222,9 @@ class MainWindowPresenter:
             submods,
             autoPlanetConnectionDistance,
             startingForcesLibraryURL,
+            darkMap,
         )
+        self.__plot.setDarkMode(darkMap)
 
         if self.__config.dataFolders != oldDataFolders:
             self.__repository.emptyRepository()

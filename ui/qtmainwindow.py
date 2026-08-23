@@ -199,10 +199,12 @@ class QtMainWindow(MainWindow):
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
         self.__optionsMenu.addAction(self.__showLoadingLogAction)
-        self.__darkMapAction: QAction = QAction("Dark Map", self.__window)
-        self.__darkMapAction.setCheckable(True)
-        self.__darkMapAction.toggled.connect(self.__setDarkMap)
-        self.__optionsMenu.addAction(self.__darkMapAction)
+        self.__showPlanetNamesAction: QAction = QAction(
+            "Show Planet Names", self.__window
+        )
+        self.__showPlanetNamesAction.setCheckable(True)
+        self.__showPlanetNamesAction.toggled.connect(self.__setShowPlanetNames)
+        self.__optionsMenu.addAction(self.__showPlanetNamesAction)
 
         self.__fileMenu.addAction(self.__saveAction)
         self.__fileMenu.addAction(self.__importForcesAction)
@@ -318,9 +320,9 @@ class QtMainWindow(MainWindow):
         """Returns the window"""
         return self.__window
 
-    def __setDarkMap(self, enabled: bool) -> None:
+    def __setShowPlanetNames(self, enabled: bool) -> None:
         if self.__plot is not None:
-            self.__plot.setDarkMode(enabled)
+            self.__plot.setShowPlanetNames(enabled)
 
     def __showLoadingLog(self) -> None:
         if self.__loadingLogDialog is not None:

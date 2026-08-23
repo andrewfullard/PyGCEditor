@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
     QLabel,
+    QCheckBox,
     QLineEdit,
     QMessageBox,
     QPushButton,
@@ -34,6 +35,7 @@ class QtOptionsDialog(Dialog):
         self.__submodsInput: QTextEdit = QTextEdit(self.__dialog)
         self.__autoConnectionDistanceInput: QLineEdit = QLineEdit(self.__dialog)
         self.__startingForcesFileInput: QLineEdit = QLineEdit(self.__dialog)
+        self.__darkMapInput: QCheckBox = QCheckBox("Use dark map", self.__dialog)
 
         submodHelpText = QLabel(
             "Enter one submod per line in ascending priority order."
@@ -70,6 +72,7 @@ class QtOptionsDialog(Dialog):
         self.__formLayout.addRow(
             "Starting Forces Library URL or CSV file", self.__startingForcesFileWidget
         )
+        self.__formLayout.addRow("Map appearance", self.__darkMapInput)
 
         self.__buttonLayout.addWidget(self.__okButton)
         self.__buttonLayout.addWidget(self.__cancelButton)
@@ -87,6 +90,7 @@ class QtOptionsDialog(Dialog):
         self.__submods: List[str] = []
         self.__autoConnectionDistance = 0
         self.__startingForcesLibraryURL = ""
+        self.__darkMap = False
 
     def show(
         self,
@@ -94,12 +98,14 @@ class QtOptionsDialog(Dialog):
         submods: List[str],
         autoConnectionDistance: int,
         startingForcesLibraryURL: str,
+        darkMap: bool = False,
     ) -> DialogResult:
         """Display dialog modally."""
         self.__modPathInput.setText(modPath)
         self.__submodsInput.setPlainText("\n".join(submods))
         self.__autoConnectionDistanceInput.setText(str(autoConnectionDistance))
         self.__startingForcesFileInput.setText(startingForcesLibraryURL)
+        self.__darkMapInput.setChecked(darkMap)
 
         self.__dialog.exec()
         return self.__result
@@ -115,6 +121,9 @@ class QtOptionsDialog(Dialog):
 
     def getStartingForcesLibraryURL(self) -> str:
         return self.__startingForcesLibraryURL
+
+    def getDarkMap(self) -> bool:
+        return self.__darkMap
 
     def __okayClicked(self) -> None:
         try:
@@ -139,6 +148,7 @@ class QtOptionsDialog(Dialog):
         self.__startingForcesLibraryURL = (
             self.__startingForcesFileInput.text().strip()
         )
+        self.__darkMap = self.__darkMapInput.isChecked()
 
         self.__result = DialogResult.Ok
         self.__dialog.close()

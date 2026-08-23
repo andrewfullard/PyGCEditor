@@ -68,6 +68,9 @@ class QtGalacticPlot(QWidget):
         self.__tradeRoutePreviewLines = []
         self.__allTradeRoutes = []
         self.__selectedPlanetNames = set()
+        self.__selectedPlanets = []
+        self.__planetLabels = []
+        self.__showPlanetNames = False
         self.__panStart = None
         self.__isPanning = False
         self.__highlightedPlanetIndex = None
@@ -104,6 +107,7 @@ class QtGalacticPlot(QWidget):
         self.__axes.set_ylim(ylim)
         self.__applyMapColors()
         self.__allTradeRoutes = allTradeRoutes or []
+        self.__selectedPlanets = list(planets)
         self.__selectedPlanetNames = {planet.name for planet in planets}
 
         # Has to be set again here for the planet hover labels to work
@@ -210,6 +214,7 @@ class QtGalacticPlot(QWidget):
 
             self.__axes.scatter(x, y, c="grey", zorder=3)
 
+        self.__updatePlanetLabels()
         self.__galacticPlotNavBar.update()
         self.__galacticPlotNavBar.push_current()
         self.__galacticPlotCanvas.draw_idle()
@@ -232,7 +237,34 @@ class QtGalacticPlot(QWidget):
             self.__planetOutlineColor = "black"
 
         self.__applyMapColors()
+        self.__updatePlanetLabels()
         self.__galacticPlotCanvas.draw_idle()
+
+    def setShowPlanetNames(self, enabled: bool) -> None:
+        """Show or hide labels for the currently selected planets."""
+        self.__showPlanetNames = enabled
+        self.__updatePlanetLabels()
+        self.__galacticPlotCanvas.draw_idle()
+
+    def __updatePlanetLabels(self) -> None:
+        for label in self.__planetLabels:
+            label.remove()
+        self.__planetLabels = []
+
+        if not self.__showPlanetNames:
+            return
+
+        self.__planetLabels = [
+            self.__axes.text(
+                planet.x,
+                planet.y,
+                planet.name,
+                color=self.__foregroundColor,
+                zorder=5,
+                clip_on=True,
+            )
+            for planet in self.__selectedPlanets
+        ]
 
     def __applyMapColors(self) -> None:
         self.__galacticPlotCanvas.figure.set_facecolor(self.__backgroundColor)

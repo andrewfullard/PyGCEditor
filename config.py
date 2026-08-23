@@ -17,6 +17,7 @@ class Config:
         submods: list,
         autoPlanetConnectionDistance: int,
         startingForcesLibraryURL: str,
+        darkMap: bool = False,
     ) -> None:
         """Persist config values to config.xml and refresh in-memory values."""
         self.__setElementText("ModPath", modPath)
@@ -24,6 +25,7 @@ class Config:
             "MaximumFleetMovementDistance", str(autoPlanetConnectionDistance)
         )
         self.__setElementText("StartingForcesLibraryURL", startingForcesLibraryURL)
+        self.__setElementText("DarkMap", str(darkMap))
 
         submodElements = self.__configRoot.findall("Submod")
         insertIndex = (
@@ -66,6 +68,12 @@ class Config:
         self.startingForcesLibraryURL = self.__configRoot.find(
             "StartingForcesLibraryURL"
         ).text
+        dark_map_el = self.__configRoot.find("DarkMap")
+        self.darkMap = (
+            dark_map_el is not None
+            and dark_map_el.text is not None
+            and dark_map_el.text.strip().lower() in ("true", "yes", "1")
+        )
 
         mod_path_el = self.__configRoot.find("ModPath")
 

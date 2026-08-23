@@ -8,7 +8,7 @@ from ui.qtmainwindow import QtMainWindow
 from PyQt6.QtWidgets import QApplication
 
 
-def test_dark_map_action_changes_map_colors_only(monkeypatch):
+def test_dark_map_changes_map_colors_only(monkeypatch):
     monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
     app = QApplication.instance()
     if app is None:
@@ -16,20 +16,12 @@ def test_dark_map_action_changes_map_colors_only(monkeypatch):
 
     window = QtMainWindow()
     plot = window.makeGalacticPlot()
-    options_menu = next(
-        action.menu()
-        for action in window.getWindow().menuBar().actions()
-        if action.text() == "Options"
-    )
-    dark_map_action = next(
-        action for action in options_menu.actions() if action.text() == "Dark Map"
-    )
     axes = plot._QtGalacticPlot__axes
 
-    dark_map_action.trigger()
+    plot.setDarkMode(True)
     assert axes.get_facecolor()[:3] == (32 / 255, 33 / 255, 36 / 255)
 
-    dark_map_action.trigger()
+    plot.setDarkMode(False)
     assert axes.get_facecolor()[:3] == (1.0, 1.0, 1.0)
 
     window.getWindow().close()
@@ -152,4 +144,31 @@ def test_inactive_planet_cannot_start_trade_route_creation(monkeypatch):
     )
 
     assert route_starts == []
+    window.getWindow().close()
+
+
+def test_show_planet_names_toggles_selected_planet_labels(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    window = QtMainWindow()
+    plot = window.makeGalacticPlot()
+    planet = Planet("Alderaan")
+    planet.x = 10.0
+    planet.y = 10.0
+    plot.plotGalaxy([planet], [], [planet], [])
+
+    plot.setShowPlanetNames(True)
+    assert [label.get_text() for label in plot._QtGalacticPlot__planetLabels] == [
+        "Alderaan"
+    ]
+    assert plot._QtGalacticPlot__planetLabels[0].get_clip_on() is True
+
+    plot.setDarkMode(True)
+    assert plot._QtGalacticPlot__planetLabels[0].get_color() == "#f1f3f4"
+
+    plot.setShowPlanetNames(False)
+    assert plot._QtGalacticPlot__planetLabels == []
     window.getWindow().close()
