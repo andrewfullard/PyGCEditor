@@ -7,6 +7,8 @@ from PyQt6.QtWidgets import QDialog, QLabel, QPlainTextEdit, QProgressBar, QVBox
 class QtLoadingLogDialog(QDialog):
     """Displays application loading progress and log records."""
 
+    loadingCancelled = pyqtSignal()
+
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("Loading Galactic Conquest Editor")
@@ -14,22 +16,43 @@ class QtLoadingLogDialog(QDialog):
 
         layout = QVBoxLayout(self)
         self.__statusLabel = QLabel("Loading...")
+        self.__modPathLabel = QLabel()
+        self.__submodsLabel = QLabel()
+        self.__startingforcesLabel = QLabel()
         self.__progressBar = QProgressBar()
         self.__progressBar.setRange(0, 0)
         self.__logOutput = QPlainTextEdit()
         self.__logOutput.setReadOnly(True)
+        self.__loading = False
 
         layout.addWidget(self.__statusLabel)
+        layout.addWidget(self.__modPathLabel)
+        layout.addWidget(self.__submodsLabel)
+        layout.addWidget(self.__startingforcesLabel)
         layout.addWidget(self.__progressBar)
         layout.addWidget(self.__logOutput)
 
     def beginLoading(self) -> None:
+        self.__loading = True
         self.__statusLabel.setText("Loading...")
         self.__progressBar.setRange(0, 0)
         self.show()
         self.repaint()
 
+    def setLoadingPaths(self, modPath: str, submods: list[str], startingForcesLibrary: str) -> None:
+        self.__modPathLabel.setText(f"Mod path: {modPath}")
+        submodText = ", ".join(submods) if submods else "None"
+        self.__submodsLabel.setText(f"Submods: {submodText}")
+        self.__startingforcesLabel.setText(f"Starting Forces Library: {startingForcesLibrary}")
+
+    def getModPathLabel(self) -> str:
+        return self.__modPathLabel.text()
+
+    def getSubmodsLabel(self) -> str:
+        return self.__submodsLabel.text()
+
     def completeLoading(self) -> None:
+        self.__loading = False
         self.__statusLabel.setText("Loading complete")
         self.__progressBar.setRange(0, 1)
         self.__progressBar.setValue(1)
@@ -52,6 +75,11 @@ class QtLoadingLogDialog(QDialog):
         self.__logOutput.appendPlainText(
             f"{record.levelname}: {record.getMessage()}"
         )
+
+    def closeEvent(self, event) -> None:
+        if self.__loading:
+            self.loadingCancelled.emit()
+        event.accept()
 
 
 class QtLogHandler(QObject, logging.Handler):

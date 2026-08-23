@@ -1,4 +1,5 @@
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
+from threading import Event
 
 from RepositoryCreator import RepositoryCreator
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -16,17 +17,19 @@ class RepositoryLoader(QObject):
         dataFolders,
         startingForcesLibraryURL: str,
         repositoryCreatorFactory=RepositoryCreator,
+        cancellationEvent: Event | None = None,
     ) -> None:
         super().__init__()
         self.__dataFolders = dataFolders
         self.__startingForcesLibraryURL = startingForcesLibraryURL
         self.__repositoryCreatorFactory = repositoryCreatorFactory
+        self.__cancellationEvent = cancellationEvent or Event()
 
     def load(self) -> None:
         try:
             repositoryCreator = self.__repositoryCreatorFactory()
             if hasattr(repositoryCreator, "setProgressCallback"):
-                repositoryCreator.setProgressCallback(self.progress.emit)
+                repositoryCreator.setProgressCallback(self.__reportProgress)
             repository = repositoryCreator.constructRepository(
                 self.__dataFolders, self.__startingForcesLibraryURL
             )
@@ -35,6 +38,14 @@ class RepositoryLoader(QObject):
             return
 
         self.loaded.emit(repository)
+
+    def cancel(self) -> None:
+        self.__cancellationEvent.set()
+
+    def __reportProgress(self, description: str, current: int, total: int) -> None:
+        if self.__cancellationEvent.is_set():
+            raise RuntimeError("Repository loading cancelled")
+        self.progress.emit(description, current, total)
 
 
 class RepositoryLoadResult(QObject):

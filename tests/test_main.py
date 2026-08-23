@@ -10,6 +10,7 @@ from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
 from ui.qtmainwindow import QtMainWindow
+from ui.qtloadinglogdialog import QtLoadingLogDialog
 
 
 def _build_dummy_repository() -> GameObjectRepository:
@@ -99,6 +100,9 @@ def test_loading_log_dialog_hides_after_startup(monkeypatch):
         def completeLoading(self):
             self.complete = True
 
+        def setLoadingPaths(self, modPath, submods):
+            pass
+
         def updateProgress(self, description, current, total):
             pass
 
@@ -114,6 +118,25 @@ def test_loading_log_dialog_hides_after_startup(monkeypatch):
     assert result == 0
     assert dialogs[0].loading is True
     assert dialogs[0].complete is True
+
+
+def test_loading_log_dialog_displays_mod_path_and_submods(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    dialog = QtLoadingLogDialog()
+    dialog.setLoadingPaths("C:/Mods/Base", ["CoreSaga", "C:/Mods/TR"], "C:/starting_forces.csv")
+
+    assert dialog.getModPathLabel() == "Mod path: C:/Mods/Base"
+    assert dialog.getSubmodsLabel() == (
+        "Submods: CoreSaga, C:/Mods/TR"
+    )
+
+    dialog.setLoadingPaths("C:/Mods/Base", [], "C:/starting_forces.csv")
+    assert dialog.getSubmodsLabel() == "Submods: None"
+    dialog.close()
 
 
 def test_show_loading_log_action_reopens_log_dialog(monkeypatch):
@@ -145,6 +168,25 @@ def test_show_loading_log_action_reopens_log_dialog(monkeypatch):
 
     assert dialog.wasShown is True
     window.getWindow().close()
+
+
+def test_closing_loading_dialog_requests_application_exit(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    dialog = QtLoadingLogDialog()
+    cancellations = []
+    dialog.loadingCancelled.connect(lambda: cancellations.append(True))
+    dialog.beginLoading()
+    dialog.close()
+    assert cancellations == [True]
+
+    dialog.beginLoading()
+    dialog.completeLoading()
+    dialog.close()
+    assert cancellations == [True]
 
 
 def test_main_launches_with_no_campaigns(monkeypatch):

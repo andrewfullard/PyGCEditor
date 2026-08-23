@@ -1,5 +1,6 @@
 import logging
 import sys
+from threading import Event
 from typing import cast
 
 from PyQt6.QtWidgets import QApplication
@@ -30,6 +31,7 @@ def main(argv=None, start_event_loop: bool = True) -> int:
     logging.getLogger().addHandler(QtLogHandler(loadingDialog))
 
     config: Config = Config()
+    loadingDialog.setLoadingPaths(config.modPath, config.submods, config.startingForcesLibraryURL)
     args = argv if argv is not None else sys.argv
 
     if len(args) > 1:
@@ -39,10 +41,12 @@ def main(argv=None, start_event_loop: bool = True) -> int:
 
     loadingLoop = QEventLoop()
     loadingThread = QThread()
+    cancellationEvent = Event()
     loader = RepositoryLoader(
         dataFolders,
         config.startingForcesLibraryURL,
         repositoryCreatorFactory=RepositoryCreator,
+        cancellationEvent=cancellationEvent,
     )
     repositoryResult = RepositoryLoadResult(loadingLoop, loadingThread)
     loader.moveToThread(loadingThread)
@@ -50,9 +54,21 @@ def main(argv=None, start_event_loop: bool = True) -> int:
     loader.progress.connect(loadingDialog.updateProgress)
     loader.loaded.connect(repositoryResult.setRepository)
     loader.failed.connect(repositoryResult.setError)
+    loadingCancelledState = [False]
+    loadingCancelled = getattr(loadingDialog, "loadingCancelled", None)
+    if loadingCancelled is not None:
+        loadingCancelled.connect(
+            lambda: (loadingCancelledState.__setitem__(0, True), cancellationEvent.set())
+        )
+        loadingCancelled.connect(loadingLoop.quit)
+        loadingCancelled.connect(app.quit)
 
     loadingThread.start()
     loadingLoop.exec()
+    if loadingCancelledState[0]:
+        loadingThread.terminate()
+        loadingThread.wait()
+        return 0
     loadingThread.wait()
 
     if repositoryResult.error is not None:
