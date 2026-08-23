@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
 )
 
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from ui.mainwindow_presenter import MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
 from ui.qttablewidgetfactory import QtTableWidgetFactory
@@ -32,7 +32,7 @@ from ui.qttablewidgetfactory import QtTableWidgetFactory
 from gameObjects.planet import Planet
 
 
-class QtMainWindow(MainWindow):
+class QtMainWindow:
     """Qt based window"""
 
     def __init__(self):

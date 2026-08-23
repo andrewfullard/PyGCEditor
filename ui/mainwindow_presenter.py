@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 import logging
 from typing import List, Optional, Set, Dict
 import os
@@ -22,112 +21,17 @@ from ui.DialogFactory import DialogFactory
 logger = logging.getLogger(__name__)
 
 
-class MainWindow(ABC):
-    @abstractmethod
-    def setMainWindowPresenter(self, presenter) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def addPlanets(self, planets: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def addFactions(self, factions: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def addTradeRoutes(self, tradeRoutes: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateTradeRoutes(self, tradeRoutes: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def addCampaigns(self, campaigns: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def makeGalacticPlot(self) -> QtGalacticPlot:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def emptyWidgets(self) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateCampaignComboBox(self, campaigns: List[str], newCampaign: str) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateCampaignComboBoxSelection(self, index: int) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updatePlanetComboBox(self, planets: List[str]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updatePlanetComboBoxSelection(self, planetName: str) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def getSelectedPlanetName(self) -> str:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updatePlanetSelection(self, planets: List[int]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateTradeRouteSelection(self, tradeRoutes: List[int]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def selectSingleTradeRoute(self, index: int) -> bool:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateFactionSelection(self, factions: List[int]) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updatePlanetInfoDisplay(
-        self,
-        planet: Planet,
-        startingForces: pd.DataFrame,
-        filter: str,
-    ) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updatePlanetCountDisplay(self, planets: List) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def updateTotalFactionIncome(self, entry: dict) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def clearPlanets(self) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def clearTradeRoutes(self) -> None:
-        raise NotImplementedError()
-
-
 class MainWindowPresenter:
     """Window display class"""
 
     def __init__(
         self,
-        mainWindow: MainWindow,
+        mainWindow,
         repository: GameObjectRepository,
         config: Config,
         dialogFactory: Optional[DialogFactory] = None,
     ):
-        self.__mainWindow: MainWindow = mainWindow
+        self.__mainWindow = mainWindow
         self.__plot: QtGalacticPlot = self.__mainWindow.makeGalacticPlot()
 
         self.__xmlWriter: XMLWriter = XMLWriter()
