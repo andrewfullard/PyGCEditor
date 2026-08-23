@@ -69,6 +69,7 @@ class QtGalacticPlot(QWidget):
         self.__allTradeRoutes = []
         self.__selectedPlanetNames = set()
         self.__panStart = None
+        self.__isPanning = False
         self.__highlightedPlanetIndex = None
 
     def plotGalaxy(
@@ -209,6 +210,8 @@ class QtGalacticPlot(QWidget):
 
             self.__axes.scatter(x, y, c="grey", zorder=3)
 
+        self.__galacticPlotNavBar.update()
+        self.__galacticPlotNavBar.push_current()
         self.__galacticPlotCanvas.draw_idle()
 
     def getWidget(self) -> QWidget:
@@ -267,12 +270,19 @@ class QtGalacticPlot(QWidget):
             event.ydata + (ylim[0] - event.ydata) * zoom_factor,
             event.ydata + (ylim[1] - event.ydata) * zoom_factor,
         )
+        self.__galacticPlotNavBar.push_current()
         self.__galacticPlotCanvas.draw_idle()
 
     def __startPan(self, event) -> None:
         """Begin panning when the middle mouse button is pressed."""
         if event.button == 2 and event.inaxes == self.__axes:
-            self.__panStart = (event.xdata, event.ydata, self.__axes.get_xlim(), self.__axes.get_ylim())
+            self.__panStart = (
+                event.xdata,
+                event.ydata,
+                self.__axes.get_xlim(),
+                self.__axes.get_ylim(),
+            )
+            self.__isPanning = False
 
     def __panPlot(self, event) -> None:
         """Move the map while the middle mouse button is held and dragged."""
@@ -284,12 +294,16 @@ class QtGalacticPlot(QWidget):
         delta_y = start_y - event.ydata
         self.__axes.set_xlim(xlim[0] + delta_x, xlim[1] + delta_x)
         self.__axes.set_ylim(ylim[0] + delta_y, ylim[1] + delta_y)
+        self.__isPanning = True
         self.__galacticPlotCanvas.draw_idle()
 
     def __endPan(self, event) -> None:
         """End panning when the middle mouse button is released."""
         if event.button == 2:
+            if self.__isPanning:
+                self.__galacticPlotNavBar.push_current()
             self.__panStart = None
+            self.__isPanning = False
 
     def __planetHover(self, event) -> None:
         """Handler for hovering on a planet in the plot"""
