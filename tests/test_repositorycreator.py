@@ -3,7 +3,7 @@ import pandas as pd
 
 from RepositoryCreator import RepositoryCreator
 from gameObjects.campaign import Campaign
-from gameObjects.planet import Planet
+from gameObjects.planet import CORE_ART_MODEL_NAME, Planet
 
 
 def test_add_trade_routes_skips_malformed_entries() -> None:
@@ -55,6 +55,23 @@ def test_dummy_planets_are_loaded_but_hidden_from_map(tmp_path) -> None:
     planets = {planet.name: planet for planet in creator.repository.planets}
     assert planets["Visible"].mapVisible is True
     assert planets["Dummy"].mapVisible is False
+
+
+def test_core_art_model_is_hidden_from_map() -> None:
+    creator = RepositoryCreator()
+    root = et.fromstring(
+        f"""<GameObjects>
+            <Planet Name='{CORE_ART_MODEL_NAME}'>
+                <Galactic_Position>3, 4, 0</Galactic_Position>
+            </Planet>
+        </GameObjects>"""
+    )
+
+    creator.addPlanetsFromXML([root])
+
+    planet = next(iter(creator.repository.planets))
+    assert planet.name == CORE_ART_MODEL_NAME
+    assert planet.mapVisible is False
 
 
 def test_missing_dummy_planet_file_logs_warning(tmp_path, caplog) -> None:

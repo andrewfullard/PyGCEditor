@@ -8,7 +8,7 @@ from xmlTools.xmlwriter import XMLWriter
 
 from config import Config
 from gameObjects.gameObjectRepository import GameObjectRepository
-from gameObjects.planet import Planet
+from gameObjects.planet import CORE_ART_MODEL_NAME, Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.faction import Faction
 from gameObjects.campaign import Campaign
@@ -374,6 +374,16 @@ class MainWindowPresenter:
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
+        core_art_model = next(
+            (
+                planet
+                for planet in self.__planets
+                if planet.name == CORE_ART_MODEL_NAME
+            ),
+            None,
+        )
+        if core_art_model is not None:
+            campaign.planets.add(core_art_model)
         self.__repository.addCampaign(campaign)
 
         self.__updateWidgets()

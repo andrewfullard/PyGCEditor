@@ -1,6 +1,9 @@
 from math import sqrt
 from typing import List
 
+
+CORE_ART_MODEL_NAME = "Galaxy_Core_Art_Model"
+
 """Planet class definition"""
 
 

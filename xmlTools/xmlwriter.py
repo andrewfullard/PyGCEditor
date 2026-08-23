@@ -4,6 +4,7 @@ import os
 from typing import Optional
 from xmlTools.xmlstructure import XMLStructure
 
+from gameObjects.planet import CORE_ART_MODEL_NAME, Planet
 from util import commaSepListParser
 
 
@@ -31,7 +32,10 @@ class XMLWriter:
                     ", ".join(planet.emptyXmlTags),
                 )
 
-        planets = self.createListEntry(campaign.planets)
+        planets_for_export = set(campaign.planets)
+        if not any(planet.name == CORE_ART_MODEL_NAME for planet in planets_for_export):
+            planets_for_export.add(Planet(CORE_ART_MODEL_NAME))
+        planets = self.createListEntry(planets_for_export)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
         self.root = et.Element(self.__root_name)

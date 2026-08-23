@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from gameObjects.gameObjectRepository import GameObjectRepository
-from gameObjects.planet import Planet
+from gameObjects.planet import CORE_ART_MODEL_NAME, Planet
 from gameObjects.traderoute import TradeRoute
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
@@ -60,7 +60,7 @@ class RepositoryCreator:
                     continue
 
                 newplanet = Planet(name)
-                newplanet.mapVisible = mapVisible
+                newplanet.mapVisible = mapVisible and name != CORE_ART_MODEL_NAME
                 newplanet.variantOf = record["variant_of"]
                 newplanet.emptyXmlTags = record["empty_xml_tags"]
                 newplanet.x, newplanet.y = coordinates

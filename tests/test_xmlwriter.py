@@ -145,6 +145,19 @@ def test_campaign_writer_logs_planets_with_empty_xml_tags(writer, tmp_path, capl
     assert "Planet_Ability_Name" in caplog.text
 
 
+def test_campaign_writer_adds_core_art_model_location(writer, tmp_path):
+    campaign = Campaign("GC")
+    campaign.setName = "GC"
+    campaign.playableFactions = {Faction("Rebel")}
+    campaign.startingForces = writer_starting_forces_dataframe()
+
+    output_path = tmp_path / "GC.xml"
+    writer.campaignWriter(campaign, [Faction("Rebel")], str(output_path))
+
+    root = et.parse(str(output_path)).getroot()
+    assert "Galaxy_Core_Art_Model" in root.find(".//Locations").text
+
+
 def writer_starting_forces_dataframe():
     import pandas as pd
 
