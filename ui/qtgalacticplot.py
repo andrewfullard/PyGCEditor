@@ -65,7 +65,7 @@ class QtGalacticPlot(QWidget):
         self.__tradeRouteTrace = []
         self.__tradeRouteLines = []
         self.__tradeRouteConnections = []
-        self.__inactiveTradeRouteLines = []
+        self.__tradeRoutePreviewLines = []
         self.__allTradeRoutes = []
         self.__selectedPlanetNames = set()
         self.__panStart = None
@@ -121,7 +121,7 @@ class QtGalacticPlot(QWidget):
         )
         self.__tradeRouteLines = []
         self.__tradeRouteConnections = []
-        self.__inactiveTradeRouteLines = []
+        self.__tradeRoutePreviewLines = []
         self.__highlightedPlanetIndex = None
 
         self.__planetNames = []
@@ -327,15 +327,15 @@ class QtGalacticPlot(QWidget):
                 hovered_planet_index = ind["ind"][0]
                 if self.__highlightedPlanetIndex != hovered_planet_index:
                     self.__reset_trade_route_highlight()
-                    self.__remove_inactive_trade_route_preview()
-                    self.__show_inactive_trade_routes(hovered_planet_index)
+                    self.__remove_trade_route_preview()
+                    self.__show_trade_route_preview(hovered_planet_index)
                     self.__highlightedPlanetIndex = hovered_planet_index
                 self.__update_annotation(ind)
                 self.__annotate.set_visible(True)
             else:
                 if self.__highlightedPlanetIndex is not None:
                     self.__reset_trade_route_highlight()
-                    self.__remove_inactive_trade_route_preview()
+                    self.__remove_trade_route_preview()
                     self.__highlightedPlanetIndex = None
                 if visible:
                     self.__annotate.set_visible(False)
@@ -344,7 +344,7 @@ class QtGalacticPlot(QWidget):
         else:
             if self.__highlightedPlanetIndex is not None:
                 self.__reset_trade_route_highlight()
-                self.__remove_inactive_trade_route_preview()
+                self.__remove_trade_route_preview()
                 self.__highlightedPlanetIndex = None
                 self.__galacticPlotCanvas.draw_idle()
 
@@ -356,20 +356,19 @@ class QtGalacticPlot(QWidget):
             line.set_linewidth(1.0)
             line.set_zorder(1)
 
-    def __remove_inactive_trade_route_preview(self) -> None:
-        for line in self.__inactiveTradeRouteLines:
+    def __remove_trade_route_preview(self) -> None:
+        for line in self.__tradeRoutePreviewLines:
             line.remove()
-        self.__inactiveTradeRouteLines = []
+        self.__tradeRoutePreviewLines = []
 
-    def __show_inactive_trade_routes(self, planet_index: int) -> None:
-        """Show subtle previews for routes available from an unselected planet."""
+    def __show_trade_route_preview(self, planet_index: int) -> None:
+        """Show subtle previews for routes available from the hovered planet."""
         if planet_index < 0 or planet_index >= len(self.__planetNames):
             return
 
         planet_name = self.__planetNames[planet_index]
         if planet_name in self.__selectedPlanetNames:
             self.__highlight_connected_trade_routes(planet_index)
-            return
 
         for trade_route in self.__allTradeRoutes:
             if trade_route.start.name != planet_name and trade_route.end.name != planet_name:
@@ -382,7 +381,7 @@ class QtGalacticPlot(QWidget):
                 linestyle="--",
                 zorder=0,
             )
-            self.__inactiveTradeRouteLines.append(line)
+            self.__tradeRoutePreviewLines.append(line)
 
     def __plot_trade_route(self, trade_route, **style):
         return self.__axes.plot(

@@ -35,7 +35,7 @@ def test_dark_map_action_changes_map_colors_only(monkeypatch):
     window.getWindow().close()
 
 
-def test_inactive_planet_hover_shows_subtle_possible_trade_routes(monkeypatch):
+def test_planet_hover_shows_subtle_possible_trade_routes(monkeypatch):
     monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
     app = QApplication.instance()
     if app is None:
@@ -43,26 +43,26 @@ def test_inactive_planet_hover_shows_subtle_possible_trade_routes(monkeypatch):
 
     window = QtMainWindow()
     plot = window.makeGalacticPlot()
-    inactive_planet = Planet("Alderaan")
-    inactive_planet.x = 10.0
-    inactive_planet.y = 10.0
+    selected_planet = Planet("Alderaan")
+    selected_planet.x = 10.0
+    selected_planet.y = 10.0
     other_planet = Planet("Kuat")
     other_planet.x = 20.0
     other_planet.y = 20.0
     route = TradeRoute("CorellianRun")
-    route.start = inactive_planet
+    route.start = selected_planet
     route.end = other_planet
 
     plot.plotGalaxy(
-        planets=[],
+        planets=[selected_planet],
         tradeRoutes=[],
-        allPlanets=[inactive_planet, other_planet],
+        allPlanets=[selected_planet, other_planet],
         planetOwners=[],
         allTradeRoutes=[route],
     )
-    plot._QtGalacticPlot__show_inactive_trade_routes(0)
+    plot._QtGalacticPlot__show_trade_route_preview(0)
 
-    preview_line = plot._QtGalacticPlot__inactiveTradeRouteLines[0]
+    preview_line = plot._QtGalacticPlot__tradeRoutePreviewLines[0]
     assert preview_line.get_alpha() == 0.25
     assert preview_line.get_linestyle() == "--"
 
