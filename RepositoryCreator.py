@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Callable
 import pandas as pd
 from tqdm import tqdm
 
@@ -25,6 +26,31 @@ class RepositoryCreator:
         self.repository: GameObjectRepository = GameObjectRepository()
         self.__folder: str = ""
         self.__xml: XMLReader = XMLReader()
+        self.__progressCallback: Callable[[str, int, int], None] | None = None
+
+    def setProgressCallback(self, callback: Callable[[str, int, int], None]) -> None:
+        """Set a callback that receives tqdm-style progress updates."""
+        self.__progressCallback = callback
+
+    def __progress(self, iterable, description: str, total: int | None = None):
+        progressCallback = self.__progressCallback
+        if progressCallback is None:
+            return tqdm(iterable, desc=description, total=total)
+
+        if total is None:
+            try:
+                total = len(iterable)
+            except TypeError:
+                total = 0
+
+        progressCallback(description, 0, total)
+
+        def report_progress():
+            for current, item in enumerate(iterable, start=1):
+                yield item
+                progressCallback(description, current, total)
+
+        return report_progress()
 
     def getNamesRootsFromXML(self, rootsList, tag: str) -> list:
         """Takes a list of XML roots and a tag to search for
@@ -49,7 +75,9 @@ class RepositoryCreator:
         }
 
         for planetRoot in planetRoots:
-            for record in tqdm(self.__xml.getPlanetInfo(planetRoot)):
+            for record in self.__progress(
+                self.__xml.getPlanetInfo(planetRoot), "Loading planets"
+            ):
                 name = record["name"]
                 coordinates = record["coordinates"]
 
@@ -94,7 +122,7 @@ class RepositoryCreator:
         for tradeRouteRoot in tradeRouteRoots:
             tradeRouteNames = self.__xml.getNamesFromXML(tradeRouteRoot)
 
-            for name in tqdm(tradeRouteNames):
+            for name in self.__progress(tradeRouteNames, "Loading trade routes"):
                 newroute = TradeRoute(name)
                 try:
                     newroute.start, newroute.end = self.__xml.getStartEnd(
@@ -124,7 +152,9 @@ class RepositoryCreator:
 
         current_campaign_set = ""
 
-        for filePath, campaign, campaignRoot in campaignEntries:
+        for filePath, campaign, campaignRoot in self.__progress(
+            campaignEntries, "Loading Galactic Conquests"
+        ):
             setName = self.__xml.getValueFromXMLRoot(campaignRoot, ".//Campaign_Set")
 
             startingActivePlayer = self.__xml.getValueFromXMLRoot(
@@ -158,8 +188,6 @@ class RepositoryCreator:
             campaignPlanetNames = self.__xml.getListFromXMLRoot(
                 campaignRoot, ".//Locations"
             )
-
-            new_campaign_locations = campaignPlanetNames
 
             newCampaign.sortOrder = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Sort_Order"
@@ -233,7 +261,9 @@ class RepositoryCreator:
             self.repository.addCampaign(newCampaign)
 
     def runPlanetVariantOfCheck(self) -> None:
-        for planet in tqdm(self.repository.planets):
+        for planet in self.__progress(
+            self.repository.planets, "Checking planet variants"
+        ):
             if (planet.x is None) or (planet.y is None):
                 logger.warning("%s needs parent coordinates", planet.name)
                 if planet.variantOf != "":
@@ -314,7 +344,11 @@ class RepositoryCreator:
         current_era = 0
 
         try:
-            for index, row in tqdm(startingForcesLibrary.iterrows()):
+            for index, row in self.__progress(
+                startingForcesLibrary.iterrows(),
+                "Loading starting forces",
+                total=len(startingForcesLibrary),
+            ):
                 if row["Planet"] != current_planet:
                     current_planet = row["Planet"]
 

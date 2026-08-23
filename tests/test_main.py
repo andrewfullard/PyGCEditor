@@ -1,6 +1,5 @@
-import pandas as pd
 import os
-from PyQt6.QtCore import QTimer
+import pandas as pd
 from PyQt6.QtWidgets import QApplication
 
 import main
@@ -10,6 +9,7 @@ from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
 from gameObjects.planet import Planet
 from gameObjects.traderoute import TradeRoute
+from ui.qtmainwindow import QtMainWindow
 
 
 def _build_dummy_repository() -> GameObjectRepository:
@@ -73,17 +73,78 @@ def test_main_launches_with_dummy_data(monkeypatch):
         app = QApplication.instance()
         if app is None:
             app = QApplication([])
-
-        # Run one event-loop cycle and quit, so startup wiring executes.
-        QTimer.singleShot(0, app.quit)
         return app
 
     monkeypatch.setattr(main, "QApplication", create_app)
     monkeypatch.setattr(main, "RepositoryCreator", DummyRepositoryCreator)
 
-    result = main.main(argv=["main.py"], start_event_loop=True)
+    result = main.main(argv=["main.py"], start_event_loop=False)
 
     assert result == 0
+
+
+def test_loading_log_dialog_hides_after_startup(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    dialogs = []
+
+    class TestLoadingDialog:
+        def __init__(self):
+            dialogs.append(self)
+            self.loading = False
+            self.complete = False
+
+        def beginLoading(self):
+            self.loading = True
+
+        def completeLoading(self):
+            self.complete = True
+
+        def updateProgress(self, description, current, total):
+            pass
+
+        def appendLogRecord(self, record):
+            pass
+
+    monkeypatch.setattr(main, "QApplication", lambda _: QApplication.instance() or QApplication([]))
+    monkeypatch.setattr(main, "QtLoadingLogDialog", TestLoadingDialog)
+    monkeypatch.setattr(main, "RepositoryCreator", DummyRepositoryCreator)
+
+    result = main.main(argv=["main.py"], start_event_loop=False)
+
+    assert result == 0
+    assert dialogs[0].loading is True
+    assert dialogs[0].complete is True
+
+
+def test_show_loading_log_action_reopens_log_dialog(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    class TestLoadingDialog:
+        def __init__(self):
+            self.wasShown = False
+
+        def showLog(self):
+            self.wasShown = True
+
+    window = QtMainWindow()
+    dialog = TestLoadingDialog()
+    window.setLoadingLogDialog(dialog)
+    options_menu = next(
+        action.menu()
+        for action in window.getWindow().menuBar().actions()
+        if action.text() == "Options"
+    )
+    show_log_action = next(
+        action for action in options_menu.actions() if action.text() == "Show Loading Log"
+    )
+
+    show_log_action.trigger()
+
+    assert dialog.wasShown is True
+    window.getWindow().close()
 
 
 def test_main_launches_with_no_campaigns(monkeypatch):
@@ -93,14 +154,12 @@ def test_main_launches_with_no_campaigns(monkeypatch):
         app = QApplication.instance()
         if app is None:
             app = QApplication([])
-
-        QTimer.singleShot(0, app.quit)
         return app
 
     monkeypatch.setattr(main, "QApplication", create_app)
     monkeypatch.setattr(main, "RepositoryCreator", EmptyRepositoryCreator)
 
-    result = main.main(argv=["main.py"], start_event_loop=True)
+    result = main.main(argv=["main.py"], start_event_loop=False)
 
     assert result == 0
 

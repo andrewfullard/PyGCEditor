@@ -1,7 +1,9 @@
 import logging
 import sys
+from typing import cast
 
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QEventLoop, QThread
 
 from commands.ShowTradeCreatorDialogCommand import ShowTradeRouteCreatorDialogCommand
 from commands.ShowCampaignPropertiesDialogCommand import (
@@ -10,7 +12,10 @@ from commands.ShowCampaignPropertiesDialogCommand import (
 from commands.ShowAutoConnectionSettingsCommand import AutoConnectionSettingsCommand
 from commands.ShowOptionsDialogCommand import ShowOptionsDialogCommand
 from config import Config
+from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.DialogFactory import DialogFactory
+from ui.qtloadinglogdialog import QtLoadingLogDialog, QtLogHandler
+from ui.repositoryloader import RepositoryLoader, RepositoryLoadResult
 from ui.mainwindow_presenter import MainWindowPresenter
 from ui.planetcontextmenu import PlanetContextMenu
 from ui.qtmainwindow import QtMainWindow
@@ -19,6 +24,11 @@ from RepositoryCreator import RepositoryCreator
 
 def main(argv=None, start_event_loop: bool = True) -> int:
     logging.basicConfig(level=logging.INFO)
+    app = QApplication([])
+    loadingDialog = QtLoadingLogDialog()
+    loadingDialog.beginLoading()
+    logging.getLogger().addHandler(QtLogHandler(loadingDialog))
+
     config: Config = Config()
     args = argv if argv is not None else sys.argv
 
@@ -27,16 +37,36 @@ def main(argv=None, start_event_loop: bool = True) -> int:
     else:
         dataFolders = config.dataFolders
 
-    app = QApplication([])
-
-    repositoryCreator: RepositoryCreator = RepositoryCreator()
-    repository = repositoryCreator.constructRepository(
-        dataFolders, config.startingForcesLibraryURL
+    loadingLoop = QEventLoop()
+    loadingThread = QThread()
+    loader = RepositoryLoader(
+        dataFolders,
+        config.startingForcesLibraryURL,
+        repositoryCreatorFactory=RepositoryCreator,
     )
+    repositoryResult = RepositoryLoadResult(loadingLoop, loadingThread)
+    loader.moveToThread(loadingThread)
+    loadingThread.started.connect(loader.load)
+    loader.progress.connect(loadingDialog.updateProgress)
+    loader.loaded.connect(repositoryResult.setRepository)
+    loader.failed.connect(repositoryResult.setError)
+
+    loadingThread.start()
+    loadingLoop.exec()
+    loadingThread.wait()
+
+    if repositoryResult.error is not None:
+        raise repositoryResult.error
+
+    if repositoryResult.repository is None:
+        raise RuntimeError("Repository loading completed without a repository")
+
+    repository = cast(GameObjectRepository, repositoryResult.repository)
 
     dialogFactory = DialogFactory(repository)
 
     qtMainWindow: QtMainWindow = QtMainWindow()
+    qtMainWindow.setLoadingLogDialog(loadingDialog)
     presenter: MainWindowPresenter = MainWindowPresenter(
         qtMainWindow, repository, config, dialogFactory
     )
@@ -53,6 +83,7 @@ def main(argv=None, start_event_loop: bool = True) -> int:
     presenter.optionsDialogCommand = ShowOptionsDialogCommand(presenter, dialogFactory)
 
     qtMainWindow.setMainWindowPresenter(presenter)
+    loadingDialog.completeLoading()
     qtMainWindow.getWindow().show()
 
     if start_event_loop:

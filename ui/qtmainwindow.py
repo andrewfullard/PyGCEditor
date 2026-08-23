@@ -136,6 +136,10 @@ class QtMainWindow(MainWindow):
 
         self.__openOptionsAction: QAction = QAction("Configuration options", self.__window)
         self.__openOptionsAction.triggered.connect(self.__showOptionsDialog)
+        self.__showLoadingLogAction: QAction = QAction(
+            "Show Loading Log", self.__window
+        )
+        self.__showLoadingLogAction.triggered.connect(self.__showLoadingLog)
         self.__forcesListTable = QTableView()
         self.__forcesListTable.setSortingEnabled(False)
 
@@ -189,6 +193,7 @@ class QtMainWindow(MainWindow):
 
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
+        self.__optionsMenu.addAction(self.__showLoadingLogAction)
         self.__darkMapAction: QAction = QAction("Dark Map", self.__window)
         self.__darkMapAction.setCheckable(True)
         self.__darkMapAction.toggled.connect(self.__setDarkMap)
@@ -256,10 +261,15 @@ class QtMainWindow(MainWindow):
         self.__factions.layout().addWidget(self.__totalFactionIncomeLabel)
 
         self.__presenter: MainWindowPresenter
+        self.__loadingLogDialog = None
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
         """Set the presenter class for the window"""
         self.__presenter = presenter
+
+    def setLoadingLogDialog(self, dialog) -> None:
+        """Set the dialog used to display loading progress and application logs."""
+        self.__loadingLogDialog = dialog
 
     def addPlanets(self, planets: List[str]) -> None:
         """Add Planet objects to the planet table widget"""
@@ -304,6 +314,10 @@ class QtMainWindow(MainWindow):
     def __setDarkMap(self, enabled: bool) -> None:
         if self.__plot is not None:
             self.__plot.setDarkMode(enabled)
+
+    def __showLoadingLog(self) -> None:
+        if self.__loadingLogDialog is not None:
+            self.__loadingLogDialog.showLog()
 
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""

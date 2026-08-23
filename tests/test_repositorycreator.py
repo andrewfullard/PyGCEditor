@@ -36,6 +36,58 @@ def test_add_trade_routes_skips_malformed_entries() -> None:
     assert loaded_route.end.name == "Kuat"
 
 
+def test_planet_loading_reports_tqdm_style_progress() -> None:
+    creator = RepositoryCreator()
+    updates = []
+    creator.setProgressCallback(lambda description, current, total: updates.append(
+        (description, current, total)
+    ))
+    planet_root = et.fromstring(
+        """<GameObjects>
+            <Planet Name='Alderaan'>
+                <Galactic_Position>1, 2, 0</Galactic_Position>
+            </Planet>
+        </GameObjects>"""
+    )
+
+    creator.addPlanetsFromXML([planet_root])
+
+    assert updates == [("Loading planets", 0, 1), ("Loading planets", 1, 1)]
+
+
+def test_campaign_loading_reports_tqdm_style_progress() -> None:
+    creator = RepositoryCreator()
+    updates = []
+    creator.setProgressCallback(lambda description, current, total: updates.append(
+        (description, current, total)
+    ))
+    campaign_root = et.fromstring(
+        """<Campaign Name='TestCampaign'>
+            <Campaign_Set>TestSet</Campaign_Set>
+            <Starting_Active_Player> </Starting_Active_Player>
+            <Locations> </Locations>
+            <Sort_Order>0</Sort_Order>
+            <Text_ID>TEST</Text_ID>
+            <Description_Text>Test</Description_Text>
+            <Era_Start>1</Era_Start>
+            <Use_Default_Forces>False</Use_Default_Forces>
+            <Rebel_Story_Name> </Rebel_Story_Name>
+            <Empire_Story_Name> </Empire_Story_Name>
+            <Underworld_Story_Name> </Underworld_Story_Name>
+            <Story_Name> </Story_Name>
+            <Is_Listed>True</Is_Listed>
+            <Trade_Routes> </Trade_Routes>
+        </Campaign>"""
+    )
+
+    creator.addCampaignsFromXML([("Campaign.xml", "TestCampaign", campaign_root)])
+
+    assert updates == [
+        ("Loading Galactic Conquests", 0, 1),
+        ("Loading Galactic Conquests", 1, 1),
+    ]
+
+
 def test_dummy_planets_are_loaded_but_hidden_from_map(tmp_path) -> None:
     creator = RepositoryCreator()
     root = et.fromstring(
