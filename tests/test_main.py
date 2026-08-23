@@ -100,7 +100,7 @@ def test_loading_log_dialog_hides_after_startup(monkeypatch):
         def completeLoading(self):
             self.complete = True
 
-        def setLoadingPaths(self, modPath, submods):
+        def setLoadingPaths(self, modPath, submods, startingForcesLibraryURL):
             pass
 
         def updateProgress(self, description, current, total):
@@ -167,6 +167,36 @@ def test_show_loading_log_action_reopens_log_dialog(monkeypatch):
     show_log_action.trigger()
 
     assert dialog.wasShown is True
+    window.getWindow().close()
+
+
+def test_undo_action_calls_presenter(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+
+    class TestPresenter:
+        def __init__(self):
+            self.undoCalls = 0
+
+        def undo(self):
+            self.undoCalls += 1
+
+    window = QtMainWindow()
+    presenter = TestPresenter()
+    window.setMainWindowPresenter(presenter)
+    edit_menu = next(
+        action.menu()
+        for action in window.getWindow().menuBar().actions()
+        if action.text() == "Edit"
+    )
+    undo_action = next(action for action in edit_menu.actions() if action.text() == "Undo")
+
+    undo_action.trigger()
+
+    assert presenter.undoCalls == 1
+    assert undo_action.shortcut().toString() == "Ctrl+Z"
     window.getWindow().close()
 
 

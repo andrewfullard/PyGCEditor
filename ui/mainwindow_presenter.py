@@ -146,6 +146,7 @@ class MainWindowPresenter:
         self.__availableTradeRoutes: List[TradeRoute] = list()
         self.__newTradeRoutes: List[TradeRoute] = list()
         self.__updatedPlanetCoords: Dict[str, List[float]] = dict()
+        self.__undoHistory: List[dict] = []
 
         self.__selectedCampaignIndex: int = 0
 
@@ -171,6 +172,7 @@ class MainWindowPresenter:
 
     def importStartingForces(self) -> None:
         """Imports all starting forces from spreadsheets"""
+        self.__recordUndo()
         self.getSelectedCampaign().startingForces = (
             self.__repository.startingForcesLibrary
         )
@@ -179,6 +181,7 @@ class MainWindowPresenter:
 
     def importStartingForcesAll(self) -> None:
         """Imports all starting forces from spreadsheets into ALL GCs"""
+        self.__recordUndo()
         for i, campaign in enumerate(self.campaigns):
             campaign.startingForces = self.__repository.startingForcesLibrary
             self.campaigns[i] = campaign
@@ -236,11 +239,13 @@ class MainWindowPresenter:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
         if checked:
             if self.__planets[index] not in self.__checkedPlanets:
+                self.__recordUndo()
                 self.__checkedPlanets.add(self.__planets[index])
                 self.getSelectedCampaign().planets.add(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
         else:
             if self.__planets[index] in self.__checkedPlanets:
+                self.__recordUndo()
                 self.__checkedPlanets.remove(self.__planets[index])
                 self.getSelectedCampaign().planets.remove(self.__planets[index])
                 self.__updateAvailableTradeRoutes(self.__checkedPlanets)
@@ -250,6 +255,7 @@ class MainWindowPresenter:
 
     def planetSelectedOnPlot(self, index: int) -> None:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
+        self.__recordUndo()
         planet = self.__mapPlanets[index]
         if planet not in self.__checkedPlanets:
             self.__checkedPlanets.add(planet)
@@ -315,6 +321,7 @@ class MainWindowPresenter:
 
     def onTradeRouteChecked(self, index: int, checked: bool) -> None:
         """If a trade route is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
+        self.__recordUndo()
         if checked:
             if self.__availableTradeRoutes[index] not in self.__checkedTradeRoutes:
                 self.__checkedTradeRoutes.add(self.__availableTradeRoutes[index])
@@ -335,6 +342,7 @@ class MainWindowPresenter:
 
     def onFactionChecked(self, index: int, checked: bool) -> None:
         """If a faction is checked by the user, add it to the selected campaign"""
+        self.__recordUndo()
         if checked:
             if self.__playableFactions[index] not in self.__checkedPlayableFactions:
                 self.__checkedPlayableFactions.add(self.__playableFactions[index])
@@ -379,6 +387,7 @@ class MainWindowPresenter:
 
     def onNewCampaign(self, campaign: Campaign) -> None:
         """If a new campaign is created, add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__recordUndo()
         core_art_model = next(
             (
                 planet
@@ -399,6 +408,7 @@ class MainWindowPresenter:
 
     def onCampaignUpdate(self, campaign: Campaign) -> None:
         """If a campaign is updated, update it and add the campaign to the repository, and clear then refresh the galaxy plot"""
+        self.__recordUndo()
         self.__repository.removeCampaign(campaign)
         self.__repository.addCampaign(campaign)
 
@@ -416,6 +426,7 @@ class MainWindowPresenter:
 
     def onNewTradeRoute(self, tradeRoute: TradeRoute):
         """Handles new trade routes"""
+        self.__recordUndo()
         self.__repository.addTradeRoute(tradeRoute)
         self.__newTradeRoutes.append(tradeRoute)
 
@@ -453,6 +464,7 @@ class MainWindowPresenter:
 
     def onPlanetPositionChanged(self, name, new_x, new_y) -> None:
         """Updates position of a planet in the repository"""
+        self.__recordUndo()
         planet = self.__repository.getPlanetByName(name)
         planet.x = new_x
         planet.y = new_y
@@ -461,6 +473,7 @@ class MainWindowPresenter:
 
     def allPlanetsChecked(self, checked: bool) -> None:
         """Select all planets handler: plots all planets"""
+        self.__recordUndo()
         if checked:
             self.__checkedPlanets.update(self.__planets)
             self.getSelectedCampaign().planets.update(self.__planets)
@@ -475,6 +488,7 @@ class MainWindowPresenter:
 
     def allTradeRoutesChecked(self, checked: bool) -> None:
         """Select all trade routes handler: plots all trade routes"""
+        self.__recordUndo()
         if checked:
             self.__checkedTradeRoutes.update(self.__availableTradeRoutes)
             self.getSelectedCampaign().tradeRoutes.update(self.__availableTradeRoutes)
@@ -483,6 +497,70 @@ class MainWindowPresenter:
             self.getSelectedCampaign().tradeRoutes.clear()
 
         self.__updateGalacticPlot()
+
+    def undo(self) -> None:
+        """Undo the most recent edit, if one is available."""
+        if not self.__undoHistory:
+            return
+
+        snapshot = self.__undoHistory.pop()
+        for campaign in self.campaigns:
+            self.__repository.removeCampaign(campaign)
+        for campaign in snapshot["campaigns"]:
+            self.__repository.addCampaign(campaign)
+        self.campaigns = list(snapshot["campaigns"])
+
+        for campaign, planets, routes, factions, starting_forces in snapshot[
+            "campaign_states"
+        ]:
+            campaign.planets.clear()
+            campaign.planets.update(planets)
+            campaign.tradeRoutes.clear()
+            campaign.tradeRoutes.update(routes)
+            campaign.playableFactions.clear()
+            campaign.playableFactions.update(factions)
+            campaign.startingForces = starting_forces.copy()
+
+        current_routes = self.__repository.tradeRoutes
+        for route in current_routes - snapshot["trade_routes"]:
+            self.__repository.removeTradeRoute(route)
+        for route in snapshot["trade_routes"] - current_routes:
+            self.__repository.addTradeRoute(route)
+        for planet, x, y in snapshot["planet_positions"]:
+            planet.x = x
+            planet.y = y
+
+        self.__newTradeRoutes = list(snapshot["new_trade_routes"])
+        self.__updatedPlanetCoords = dict(snapshot["updated_planet_coords"])
+        self.__selectedCampaignIndex = snapshot["selected_campaign_index"]
+        self.__updateWidgets()
+
+    def __recordUndo(self) -> None:
+        campaign_states = [
+            (
+                campaign,
+                set(campaign.planets),
+                set(campaign.tradeRoutes),
+                set(campaign.playableFactions),
+                campaign.startingForces.copy(),
+            )
+            for campaign in self.campaigns
+        ]
+        self.__undoHistory.append(
+            {
+                "campaigns": list(self.campaigns),
+                "campaign_states": campaign_states,
+                "trade_routes": self.__repository.tradeRoutes,
+                "planet_positions": [
+                    (planet, planet.x, planet.y)
+                    for planet in self.__repository.planets
+                ],
+                "new_trade_routes": list(self.__newTradeRoutes),
+                "updated_planet_coords": dict(self.__updatedPlanetCoords),
+                "selected_campaign_index": self.__selectedCampaignIndex,
+            }
+        )
+        del self.__undoHistory[:-20]
 
     def saveFile(self, fileName: str) -> None:
         """Saves XML files"""

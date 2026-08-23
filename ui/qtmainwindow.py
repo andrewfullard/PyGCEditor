@@ -154,6 +154,7 @@ class QtMainWindow(MainWindow):
         # set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
         self.__fileMenu: QMenu = QMenu("File", self.__window)
+        self.__editMenu: QMenu = QMenu("Edit", self.__window)
         self.__optionsMenu: QMenu = QMenu("Options", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
 
@@ -191,6 +192,10 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
 
+        self.__undoAction: QAction = QAction("Undo", self.__window)
+        self.__undoAction.setShortcut("Ctrl+Z")
+        self.__undoAction.triggered.connect(self.__undo)
+
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
         self.__optionsMenu.addAction(self.__showLoadingLogAction)
@@ -210,6 +215,8 @@ class QtMainWindow(MainWindow):
         self.__addMenu.addAction(self.__newTradeRouteAction)
 
         self.__menuBar.addMenu(self.__fileMenu)
+        self.__editMenu.addAction(self.__undoAction)
+        self.__menuBar.addMenu(self.__editMenu)
         self.__menuBar.addMenu(self.__addMenu)
         self.__menuBar.addMenu(self.__optionsMenu)
         self.__window.setMenuWidget(self.__menuBar)
@@ -318,6 +325,9 @@ class QtMainWindow(MainWindow):
     def __showLoadingLog(self) -> None:
         if self.__loadingLogDialog is not None:
             self.__loadingLogDialog.showLog()
+
+    def __undo(self) -> None:
+        self.__presenter.undo()
 
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""
