@@ -81,6 +81,12 @@ class QtGalacticPlot(QWidget):
         allTradeRoutes=None,
     ) -> None:
         """Plots all planets as alpha = 0.1, then overlays all selected planets and trade routes"""
+        if not allPlanets:
+            self.__axes.clear()
+            self.__applyMapColors()
+            self.__galacticPlotCanvas.draw_idle()
+            return
+
         if self.__is_first_run:
             x = [p.x for p in allPlanets]
             y = [p.y for p in allPlanets]

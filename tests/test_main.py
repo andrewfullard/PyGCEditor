@@ -1,8 +1,10 @@
 import pandas as pd
+import os
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QApplication
 
 import main
+from config import Config
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.gameObjectRepository import GameObjectRepository
@@ -59,6 +61,11 @@ class DummyRepositoryCreator:
         return self.repository
 
 
+class EmptyRepositoryCreator:
+    def constructRepository(self, data_folders, starting_forces_library_url):
+        return GameObjectRepository()
+
+
 def test_main_launches_with_dummy_data(monkeypatch):
     monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
 
@@ -77,5 +84,78 @@ def test_main_launches_with_dummy_data(monkeypatch):
     result = main.main(argv=["main.py"], start_event_loop=True)
 
     assert result == 0
+
+
+def test_main_launches_with_no_campaigns(monkeypatch):
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+
+    def create_app(*args, **kwargs):
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+
+        QTimer.singleShot(0, app.quit)
+        return app
+
+    monkeypatch.setattr(main, "QApplication", create_app)
+    monkeypatch.setattr(main, "RepositoryCreator", EmptyRepositoryCreator)
+
+    result = main.main(argv=["main.py"], start_event_loop=True)
+
+    assert result == 0
+
+
+def test_config_resolves_absolute_submod_paths(tmp_path, monkeypatch):
+    absolute_submod = tmp_path / "ExternalSubmod"
+    (tmp_path / "Data").mkdir()
+    (absolute_submod / "Data").mkdir(parents=True)
+    (tmp_path / "config.xml").write_text(
+        f"""<Config>
+    <ModPath>{tmp_path}</ModPath>
+    <Submod>{absolute_submod}</Submod>
+    <MaximumFleetMovementDistance>0</MaximumFleetMovementDistance>
+    <StartingForcesLibraryURL></StartingForcesLibraryURL>
+</Config>""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    config = Config()
+
+    assert config.dataFolders == [
+        os.path.join(str(tmp_path), "Data"),
+        os.path.join(str(absolute_submod), "Data"),
+    ]
+
+
+def test_config_save_preserves_readable_xml_format(tmp_path, monkeypatch):
+    (tmp_path / "config.xml").write_text(
+        """<Config>
+    <ModPath>C:\\Mods\\Base</ModPath>
+    <!-- Submods -->
+    <Submod>Old</Submod>
+    <MaximumFleetMovementDistance>0</MaximumFleetMovementDistance>
+    <StartingForcesLibraryURL>forces.csv</StartingForcesLibraryURL>
+</Config>
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    config = Config()
+    config.save("C:\\Mods\\Base", ["First", "Second"], 5, "forces.csv")
+
+    assert (tmp_path / "config.xml").read_text(encoding="utf-8") == (
+        """<?xml version='1.0' encoding='UTF-8'?>
+<Config>
+    <ModPath>C:\\Mods\\Base</ModPath>
+    <!-- Submods -->
+    <Submod>First</Submod>
+    <Submod>Second</Submod>
+    <MaximumFleetMovementDistance>5</MaximumFleetMovementDistance>
+    <StartingForcesLibraryURL>forces.csv</StartingForcesLibraryURL>
+</Config>
+"""
+    )
 
 

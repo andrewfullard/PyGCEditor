@@ -189,7 +189,12 @@ class MainWindowPresenter:
         logger.info("Loading from folder %s", modPath)
         dataFolders = [os.path.join(modPath, "Data")]
         for submod in self.__config.submods:
-            dataFolders.append(os.path.join(modPath, submod, "Data"))
+            submodPath = (
+                submod
+                if os.path.isabs(submod)
+                else os.path.join(modPath, submod)
+            )
+            dataFolders.append(os.path.join(submodPath, "Data"))
         self.__repository = self.__repositoryCreator.constructRepository(
             dataFolders, self.__config.startingForcesLibraryURL
         )
@@ -367,7 +372,7 @@ class MainWindowPresenter:
         self.__updateGalacticPlot()
 
     def getSelectedCampaign(self) -> Campaign:
-        if self.__selectedCampaignIndex > -1:
+        if 0 <= self.__selectedCampaignIndex < len(self.campaigns):
             return self.campaigns[self.__selectedCampaignIndex]
 
         return None
@@ -556,6 +561,15 @@ class MainWindowPresenter:
         self.__mainWindow.addFactions(self.__getNames(self.__factions))
         self.__mainWindow.addTradeRoutes(self.__getNames(self.__availableTradeRoutes))
 
+        if not self.campaigns:
+            self.__selectedCampaignIndex = -1
+            self.__mainWindow.updateCampaignComboBoxSelection(-1)
+            self.__mainWindow.updatePlanetComboBox([])
+            self.__mainWindow.updateTradeRouteSelection([])
+            self.__mainWindow.updateFactionSelection([])
+            self.__updateGalacticPlot()
+            return
+
         self.__mainWindow.updateCampaignComboBoxSelection(self.__selectedCampaignIndex)
         self.onCampaignSelected(self.__selectedCampaignIndex)
 
@@ -711,8 +725,10 @@ class MainWindowPresenter:
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
         mapPlanets = set(self.__checkedPlanets).intersection(self.__mapPlanets)
-        mapPlanetOwners = self.__helper.getPlanetOwners(
-            self.__selectedCampaignIndex, mapPlanets
+        mapPlanetOwners = (
+            self.__helper.getPlanetOwners(self.__selectedCampaignIndex, mapPlanets)
+            if self.campaigns
+            else []
         )
         self.__plot.plotGalaxy(
             mapPlanets,

@@ -25,7 +25,14 @@ class Config:
         )
         self.__setElementText("StartingForcesLibraryURL", startingForcesLibraryURL)
 
-        for el in self.__configRoot.findall("Submod"):
+        submodElements = self.__configRoot.findall("Submod")
+        insertIndex = (
+            self.__configRoot.index(submodElements[0])
+            if submodElements
+            else len(self.__configRoot)
+        )
+
+        for el in submodElements:
             self.__configRoot.remove(el)
 
         for submod in submods:
@@ -33,7 +40,13 @@ class Config:
             if submodName:
                 submodElement = et.Element("Submod")
                 submodElement.text = submodName
-                self.__configRoot.append(submodElement)
+                self.__configRoot.insert(insertIndex, submodElement)
+                insertIndex += 1
+
+        self.__configRoot.text = "\n    "
+        children = list(self.__configRoot)
+        for index, child in enumerate(children):
+            child.tail = "\n    " if index < len(children) - 1 else "\n"
 
         self.__configTree.write(
             self.__configFile,
@@ -71,7 +84,8 @@ class Config:
 
         self.dataFolders = [os.path.join(self.modPath, "Data")]
         for submod in self.submods:
-            self.dataFolders.append(os.path.join(self.modPath, submod, "Data"))
+            submodPath = submod if os.path.isabs(submod) else os.path.join(self.modPath, submod)
+            self.dataFolders.append(os.path.join(submodPath, "Data"))
 
         # dataPath remains the base Data folder for backward compatibility
         self.dataPath = self.dataFolders[0]
