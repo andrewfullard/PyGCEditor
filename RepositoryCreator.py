@@ -13,8 +13,6 @@ from gameObjects.startingForce import StartingForce
 from xmlTools.xmlreader import XMLReader
 from xmlTools.xmlstructure import XMLStructure
 
-from util import getObject
-
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +149,12 @@ class RepositoryCreator:
         campaigns to the repository, after finding their planets and trade routes"""
 
         current_campaign_set = ""
+        # Build lookup dicts once instead of re-scanning/copying the full
+        # planet/trade route sets for every single name in every campaign.
+        planetsByLowerName = {p.name.lower(): p for p in self.repository.planets}
+        tradeRoutesByLowerName = {
+            t.name.lower(): t for t in self.repository.tradeRoutes
+        }
 
         for filePath, campaign, campaignRoot in self.__progress(
             campaignEntries, "Loading Galactic Conquests"
@@ -233,11 +237,15 @@ class RepositoryCreator:
             )
 
             for p in campaignPlanetNames:
-                newPlanet = getObject(p, self.repository.planets)
+                newPlanet = planetsByLowerName.get(p.lower())
+                if newPlanet is None:
+                    logger.warning("Object %s not found!", p)
                 newCampaignPlanets.add(newPlanet)
 
             for t in campaignTradeRouteNames:
-                newRoute = getObject(t, self.repository.tradeRoutes)
+                newRoute = tradeRoutesByLowerName.get(t.lower())
+                if newRoute is None:
+                    logger.warning("Object %s not found!", t)
                 newCampaignTradeRoutes.add(newRoute)
 
             for s in campaignStartingForces:
@@ -344,27 +352,39 @@ class RepositoryCreator:
         current_era = 0
 
         try:
-            for index, row in self.__progress(
-                startingForcesLibrary.iterrows(),
+            # Group once so each reuse lookup is O(1) instead of re-scanning
+            # (and re-copying) the whole, ever-growing DataFrame per row.
+            grouped_by_era_planet = startingForcesLibrary.groupby(
+                ["Era", "Planet"]
+            )
+            additions = []
+
+            for row in self.__progress(
+                startingForcesLibrary.itertuples(index=False),
                 "Loading starting forces",
                 total=len(startingForcesLibrary),
             ):
-                if row["Planet"] != current_planet:
-                    current_planet = row["Planet"]
+                if row.Planet != current_planet:
+                    current_planet = row.Planet
 
-                if row["Era"] != current_era:
-                    current_era = row["Era"]
-                    if not pd.isna(row["ReuseEra"]):
-                        era_to_reuse = row["ReuseEra"]
-                        reuse_filter = (startingForcesLibrary.Era == era_to_reuse) & (
-                            startingForcesLibrary.Planet == current_planet
-                        )
-                        data_to_add = startingForcesLibrary[reuse_filter].copy()
+                if row.Era != current_era:
+                    current_era = row.Era
+                    if not pd.isna(row.ReuseEra):
+                        era_to_reuse = row.ReuseEra
+                        try:
+                            data_to_add = grouped_by_era_planet.get_group(
+                                (era_to_reuse, current_planet)
+                            ).copy()
+                        except KeyError:
+                            continue
                         data_to_add = data_to_add.assign(Era=current_era)
-                        startingForcesLibrary = pd.concat(
-                            [startingForcesLibrary, data_to_add]
-                        )
+                        additions.append(data_to_add)
                         continue
+
+            if additions:
+                startingForcesLibrary = pd.concat(
+                    [startingForcesLibrary] + additions, ignore_index=True
+                )
 
             startingForcesLibrary.reset_index(drop=True, inplace=True)
 
