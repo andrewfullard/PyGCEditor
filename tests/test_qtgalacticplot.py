@@ -94,6 +94,8 @@ def test_map_supports_scroll_zoom_and_middle_mouse_pan(monkeypatch):
     assert axes.get_ylim() == (9.0, 17.0)
     plot._QtGalacticPlot__endPan(SimpleNamespace(button=2))
 
+    plot.plotGalaxy([], [], [planet_a, planet_b], [])
+
     plot._QtGalacticPlot__galacticPlotNavBar.home()
     assert axes.get_xlim() == (10.0, 20.0)
     assert axes.get_ylim() == (10.0, 20.0)

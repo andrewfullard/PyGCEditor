@@ -19,6 +19,7 @@ class QtGalacticPlot(QWidget):
         self.__galacticPlotWidget: QWidget = QWidget(parent)
         self.__galacticPlotWidget.setLayout(QVBoxLayout())
         self.__is_first_run = True
+        self.__hasInitialView = False
 
         self.__galacticPlotCanvas: FigureCanvas = FigureCanvas(Figure())
 
@@ -215,8 +216,9 @@ class QtGalacticPlot(QWidget):
             self.__axes.scatter(x, y, c="grey", zorder=3)
 
         self.__updatePlanetLabels()
-        self.__galacticPlotNavBar.update()
-        self.__galacticPlotNavBar.push_current()
+        if not self.__hasInitialView:
+            self.__galacticPlotNavBar.push_current()
+            self.__hasInitialView = True
         self.__galacticPlotCanvas.draw_idle()
 
     def getWidget(self) -> QWidget:
