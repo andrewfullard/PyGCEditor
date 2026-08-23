@@ -285,8 +285,13 @@ def test_config_save_preserves_readable_xml_format(tmp_path, monkeypatch):
     <Submod>Second</Submod>
     <MaximumFleetMovementDistance>5</MaximumFleetMovementDistance>
     <StartingForcesLibraryURL>forces.csv</StartingForcesLibraryURL>
+    <DarkMap>False</DarkMap>
 </Config>
 """
     )
+
+    assert config.darkMap is False
+    config.save("C:\\Mods\\Base", ["First", "Second"], 5, "forces.csv", True)
+    assert config.darkMap is True
 
 

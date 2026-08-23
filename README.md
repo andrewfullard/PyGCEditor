@@ -95,10 +95,8 @@ Loading Log**.
 - **Auto connection settings**: set the automatic planet-connection distance
 	and hide or show those connections.
 - **Configuration options**: edit the mod path, submods, starting-forces CSV,
-	and automatic connection distance.
+	automatic connection distance, and map appearance.
 - **Show Loading Log**: reopen the loading and Python log dialog after startup.
-- **Dark Map**: toggle the map-only dark background. Planet faction colours
-	are preserved.
 
 ### Layout tab
 
