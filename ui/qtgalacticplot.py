@@ -239,6 +239,8 @@ class QtGalacticPlot(QWidget):
         """Event handler for selecting a planet on the map"""
         planet_index = event.ind[0]
         if event.mouseevent.button == 3:
+            if self.__planetNames[planet_index] not in self.__selectedPlanetNames:
+                return
             self.planetShiftSelectedSignal.emit(planet_index)
         elif event.mouseevent.button == 1:
             self.planetSelectedSignal.emit(planet_index)
