@@ -245,13 +245,14 @@ class MainWindowPresenter:
 
     def planetSelectedOnPlot(self, index: int) -> None:
         """If a planet is checked by the user, add it to the selected campaign and refresh the galaxy plot"""
-        if self.__planets[index] not in self.__checkedPlanets:
-            self.__checkedPlanets.add(self.__planets[index])
-            self.getSelectedCampaign().planets.add(self.__planets[index])
+        planet = self.__mapPlanets[index]
+        if planet not in self.__checkedPlanets:
+            self.__checkedPlanets.add(planet)
+            self.getSelectedCampaign().planets.add(planet)
             self.__updateAvailableTradeRoutes(self.__checkedPlanets)
-        elif self.__planets[index] in self.__checkedPlanets:
-            self.__checkedPlanets.remove(self.__planets[index])
-            self.getSelectedCampaign().planets.remove(self.__planets[index])
+        elif planet in self.__checkedPlanets:
+            self.__checkedPlanets.remove(planet)
+            self.getSelectedCampaign().planets.remove(planet)
             self.__updateAvailableTradeRoutes(self.__checkedPlanets)
 
         selectedPlanets = []
@@ -264,18 +265,19 @@ class MainWindowPresenter:
         self.__mainWindow.updatePlanetMaxConnectionsCountDisplay(
             self.__checkedTradeRoutes
         )
-        self.__refreshForcesDisplay(preferredPlanetName=self.__planets[index].name)
+        self.__refreshForcesDisplay(preferredPlanetName=planet.name)
         self.__updateGalacticPlot()
 
     def planetShiftSelectedOnPlot(self, index: int) -> None:
         """If two planets in a row are right clicked by a user, this find and adds the trade route, or helps create a new one"""
+        planet = self.__mapPlanets[index]
         if not self.__onPlotSelectedStartPlanet:
-            self.__onPlotSelectedStartPlanet = self.__planets[index]
+            self.__onPlotSelectedStartPlanet = planet
             self.__plot.TraceTradeRoute(index)
             return
 
         if self.__onPlotSelectedStartPlanet and not self.__onPlotSelectedEndPlanet:
-            self.__onPlotSelectedEndPlanet = self.__planets[index]
+            self.__onPlotSelectedEndPlanet = planet
             self.__plot.TraceTradeRoute(None)
 
         if self.__onPlotSelectedStartPlanet and self.__onPlotSelectedEndPlanet:
@@ -520,6 +522,9 @@ class MainWindowPresenter:
         self.__planets: List[Planet] = sorted(
             self.__repository.planets, key=lambda entry: entry.name
         )
+        self.__mapPlanets: List[Planet] = [
+            planet for planet in self.__planets if planet.mapVisible
+        ]
         self.__tradeRoutes: List[TradeRoute] = sorted(
             self.__repository.tradeRoutes, key=lambda entry: entry.name
         )
@@ -695,11 +700,15 @@ class MainWindowPresenter:
         autoConnectionDistance = self.config.autoPlanetConnectionDistance
         if not self.__showAutoConnections:
             autoConnectionDistance = 0
+        mapPlanets = set(self.__checkedPlanets).intersection(self.__mapPlanets)
+        mapPlanetOwners = self.__helper.getPlanetOwners(
+            self.__selectedCampaignIndex, mapPlanets
+        )
         self.__plot.plotGalaxy(
-            self.__checkedPlanets,
+            mapPlanets,
             self.__checkedTradeRoutes,
-            self.__planets,
-            self.__planetOwners,
+            self.__mapPlanets,
+            mapPlanetOwners,
             autoPlanetConnectionDistance=autoConnectionDistance,
             allTradeRoutes=self.__tradeRoutes,
         )

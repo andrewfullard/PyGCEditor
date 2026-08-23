@@ -38,7 +38,7 @@ class RepositoryCreator:
 
         return names, roots
 
-    def addPlanetsFromXML(self, planetRoots) -> None:
+    def addPlanetsFromXML(self, planetRoots, mapVisible: bool = True) -> None:
         """Takes a list of Planet GameObject XML roots and adds
         them to the repository with x and y positions"""
         shipyard_list = {
@@ -60,6 +60,7 @@ class RepositoryCreator:
                     continue
 
                 newplanet = Planet(name)
+                newplanet.mapVisible = mapVisible
                 newplanet.variantOf = record["variant_of"]
                 newplanet.emptyXmlTags = record["empty_xml_tags"]
                 newplanet.x, newplanet.y = coordinates
@@ -377,8 +378,14 @@ class RepositoryCreator:
 
         if metaFileExists("GameObjectFiles.XML"):
             logger.info("Loading Planets")
-            planetRoots = self.__xml.findPlanetsFiles(gameObjectFile, dataFolders)
+            planetRoots = self.__xml.findPlanetsFiles(
+                gameObjectFile, dataFolders, excludedFiles={"Planets_Dummy.xml"}
+            )
             self.addPlanetsFromXML(planetRoots)
+            dummyPlanetRoots = self.__xml.findPlanetFileByName(
+                "Planets_Dummy.xml", dataFolders
+            )
+            self.addPlanetsFromXML(dummyPlanetRoots, mapVisible=False)
 
         if metaFileExists("TradeRouteFiles.XML"):
             logger.info("Loading Trade Routes")

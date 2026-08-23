@@ -36,6 +36,38 @@ def test_add_trade_routes_skips_malformed_entries() -> None:
     assert loaded_route.end.name == "Kuat"
 
 
+def test_dummy_planets_are_loaded_but_hidden_from_map(tmp_path) -> None:
+    creator = RepositoryCreator()
+    root = et.fromstring(
+        """<GameObjects>
+            <Planet Name='Visible'><Galactic_Position>1, 2, 0</Galactic_Position></Planet>
+        </GameObjects>"""
+    )
+    dummy_root = et.fromstring(
+        """<GameObjects>
+            <Planet Name='Dummy'><Galactic_Position>3, 4, 0</Galactic_Position></Planet>
+        </GameObjects>"""
+    )
+
+    creator.addPlanetsFromXML([root])
+    creator.addPlanetsFromXML([dummy_root], mapVisible=False)
+
+    planets = {planet.name: planet for planet in creator.repository.planets}
+    assert planets["Visible"].mapVisible is True
+    assert planets["Dummy"].mapVisible is False
+
+
+def test_missing_dummy_planet_file_logs_warning(tmp_path, caplog) -> None:
+    creator = RepositoryCreator()
+
+    with caplog.at_level("WARNING"):
+        creator._RepositoryCreator__xml.findPlanetFileByName(
+            "Planets_Dummy.xml", [str(tmp_path)]
+        )
+
+    assert "Planets_Dummy.xml not found" in caplog.text
+
+
 def test_get_starting_forces_library_returns_none_when_file_missing() -> None:
     creator = RepositoryCreator()
 

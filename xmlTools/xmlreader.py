@@ -117,7 +117,12 @@ class XMLReader:
                             entries.append(entry)
         return entries
 
-    def findPlanetsFiles(self, gameObjectFile: str, dataFolders: list = None) -> list:
+    def findPlanetsFiles(
+        self,
+        gameObjectFile: str,
+        dataFolders: list = None,
+        excludedFiles: set[str] | None = None,
+    ) -> list:
         """Searches GameObjectFiles for all XML files with the Planet tag.
         Returns a list of their XML roots"""
         if dataFolders:
@@ -125,6 +130,8 @@ class XMLReader:
             fileList = self._collectMetaFileEntries(metaFileName, dataFolders)
             planetsFiles = []
             for file in fileList:
+                if excludedFiles and file in excludedFiles:
+                    continue
                 filePath = self._findFileAcrossFolders(file, dataFolders)
                 if filePath is None:
                     logger.warning("%s not found. Continuing", file)
@@ -140,6 +147,8 @@ class XMLReader:
                 planetsFiles = []
 
                 for file in fileList:
+                    if excludedFiles and file in excludedFiles:
+                        continue
                     if not os.path.isfile(XMLStructure.dataFolder + "/XML/" + file):
                         logger.warning("%s not found. Continuing", file)
                         continue
@@ -152,6 +161,18 @@ class XMLReader:
 
             else:
                 logger.error("Not a meta file: findPlanetsFiles")
+
+    def findPlanetFileByName(self, fileName: str, dataFolders: list) -> list:
+        """Find a named planet XML file across the active data folders."""
+        filePath = self._findFileAcrossFolders(fileName, dataFolders)
+        if filePath is None:
+            logger.warning("%s not found. Continuing", fileName)
+            return []
+
+        fileRoot = et.parse(filePath)
+        if self.hasTag(fileRoot, "Planet"):
+            return [fileRoot.getroot()]
+        return []
 
     def findPlanetFilesAndRoots(self, gameObjectFile: str) -> list:
         """Searches GameObjectFiles for all XML files with the Planet tag.
