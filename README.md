@@ -15,7 +15,7 @@ Empire at War mod data folder and can export edited campaign XML.
 From the repository directory, create and activate a virtual environment:
 
 ```powershell
-py -m venv .venv
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
