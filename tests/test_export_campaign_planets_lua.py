@@ -1,6 +1,12 @@
+from types import SimpleNamespace
+
 import pandas as pd
 
-from export_campaign_planets_lua import campaign_export_name, campaign_lua_table
+from export_campaign_planets_lua import (
+    campaign_export_name,
+    campaign_lua_table,
+    export_campaigns,
+)
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
 from gameObjects.planet import Planet
@@ -54,3 +60,20 @@ def test_campaign_export_name_keeps_faction_words_in_set_name():
     campaign.playableFactions = {Faction("Empire")}
 
     assert campaign_export_name(campaign) == "CRIMSON_EMPIRE"
+
+
+def test_different_layouts_export_one_file_per_campaign(tmp_path):
+    empire = Campaign("FullProgressive_Empire")
+    empire.setName = "FullProgressive"
+    empire.differentLayoutPerFaction = True
+
+    rebel = Campaign("FullProgressive_Rebel")
+    rebel.setName = "FullProgressive"
+    rebel.differentLayoutPerFaction = True
+
+    export_campaigns(SimpleNamespace(campaigns={empire, rebel}), tmp_path)
+
+    assert {path.name for path in tmp_path.iterdir()} == {
+        "FULLPROGRESSIVE_EMPIRE.lua",
+        "FULLPROGRESSIVE_REBEL.lua",
+    }

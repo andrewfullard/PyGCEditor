@@ -182,13 +182,18 @@ class RepositoryCreator:
             startingActivePlayer = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Starting_Active_Player"
             ).strip()
+            differentLayoutTag = campaignRoot.find(".//Different_Layout_Per_Faction")
+            differentLayoutPerFaction = (
+                differentLayoutTag is not None
+                and self.__xml.stringToBool(differentLayoutTag.text or "")
+            )
 
             logger.info("Loading campaign %s from set %s", campaign, setName)
 
             if self.__tryAddAlternateSet(campaign, setName, startingActivePlayer, campaignRoot):
                 continue
 
-            if setName != current_campaign_set:
+            if setName != current_campaign_set or differentLayoutPerFaction:
                 current_campaign_set = setName
                 newCampaign = Campaign(campaign)
                 newCampaign.fileName = filePath
@@ -250,11 +255,7 @@ class RepositoryCreator:
             newCampaign.isListed = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Is_Listed"
             )
-            differentLayoutTag = campaignRoot.find(".//Different_Layout_Per_Faction")
-            newCampaign.differentLayoutPerFaction = (
-                differentLayoutTag is not None
-                and self.__xml.stringToBool(differentLayoutTag.text or "")
-            )
+            newCampaign.differentLayoutPerFaction = differentLayoutPerFaction
 
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(
                 campaignRoot, ".//Trade_Routes"

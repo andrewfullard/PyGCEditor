@@ -62,11 +62,39 @@ def test_same_faction_alternate_setup_is_loaded():
     ]
 
 
-def _campaign_xml(set_name, owner):
+def test_different_faction_layouts_are_loaded_as_separate_campaigns():
+    creator = RepositoryCreator()
+    creator.repository.addFaction(Faction("Empire"))
+    creator.repository.addPlanet(Planet("Kessel"))
+
+    empire = _campaign_xml("GC", "Empire", "Empire", different_layout=True)
+    rebel = _campaign_xml("GC", "Rebel", "Rebel", different_layout=True)
+    creator.repository.addFaction(Faction("Rebel"))
+    creator.addCampaignsFromXML(
+        [
+            ("Campaign.xml", "GC_Empire", empire),
+            ("Campaign.xml", "GC_Rebel", rebel),
+        ]
+    )
+
+    assert {campaign.name for campaign in creator.repository.campaigns} == {
+        "GC_Empire",
+        "GC_Rebel",
+    }
+
+
+def _campaign_xml(
+    set_name, owner, active_player="Empire", different_layout=False
+):
+    different_layout_tag = (
+        "<Different_Layout_Per_Faction>True</Different_Layout_Per_Faction>"
+        if different_layout
+        else ""
+    )
     return et.fromstring(
         f"""<Campaign>
             <Campaign_Set>{set_name}</Campaign_Set>
-            <Starting_Active_Player>Empire</Starting_Active_Player>
+            <Starting_Active_Player>{active_player}</Starting_Active_Player>
             <Locations>Kessel</Locations>
             <Sort_Order>0</Sort_Order>
             <Text_ID>TEST</Text_ID>
@@ -78,6 +106,7 @@ def _campaign_xml(set_name, owner):
             <Underworld_Story_Name />
             <Story_Name />
             <Is_Listed>True</Is_Listed>
+            {different_layout_tag}
             <Trade_Routes> </Trade_Routes>
             <Starting_Forces>{owner}, Kessel, Mine</Starting_Forces>
         </Campaign>"""
