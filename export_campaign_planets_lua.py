@@ -1,10 +1,13 @@
 import argparse
+import logging
 import re
 from collections import defaultdict
 from pathlib import Path
-
 from config import Config
 from RepositoryCreator import RepositoryCreator
+
+
+logger = logging.getLogger(__name__)
 
 
 def lua_quote(value) -> str:
@@ -50,9 +53,9 @@ def campaign_lua_table(campaign) -> str:
     for planet in sorted(adjacent):
         neighbors = ", ".join(lua_quote(name) for name in sorted(adjacent[planet]))
         lines.append(
-            f"    [{lua_quote(planet)}] = "
+            f"    [{lua_quote(planet.upper())}] = "
             f"{{ owner = {lua_quote(owners.get(planet, 'NEUTRAL'))}, "
-            f"adjacent = {{{neighbors}}} }},"
+            f"adjacent = {{{neighbors.upper()}}} }},"
         )
 
     lines.append("}")
@@ -63,12 +66,16 @@ def safe_file_name(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", name).strip("_") or "campaign"
 
 
+def campaign_export_name(campaign) -> str:
+    return campaign.setName.upper() if campaign.setName != "Empty" else campaign.name.upper()
+
+
 def export_campaigns(repository, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     for campaign in sorted(repository.campaigns, key=lambda c: c.name):
-        output_path = output_dir / f"{safe_file_name(campaign.name)}.lua"
+        output_path = output_dir / f"{safe_file_name(campaign_export_name(campaign))}.lua"
         output_path.write_text(campaign_lua_table(campaign), encoding="utf-8")
-        print(output_path)
+        logger.info("Exported %s", output_path)
 
 
 def main() -> int:

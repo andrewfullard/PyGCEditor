@@ -1,9 +1,14 @@
+import logging
 import lxml.etree as et
 import os
 from typing import Optional
 from xmlTools.xmlstructure import XMLStructure
 
+from gameObjects.planet import CORE_ART_MODEL_NAME, Planet
 from util import commaSepListParser
+
+
+logger = logging.getLogger(__name__)
 
 
 # incomplete example of writing XML files to disk
@@ -17,9 +22,20 @@ class XMLWriter:
     def campaignWriter(self, campaign, factions, outputName: str) -> None:
         """Writes a campaign to file"""
 
-        print("Exporting campaign set: ", campaign.setName)
+        logger.info("Exporting campaign set: %s", campaign.setName)
 
-        planets = self.createListEntry(campaign.planets)
+        for planet in campaign.planets:
+            if planet.emptyXmlTags:
+                logger.error(
+                    "Planet %s has empty XML tags: %s",
+                    planet.name,
+                    ", ".join(planet.emptyXmlTags),
+                )
+
+        planets_for_export = set(campaign.planets)
+        if not any(planet.name == CORE_ART_MODEL_NAME for planet in planets_for_export):
+            planets_for_export.add(Planet(CORE_ART_MODEL_NAME))
+        planets = self.createListEntry(planets_for_export)
         tradeRoutes = self.createListEntry(campaign.tradeRoutes)
 
         self.root = et.Element(self.__root_name)
@@ -378,11 +394,11 @@ class XMLWriter:
         requires a GameObject with the name property"""
         entry = "\n"
         if len(inputList) == 0:
-            print("Empty list")
+            logger.warning("Empty list")
             return entry
         for item in inputList:
             if item is None:
-                print("Error! Missing entry in list")
+                logger.error("Missing entry in list")
                 return ""
         inputList = sorted(inputList, key=lambda entry: entry.name)
         for item in inputList:
@@ -401,7 +417,7 @@ class XMLWriter:
 
     def writer(self, XMLRoot, outputName: str) -> None:
         """Writes XML file"""
-        print("Writing campaign file", outputName)
+        logger.info("Writing campaign file %s", outputName)
         XMLRoot.write(
             outputName, xml_declaration="1.0", pretty_print=True, encoding="utf-8"
         )

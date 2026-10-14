@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
 )
 
-from ui.mainwindow_presenter import MainWindow, MainWindowPresenter
+from ui.mainwindow_presenter import MainWindowPresenter
 from ui.qtgalacticplot import QtGalacticPlot
 from ui.qtPandasModel import PandasModel
 from ui.qttablewidgetfactory import QtTableWidgetFactory
@@ -32,7 +32,7 @@ from ui.qttablewidgetfactory import QtTableWidgetFactory
 from gameObjects.planet import Planet
 
 
-class QtMainWindow(MainWindow):
+class QtMainWindow:
     """Qt based window"""
 
     def __init__(self):
@@ -41,6 +41,7 @@ class QtMainWindow(MainWindow):
         self.__widget: QWidget = QSplitter(self.__window)
         self.__window.setCentralWidget(self.__widget)
         self.__window.setWindowTitle("Galactic Conquest Editor")
+        self.__plot = None
 
         # Left pane, GC layout tab
         self.__campaignComboBox: QComboBox = QComboBox()
@@ -135,6 +136,10 @@ class QtMainWindow(MainWindow):
 
         self.__openOptionsAction: QAction = QAction("Configuration options", self.__window)
         self.__openOptionsAction.triggered.connect(self.__showOptionsDialog)
+        self.__showLoadingLogAction: QAction = QAction(
+            "Show Loading Log", self.__window
+        )
+        self.__showLoadingLogAction.triggered.connect(self.__showLoadingLog)
         self.__forcesListTable = QTableView()
         self.__forcesListTable.setSortingEnabled(False)
 
@@ -149,6 +154,7 @@ class QtMainWindow(MainWindow):
         # set up menu and menu options
         self.__menuBar: QMenuBar = QMenuBar()
         self.__fileMenu: QMenu = QMenu("File", self.__window)
+        self.__editMenu: QMenu = QMenu("Edit", self.__window)
         self.__optionsMenu: QMenu = QMenu("Options", self.__window)
         self.__addMenu: QMenu = QMenu("New...", self.__window)
 
@@ -166,6 +172,11 @@ class QtMainWindow(MainWindow):
         self.__saveAction: QAction = QAction("Save", self.__window)
         self.__saveAction.triggered.connect(self.__saveFile)
 
+        self.__importForcesAction: QAction = QAction(
+            "Import Default Forces", self.__window
+        )
+        self.__importForcesAction.triggered.connect(self.__importForcesFile)
+
         self.__importForcesSaveAction: QAction = QAction(
             "Import Default Forces and Save", self.__window
         )
@@ -181,10 +192,25 @@ class QtMainWindow(MainWindow):
         self.__quitAction: QAction = QAction("Quit", self.__window)
         self.__quitAction.triggered.connect(self.__quit)
 
+        self.__undoAction: QAction = QAction("Undo", self.__window)
+        self.__undoAction.setShortcut("Ctrl+Z")
+        self.__undoAction.triggered.connect(self.__undo)
+        self.__redoAction: QAction = QAction("Redo", self.__window)
+        self.__redoAction.setShortcut("Ctrl+Y")
+        self.__redoAction.triggered.connect(self.__redo)
+
         self.__optionsMenu.addAction(self.__openAutoConnectionSettingsAction)
         self.__optionsMenu.addAction(self.__openOptionsAction)
+        self.__optionsMenu.addAction(self.__showLoadingLogAction)
+        self.__showPlanetNamesAction: QAction = QAction(
+            "Show Planet Names", self.__window
+        )
+        self.__showPlanetNamesAction.setCheckable(True)
+        self.__showPlanetNamesAction.toggled.connect(self.__setShowPlanetNames)
+        self.__optionsMenu.addAction(self.__showPlanetNamesAction)
 
         self.__fileMenu.addAction(self.__saveAction)
+        self.__fileMenu.addAction(self.__importForcesAction)
         self.__fileMenu.addAction(self.__importForcesSaveAction)
         self.__fileMenu.addAction(self.__importStartingForcesAllSaveAction)
         self.__fileMenu.addAction(self.__setDataFolderAction)
@@ -194,6 +220,9 @@ class QtMainWindow(MainWindow):
         self.__addMenu.addAction(self.__newTradeRouteAction)
 
         self.__menuBar.addMenu(self.__fileMenu)
+        self.__editMenu.addAction(self.__undoAction)
+        self.__editMenu.addAction(self.__redoAction)
+        self.__menuBar.addMenu(self.__editMenu)
         self.__menuBar.addMenu(self.__addMenu)
         self.__menuBar.addMenu(self.__optionsMenu)
         self.__window.setMenuWidget(self.__menuBar)
@@ -245,10 +274,15 @@ class QtMainWindow(MainWindow):
         self.__factions.layout().addWidget(self.__totalFactionIncomeLabel)
 
         self.__presenter: MainWindowPresenter
+        self.__loadingLogDialog = None
 
     def setMainWindowPresenter(self, presenter: MainWindowPresenter) -> None:
         """Set the presenter class for the window"""
         self.__presenter = presenter
+
+    def setLoadingLogDialog(self, dialog) -> None:
+        """Set the dialog used to display loading progress and application logs."""
+        self.__loadingLogDialog = dialog
 
     def addPlanets(self, planets: List[str]) -> None:
         """Add Planet objects to the planet table widget"""
@@ -282,12 +316,27 @@ class QtMainWindow(MainWindow):
     def makeGalacticPlot(self) -> QtGalacticPlot:
         """Plot planets and trade routes"""
         plot: QtGalacticPlot = QtGalacticPlot(self.__widget)
+        self.__plot = plot
         self.__widget.addWidget(plot.getWidget())
         return plot
 
     def getWindow(self) -> QMainWindow:
         """Returns the window"""
         return self.__window
+
+    def __setShowPlanetNames(self, enabled: bool) -> None:
+        if self.__plot is not None:
+            self.__plot.setShowPlanetNames(enabled)
+
+    def __showLoadingLog(self) -> None:
+        if self.__loadingLogDialog is not None:
+            self.__loadingLogDialog.showLog()
+
+    def __undo(self) -> None:
+        self.__presenter.undo()
+
+    def __redo(self) -> None:
+        self.__presenter.redo()
 
     def emptyWidgets(self) -> None:
         """Clears all list and combobox widgets"""
@@ -560,6 +609,10 @@ class QtMainWindow(MainWindow):
         )
         if fileName:
             self.__presenter.saveFile(fileName)
+
+    def __importForcesFile(self) -> None:
+        """Import default forces without saving"""
+        self.__presenter.importStartingForces()
 
     def __importForcesSaveFile(self) -> None:
         """Import default forces and save"""

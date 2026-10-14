@@ -1,6 +1,8 @@
 import json
 
 from PyQt6 import QtCore
+import logging
+
 from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -16,6 +18,9 @@ from PyQt6.QtWidgets import (
 
 from gameObjects.campaign import Campaign
 from ui.dialogs import DialogResult
+
+
+logger = logging.getLogger(__name__)
 
 
 class QtCampaignProperties:
@@ -140,7 +145,7 @@ class QtCampaignProperties:
         self.__name = self.__inputName.text()
 
         if len(self.__name) == 0:
-            print("Error! No campaign name set!")
+            logger.error("No campaign name set!")
 
         self.__result = DialogResult.Ok
         self.__dialog.close()

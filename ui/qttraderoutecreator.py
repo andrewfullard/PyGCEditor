@@ -1,3 +1,5 @@
+import logging
+
 from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -11,6 +13,9 @@ from gameObjects.traderoute import TradeRoute
 from gameObjects.gameObjectRepository import GameObjectRepository
 from ui.qtautocomplete import AutoCompleter
 from ui.dialogs import Dialog, DialogResult
+
+
+logger = logging.getLogger(__name__)
 
 
 class QtTradeRouteCreator(Dialog):
@@ -109,11 +114,11 @@ class QtTradeRouteCreator(Dialog):
         self.__name = self.__inputName.text()
 
         if not self.__tradeRouteDataIsValid():
-            print("Error! Not enough trade route parameters set!")
+            logger.error("Not enough trade route parameters set!")
             return
 
         if self.__repository.tradeRouteExists(self.__start, self.__end):
-            print("Error! Trade route already exists!")
+            logger.error("Trade route already exists!")
             return
 
         self.__result = DialogResult.Ok

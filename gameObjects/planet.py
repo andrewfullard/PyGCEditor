@@ -1,4 +1,8 @@
 from math import sqrt
+from typing import List
+
+
+CORE_ART_MODEL_NAME = "Galaxy_Core_Art_Model"
 
 """Planet class definition"""
 
@@ -17,6 +21,8 @@ class Planet:
         self.__SupportsStructure: str = ""
         self.__groundStructureSlots: int = 0
         self.__income: int = 0
+        self.__emptyXmlTags: List[str] = []
+        self.__mapVisible: bool = True
 
     def distanceTo(self, target):
         return sqrt((self.x - target.x) ** 2 + (self.y - target.y) ** 2)
@@ -104,3 +110,19 @@ class Planet:
     @income.setter
     def income(self, value: int) -> None:
         self.__income = value
+
+    @property
+    def emptyXmlTags(self) -> List[str]:
+        return list(self.__emptyXmlTags)
+
+    @emptyXmlTags.setter
+    def emptyXmlTags(self, value: List[str]) -> None:
+        self.__emptyXmlTags = list(value)
+
+    @property
+    def mapVisible(self) -> bool:
+        return self.__mapVisible
+
+    @mapVisible.setter
+    def mapVisible(self, value: bool) -> None:
+        self.__mapVisible = value
