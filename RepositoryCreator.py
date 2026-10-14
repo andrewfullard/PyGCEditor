@@ -114,6 +114,24 @@ class RepositoryCreator:
 
                 self.repository.addPlanet(newplanet)
 
+    def addGroundForceTypesFromXML(self, gameObjectRoots) -> None:
+        """Adds ground unit names, including variants of ground units, to the repository."""
+        variants = {}
+        for root in gameObjectRoots:
+            variants.update(self.__xml.getGroundForceTypes(root))
+
+        unresolved = dict(variants)
+        while unresolved:
+            resolved = set()
+            for name, parent in unresolved.items():
+                if parent is None or parent in self.repository.groundForceTypes:
+                    self.repository.addGroundForceType(name)
+                    resolved.add(name)
+            if not resolved:
+                break
+            for name in resolved:
+                unresolved.pop(name)
+
     def addTradeRoutesFromXML(self, tradeRouteRoots) -> None:
         """Takes a list of Trade Route GameObject XML roots and adds
         them to the repository with start and end planets"""
@@ -503,10 +521,10 @@ class RepositoryCreator:
             )
 
         if metaFileExists("GameObjectFiles.XML"):
-            logger.info("Loading Planets")
-            planetRoots = self.__xml.findPlanetsFiles(
-                gameObjectFile, dataFolders, excludedFiles={"Planets_Dummy.xml"}
-            )
+            print("\nLoading Planets")
+            gameObjectRoots = self.__xml.findMetaFileRefs(gameObjectFile, dataFolders)
+            self.addGroundForceTypesFromXML(gameObjectRoots)
+            planetRoots = self.__xml.findPlanetsFiles(gameObjectFile, dataFolders, excludedFiles={"Planets_Dummy.xml"})
             self.addPlanetsFromXML(planetRoots)
             dummyPlanetRoots = self.__xml.findPlanetFileByName(
                 "Planets_Dummy.xml", dataFolders

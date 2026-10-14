@@ -17,6 +17,7 @@ class GameObjectRepository:
         self.__tradeRoutes: Set[TradeRoute] = set()
         self.__factions: Set[Faction] = set()
         self.__aiplayers: Set[AIPlayer] = set()
+        self.__groundForceTypes: Set[str] = set()
         self.__startingForcesLibrary: Optional[pd.DataFrame] = None
 
     def addCampaign(self, campaign: Campaign) -> None:
@@ -113,6 +114,9 @@ class GameObjectRepository:
         """Add an AI Player to the repository"""
         self.__aiplayers.add(aiplayer)
 
+    def addGroundForceType(self, name: str) -> None:
+        self.__groundForceTypes.add(name)
+
     def removeAIPlayer(self, aiplayer: AIPlayer) -> None:
         """Remove an AI Player from the repository"""
         self.__aiplayers.remove(aiplayer)
@@ -124,6 +128,7 @@ class GameObjectRepository:
         self.__planets.clear()
         self.__factions.clear()
         self.__aiplayers.clear()
+        self.__groundForceTypes.clear()
 
     @property
     def campaigns(self) -> Set[Campaign]:
@@ -144,6 +149,10 @@ class GameObjectRepository:
     @property
     def aiplayers(self) -> Set[AIPlayer]:
         return set(self.__aiplayers)
+
+    @property
+    def groundForceTypes(self) -> Set[str]:
+        return set(self.__groundForceTypes)
 
     @property
     def startingForcesLibrary(self) -> Optional[pd.DataFrame]:
