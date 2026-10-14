@@ -232,6 +232,11 @@ class RepositoryCreator:
             newCampaign.isListed = self.__xml.getValueFromXMLRoot(
                 campaignRoot, ".//Is_Listed"
             )
+            differentLayoutTag = campaignRoot.find(".//Different_Layout_Per_Faction")
+            newCampaign.differentLayoutPerFaction = (
+                differentLayoutTag is not None
+                and self.__xml.stringToBool(differentLayoutTag.text or "")
+            )
 
             campaignTradeRouteNames = self.__xml.getListFromXMLRoot(
                 campaignRoot, ".//Trade_Routes"

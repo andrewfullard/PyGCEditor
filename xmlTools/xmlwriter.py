@@ -59,6 +59,10 @@ class XMLWriter:
             self.subElementText(campaignElement, "Campaign_Set", campaignSetName)
             self.subElementText(campaignElement, "Sort_Order", campaign.sortOrder)
             self.subElementText(campaignElement, "Is_Listed", campaign.isListed)
+            if campaign.differentLayoutPerFaction:
+                self.subElementText(
+                    campaignElement, "Different_Layout_Per_Faction", "True"
+                )
 
             self.subElementText(campaignElement, "Supports_Custom_Settings", "False")
             self.subElementText(campaignElement, "Show_Completed_Tab", "True")

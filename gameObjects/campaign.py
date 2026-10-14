@@ -29,6 +29,7 @@ class Campaign:
         self.__isListed: str = "True"
         self.__useDefaultForces: bool = False
         self.__alternateSets: List[dict] = []
+        self.__differentLayoutPerFaction: bool = False
 
         self.__planets: Set[Planet] = set()
         self.__playableFactions: Set[Faction] = set()
@@ -243,3 +244,11 @@ class Campaign:
                 if str(planet).strip() and str(faction).strip()
             },
         }
+
+    @property
+    def differentLayoutPerFaction(self) -> bool:
+        return self.__differentLayoutPerFaction
+
+    @differentLayoutPerFaction.setter
+    def differentLayoutPerFaction(self, value: bool) -> None:
+        self.__differentLayoutPerFaction = bool(value)

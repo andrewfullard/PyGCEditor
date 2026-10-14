@@ -105,6 +105,7 @@ def test_campaign_writer_uses_campaign_story_name_override(writer, tmp_path):
     story_name = root.find(".//Story_Name")
     assert story_name is not None
     assert story_name.text == campaign.storyName
+    assert root.find(".//Different_Layout_Per_Faction") is None
 
 
 def test_campaign_writer_uses_default_story_name_when_empty(writer, tmp_path):
@@ -183,6 +184,20 @@ def test_campaign_alternate_sets_round_trip(tmp_path):
     loaded.loadAlternateSets(campaign_file)
 
     assert loaded.alternateSets == campaign.alternateSets
+
+
+def test_campaign_writer_marks_different_layout_per_faction(writer, tmp_path):
+    campaign = Campaign("GC")
+    campaign.setName = "GC"
+    campaign.playableFactions = {Faction("Empire")}
+    campaign.startingForces = writer_starting_forces_dataframe()
+    campaign.differentLayoutPerFaction = True
+
+    output_path = tmp_path / "Campaigns.xml"
+    writer.campaignWriter(campaign, [Faction("Empire")], str(output_path))
+
+    root = et.parse(str(output_path)).getroot()
+    assert root.findtext(".//Different_Layout_Per_Faction") == "True"
 
 
 def writer_starting_forces_dataframe():

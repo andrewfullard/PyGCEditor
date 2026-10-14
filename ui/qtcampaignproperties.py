@@ -1,8 +1,7 @@
 import json
-
-from PyQt6 import QtCore
 import logging
 
+from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -49,6 +48,7 @@ class QtCampaignProperties:
             ["Enabled", "Suffix", "Faction", "Dummy Planet", "Planet Affiliations JSON"]
         )
         self.__alternateSetButtonLayout: QHBoxLayout = QHBoxLayout()
+        self.__differentLayoutPerFaction: QCheckBox = QCheckBox(self.__dialog)
 
         self.__okayButton: QPushButton = QPushButton("OK")
         self.__okayButton.clicked.connect(self.__okayClicked)
@@ -77,6 +77,9 @@ class QtCampaignProperties:
             "Use default starting forces?", self.__useDefaultForces
         )
         self.__formLayout.addRow("Alternate Sets", self.__alternateSets)
+        self.__formLayout.addRow(
+            "Different layout per faction?", self.__differentLayoutPerFaction
+        )
 
         self.__alternateSetButtonLayout.addWidget(self.__addAlternateSetButton)
         self.__alternateSetButtonLayout.addWidget(self.__removeAlternateSetButton)
@@ -117,6 +120,9 @@ class QtCampaignProperties:
         self.__isListed.setText(self.__campaign.isListed)
         self.__useDefaultForces.setChecked(self.__campaign.useDefaultForces)
         self.__setAlternateRows(self.__campaign.alternateSets)
+        self.__differentLayoutPerFaction.setChecked(
+            self.__campaign.differentLayoutPerFaction
+        )
 
         self.__dialog.exec()
         return self.__result
@@ -137,6 +143,9 @@ class QtCampaignProperties:
         self.__campaign.isListed = self.__isListed.text()
         self.__campaign.useDefaultForces = self.__useDefaultForces.isChecked()
         self.__campaign.alternateSets = self.__getAlternateRows()
+        self.__campaign.differentLayoutPerFaction = (
+            self.__differentLayoutPerFaction.isChecked()
+        )
 
         return self.__campaign
 
