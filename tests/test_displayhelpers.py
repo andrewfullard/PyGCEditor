@@ -1,3 +1,5 @@
+import pandas as pd
+
 from DisplayHelpers import DisplayHelpers
 from gameObjects.campaign import Campaign
 from gameObjects.faction import Faction
@@ -37,3 +39,28 @@ def test_calculate_faction_income_empty_returns_empty_dict() -> None:
     totals = helper.calculateFactionIncome(planets=[], planet_owners=[])
 
     assert totals == {}
+
+
+def test_get_planet_owner_uses_ground_force_for_mixed_forces() -> None:
+    repository = GameObjectRepository()
+    empire = Faction("Empire")
+    trade_federation = Faction("Trade Federation")
+    neutral = Faction("Neutral")
+    repository.addFaction(empire)
+    repository.addFaction(trade_federation)
+    repository.addFaction(neutral)
+    repository.addGroundForceType("GroundCompany")
+
+    campaign = Campaign("GC")
+    campaign.startingForces = pd.DataFrame(
+        [
+            ["Nar Shaddaa", 1, trade_federation.name, "SpaceUnit", 1],
+            ["Nar Shaddaa", 1, empire.name, "GroundCompany", 1],
+        ],
+        columns=["Planet", "Era", "Owner", "ObjectType", "Amount"],
+    )
+    helper = DisplayHelpers(repository, [campaign])
+
+    owner = helper.getPlanetOwners(0, {Planet("Nar Shaddaa")})
+
+    assert owner == [empire]
