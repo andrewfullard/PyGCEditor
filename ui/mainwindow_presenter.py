@@ -491,6 +491,7 @@ class MainWindowPresenter:
         campaign = self.getSelectedCampaign()
         factions = self.__repository.factions
         self.__xmlWriter.campaignWriter(campaign, factions, fileName)
+        campaign.saveAlternateSets(fileName)
 
         if len(self.__newTradeRoutes) > 0:
             self.__xmlWriter.tradeRouteWriter(self.__newTradeRoutes)
@@ -518,8 +519,10 @@ class MainWindowPresenter:
         for campaign in self.campaigns:
             if default_forces_only and campaign.useDefaultForces:
                 self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
+                campaign.saveAlternateSets()
             elif not default_forces_only:
                 self.__xmlWriter.campaignWriter(campaign, factions, campaign.fileName)
+                campaign.saveAlternateSets()
 
     def getNameOfPlanetAt(self, ind: int) -> str:
         return self.__planets[ind].name
