@@ -22,6 +22,7 @@ class ShowOptionsDialogCommand(Command):
             config.submods,
             config.autoPlanetConnectionDistance,
             config.startingForcesLibraryURL,
+            config.darkMap,
         )
 
         if result is DialogResult.Ok:
@@ -30,4 +31,5 @@ class ShowOptionsDialogCommand(Command):
                 dialog.getSubmods(),
                 dialog.getAutoConnectionDistance(),
                 dialog.getStartingForcesLibraryURL(),
+                dialog.getDarkMap(),
             )

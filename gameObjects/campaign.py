@@ -1,4 +1,6 @@
-from typing import Set
+import json
+import os
+from typing import List, Set
 import pandas as pd
 
 from gameObjects.planet import Planet
@@ -26,6 +28,7 @@ class Campaign:
         self.__era = 1
         self.__isListed: str = "True"
         self.__useDefaultForces: bool = False
+        self.__alternateSets: List[dict] = []
 
         self.__planets: Set[Planet] = set()
         self.__playableFactions: Set[Faction] = set()
@@ -179,3 +182,64 @@ class Campaign:
     def isListed(self, value: str) -> None:
         if value:
             self.__isListed = value
+
+    @property
+    def alternateSets(self) -> List[dict]:
+        return [self.__cleanAlternateSet(entry) for entry in self.__alternateSets]
+
+    @alternateSets.setter
+    def alternateSets(self, value: List[dict]) -> None:
+        self.__alternateSets = [self.__cleanAlternateSet(entry) for entry in value or []]
+
+    def loadAlternateSets(self, campaignFileName: str = "") -> None:
+        path = self.__alternateSetsPath(campaignFileName or self.fileName)
+        if not os.path.isfile(path):
+            self.alternateSets = []
+            return
+
+        try:
+            with open(path, encoding="utf-8") as alternateFile:
+                data = json.load(alternateFile)
+        except (OSError, json.JSONDecodeError) as err:
+            print(f"Failed to load alternate sets '{path}': {err}")
+            data = {}
+        self.alternateSets = data.get("alternates", [])
+
+    def saveAlternateSets(self, campaignFileName: str = "") -> None:
+        path = self.__alternateSetsPath(campaignFileName or self.fileName)
+        if not path:
+            return
+        if not self.alternateSets and not os.path.isfile(path):
+            return
+
+        with open(path, "w", encoding="utf-8") as alternateFile:
+            json.dump({"alternates": self.alternateSets}, alternateFile, indent=2)
+            alternateFile.write("\n")
+
+    @staticmethod
+    def alternateSetsPath(campaignFileName: str) -> str:
+        return Campaign.__alternateSetsPath(campaignFileName)
+
+    @staticmethod
+    def __alternateSetsPath(campaignFileName: str) -> str:
+        return campaignFileName + ".alternates.json" if campaignFileName else ""
+
+    @staticmethod
+    def __cleanAlternateSet(entry: dict) -> dict:
+        if not isinstance(entry, dict):
+            entry = {}
+        overrides = entry.get("planet_affiliations", {})
+        if not isinstance(overrides, dict):
+            overrides = {}
+
+        return {
+            "enabled": bool(entry.get("enabled", True)),
+            "suffix": str(entry.get("suffix", "")).strip(),
+            "faction": str(entry.get("faction", "")).strip(),
+            "dummy_planet": str(entry.get("dummy_planet", "")).strip(),
+            "planet_affiliations": {
+                str(planet).strip(): str(faction).strip()
+                for planet, faction in overrides.items()
+                if str(planet).strip() and str(faction).strip()
+            },
+        }
