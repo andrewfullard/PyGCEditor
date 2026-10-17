@@ -326,16 +326,13 @@ class XMLReader:
                 continue
 
             tag = element.tag.lower()
-            child_tags = {child.tag.lower() for child in element}
             is_ground = (
                 "ground" in tag
                 or "company" in tag
-                or "company_units" in child_tags
             )
             is_space = (
                 "space" in tag
                 or "squadron" in tag
-                or "squadron_units" in child_tags
             )
 
             if is_ground and not is_space:
